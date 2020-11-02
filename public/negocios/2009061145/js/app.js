@@ -1709,7 +1709,7 @@ function checkCookie() {
         }
     } else {
         alert("¡Por favor inicia sesión!");
-        window.location.href="/negocios/index.html";
+        window.location.href="../index.html";
     }
 
 }
