@@ -1,60 +1,67 @@
-#nombreNegocio{
-    font-size: 7px;
-  }
+.logo_navbar{
+  margin: 5px 5px;
+}
 
   @media (min-width: 300px) {
 
-    #logo{
+    .logo_navbar{
       width: 150px;
       height: 55px;
     }
   
-    #nombreNegocio{
-      font-size: 7px;
-    }
+    
   
    }
    
    @media (min-width: 500px) {
   
-    #logo{
+    .logo_navbar{
       width: 160px;
       height: 60px;
     }
   
-    #nombreNegocio{
-      font-size: 8px;
-    }
+    
   
    }
   
    @media (min-width: 700px) {
   
-    #logo{
+    .logo_navbar{
       width: 170px;
       height: 62px;
     }
   
-    #nombreNegocio{
-      font-size: 10px;
+    .nombreNegocio{
+      font-size: 20px;
+      font-weight: bold;
     }
   
    }
   
    @media (min-width: 1000px) {
   
-    #logo{
+    .logo_navbar{
       width: 190px;
       height: 64px;
+    }
+
+    .nombreNegocio{
+      font-size: 20px;
+      font-weight: bold;
     }
   
    }
   
    @media (min-width: 1200px) {
   
-    #logo{
+    .logo_navbar{
       width: 210px;
       height: 68px;
+    }
+
+    .nombreNegocio{
+      font-size: 20px;
+      font-weight: bold;
     }
   
    }
