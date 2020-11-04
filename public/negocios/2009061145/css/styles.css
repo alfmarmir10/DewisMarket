@@ -1,0 +1,71 @@
+.logo_navbar{
+  margin: 5px 5px;
+}
+
+  @media (min-width: 300px) {
+
+    .logo_navbar{
+      width: 150px;
+      height: 55px;
+    }
+  
+    .nombreNegocio{
+      font-size: 16px;
+      font-weight: bold;
+    }
+    
+  
+   }
+   
+   @media (min-width: 500px) {
+  
+    .logo_navbar{
+      width: 160px;
+      height: 60px;
+    }
+  
+    
+  
+   }
+  
+   @media (min-width: 700px) {
+  
+    .logo_navbar{
+      width: 170px;
+      height: 62px;
+    }
+  
+    .nombreNegocio{
+      font-size: 20px;
+      font-weight: bold;
+    }
+  
+   }
+  
+   @media (min-width: 1000px) {
+  
+    .logo_navbar{
+      width: 190px;
+      height: 64px;
+    }
+
+    .nombreNegocio{
+      font-size: 20px;
+      font-weight: bold;
+    }
+  
+   }
+  
+   @media (min-width: 1200px) {
+  
+    .logo_navbar{
+      width: 210px;
+      height: 68px;
+    }
+
+    .nombreNegocio{
+      font-size: 20px;
+      font-weight: bold;
+    }
+  
+   }

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es"> 
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="/negocios/img/favicon.ico" type="image/x-icon"/>
+    <!-- Bootstrap CSS -->
+    <!-- Scripts BOOTSTRAP -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <!-- Scripts FIREBASE -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-firestore.js"></script>
+    <!-- <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" /> -->
+    <link type="text/css" rel="stylesheet" href="css/styles.css" />
+    <title>Dewis Market - Ver Catálogo</title>
+    <script src="js/app.js"></script>   
+    <link href="css/scanner.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script>
+        $(Document).ready(function(){
+            $("#txtCodigoBarras").focus();
+            checkCookie();
+            getNombreNegocio();
+
+        });
+
+        $(Document).on("change", "#cmbDescripcion", function(e){
+			var x = document.getElementById("cmbDescripcion");
+			var valor = x.value;
+			CargarCatalogoFiltroDescripcion(valor);
+		});
+
+		$(Document).on("change", "#cmbCategoria1", function(e){
+			var x = document.getElementById("cmbCategoria1");
+			var valor = x.value;
+			CargarCatalogoFiltroCategoria1(valor);
+		});
+
+		$(Document).on("change", "#cmbCategoria2", function(e){
+			var x = document.getElementById("cmbCategoria2");
+			var valor = x.value;
+			CargarCatalogoFiltroCategoria2(valor);
+        });
+
+        $(Document).on("keydown", "#precioActualizarPrecio", function(e){
+                var x = event.charCode || event.keyCode;
+
+                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+         });
+
+         $(Document).on("keyup", "#precioActualizarPrecio", function(e){
+            var Costo = parseFloat($("#costoActualizarPrecio").val());
+            var Precio = parseFloat($("#precioActualizarPrecio").val());
+            console.log(Costo);
+            console.log(Precio);
+            var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
+            $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
+         });
+        
+        function index(x){
+            // var idNegocio = getCookie("idNegocio");
+            var row = x.parentNode.rowIndex;
+            if (confirm("¿Deseas modificar el precio?")) {
+                var idNegocio = getCookie("idNegocio");
+                var CB = $("#"+row+"_codigoBarrasProducto").text();
+                var Des = $("#"+row+"_descripcionProducto").text();
+                var PrecioOriginal = parseFloat($("#"+row+"_precioProducto").text());
+                var Costo = parseFloat($("#"+row+"_costoProducto").text());
+                var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
+                console.log(CB+Des+PrecioOriginal+Costo+Margen);
+                $("#modalActualizarPrecio").modal('toggle');
+                $("#modalActualizarPrecioLabel").text(Des);
+                $("#costoActualizarPrecio").val(Costo);
+                $("#precioActualizarPrecio").val(PrecioOriginal);
+                $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
+                $("#codigoBarrasActualizarPrecio").val(CB);
+                $("#rowActualizarPrecio").val(row);
+            } else {
+
+            }
+            
+            
+            // $(Document).on("focus", "#"+row+"_precioProducto", function(e){
+                
+            //     var precioOriginal = parseFloat($("#precioProducto").text());
+            //     // var x = $(this).rowIndex;
+            //     // console.log("Index: "+x);
+            //     console.log(precioOriginal);
+            //         $(Document).on("blur", "#"+row+"_precioProducto", function(e){
+            //             var precio = $("#precioProducto");
+            //             var precioNuevo = parseFloat(precio.text());
+            //             if (precioNuevo == precioOriginal){
+            //                 exit;
+            //             }
+            //             if (confirm("¿Deseas modificar el precio?")) {
+            //                 var index = precio.index(precio) + 1;
+            //                 var codigo = $("#codigoBarras").text();
+            //                 console.log(codigo);
+            //                 var x = "#"+index+"_costoProducto";
+            //                 var costo = $(x).text();
+                            
+            //                 console.log("Margen: "+ margen);
+            //                 if (confirm("El margen será del "+ margen + "%. \n\n ¿Es correcto?")) {
+            //                     db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', codigo).get()
+            //                     .then((querySnapshot) => {
+            //                         querySnapshot.forEach(function(doc){
+            //                             db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(doc.id).update({
+            //                                 Precio: precioNuevo.toFixed(1),
+            //                                 MargenActual: margen.toFixed(1)
+            //                             })
+            //                             .then(function() {
+            //                                 alert("Precio Actualizado Correctamente");
+            //                             })
+            //                             .catch(function(error){
+            //                                 console.log("Error actualizando precio: \n" + error);
+            //                             })
+            //                         })
+            //                     })
+            //                 } else {
+            //                     $("#precioProducto").text(precioOriginal);
+            //                 }
+            //             } else {
+            //                 $("#precioProducto").text(precioOriginal);
+            //             }
+                        
+            //         });
+            // });
+        };
+
+        $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
+            try{
+                StopScanner();
+                var nodes = document.getElementsByTagName("Canvas");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+
+                var nodes = document.getElementsByTagName("video");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+            } catch(error){
+                console.log("Service is not running");
+            };
+        });
+
+        $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
+            llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
+        });
+
+        $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
+            var x = document.getElementById("cmbCatalogoValidarPrecio");
+			var valor = x.value;
+			validarPrecioDescripcion(valor);
+        });
+    </script>
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- main wrapper -->
+    <!-- ============================================================== -->
+    <div class="dashboard-main-wrapper">
+        <!-- ============================================================== -->
+        <!-- navbar -->
+        <!-- ============================================================== -->
+        <div class="dashboard-header">
+            <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                <a class="navbar-brand" href="index.html"><img src="/img/logo_editado.png" alt="" width="150" id="logo"></a>
+                <span class=""><p id="nombreNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
+                <span class="d-none"><p id="idNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse " id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto navbar-right-top">
+                        <li class="nav-item">
+                            <div id="custom-search" class="top-search-bar">
+                                <input class="form-control" type="text" placeholder="Buscar...">
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown notification">
+                            <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell"></i> <span class="indicator"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                <li>
+                                    <div class="notification-title"> Notificaciones</div>
+                                    <div class="notification-list">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action active">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-2.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">Jeremy Rakestraw</span>accepted your invitation to join the team.
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-3.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">John Abraham </span>is now following you
+                                                        <div class="notification-date">2 days ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-4.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">Monaan Pechi</span> is watching your main repository
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-5.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">Jessica Caruso</span>accepted your invitation to join the team.
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="list-footer"> <a href="#">Ver todas las notificaciones</a></div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown nav-user">
+                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="assets/images/avatar-1.jpg" alt="" class="user-avatar-md rounded-circle"></a>
+                            <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
+                                <div class="nav-user-info">
+                                    <h5 class="mb-0 text-white nav-user-name">Alfonso </h5>
+                                    <span class="status"></span><span class="ml-2">Perfil 1</span>
+                                </div>
+                                <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Cuenta</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Configuración</a>
+                                <a class="dropdown-item" href="#" onclick="CerrarSesion(); return false;"><i class="fas fa-power-off mr-2"></i>Salir</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end navbar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- left sidebar -->
+        <!-- ============================================================== -->
+            <div class="nav-left-sidebar sidebar">
+                <div class="menu-list">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <a class="d-xl-none d-lg-none" href="#">Menú</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav flex-column">
+                                <li class="nav-divider">
+                                    Menú General
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link font-weight-bold" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fas fa-money-bill-alt"></i>Tablero de Control</a>
+                                    <div id="submenu-1" class="collapse submenu bg-transparent border-left border-info">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="index.html">Análisis General</a>
+                                                <!-- <span class="badge badge-secondary">New</span> -->
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-1" aria-controls="submenu-1-1">Análisis Detallado</a>
+                                                <div id="submenu-1-1" class="collapse submenu bg-transparent border-left border-info">
+                                                    <ul class="nav flex-column">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="index.html">Ventas</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="ecommerce-product.html">Compras</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="ecommerce-product-single.html">Gastos</a>
+                                                        </li>  
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active font-weight-bold" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2" aria-controls="submenu-2"><i class="fa fa-fw fa-boxes"></i>Inventario</a>
+                                        <!-- <span class="badge badge-success">6</span> -->
+                                    <div id="submenu-2" class="collapse submenu bg-transparent border-left border-info">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2-1" aria-controls="submenu-2-1">Catálogo</a>
+                                                <div id="submenu-2-1" class="collapse show submenu bg-transparent border-left border-info">
+                                                    <ul class="nav flex-column">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active" href="index.html">Ver Catálogo</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="agregarProducto.html">Agregar Producto</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="ecommerce-product-single.html">Análisis por Producto</a>
+                                                        </li>  
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="entradas.html">Entradas</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="proveedores.html">Proveedores</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="dashboard-sales.html">Salidas</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link font-weight-bold" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-3" aria-controls="submenu-3"><i class="fas fa-money-bill-alt"></i>Ventas</a>
+                                    <div id="submenu-3" class="collapse submenu bg-transparent border-left border-info">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="puntoDeVenta.html">Punto de Venta</a>
+                                                <!-- <span class="badge badge-secondary">New</span> -->
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="pages/general.html">Histórico</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-divider">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" data-toggle="modal" data-target="#modalValidarPrecio"><i class="fas fa-dollar-sign"></i>Validar Precio</a>
+                                    </li>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end left sidebar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="dashboard-ecommerce">
+                <div class="container-fluid dashboard-content ">
+                    <!-- ============================================================== -->
+                    <!-- pageheader  -->
+                    <!-- ============================================================== -->
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="page-header">
+                                <h2 class="pageheader-title">Catálogo </h2>
+                                <p class="pageheader-text">Ver catálogo.</p>
+                                <div class="page-breadcrumb">
+                                    <nav aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Inventario</a></li>
+                                            <li class="breadcrumb-item active" aria-current="page">Catálogo</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ============================================================== -->
+                    <!-- end pageheader  -->
+                    <!-- ============================================================== -->
+                    
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-inline">
+                                        <div class="row">
+                                            <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
+                                            <div class="col-sm">
+                                                    <div id="Catalogo"></div>
+                                                    <script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script>
+                                                    <label>Descripcion</label>
+                                            </div>
+
+                                            <div class="col-sm">
+                                                <select id="cmbCategoria1" class="form-control">
+                                                    <option value="Comestible">Comestible</option>
+                                                    <option value="No Comestible">No Comestible</option>
+                                                </select>
+                                                <label>Categoría 1</label>
+                                            </div>
+
+                                            <div class="col-sm">
+                                                <div id="Cat2"></div>
+                                                <script> llenarComboBox("Cat2", "cmbCategoria2", "form-control"); </script>
+                                                <label>Categoría 2</label>
+                                            </div>
+
+                                            <div class="col-sm">
+                                                <div class="btn-group" id="btnCatalogo">
+                                                    <button type="button" class="btn btn-warning" onclick="PDFCatalogoCalcularNombreArchivo(); return false;">Descargar</button>
+                                                    <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <span class="sr-only">Opciones descargar catálogo</span>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="#" onclick="PDFCatalogoCalcularNombreArchivo(); return false;">PDF elementos filtrados</a>
+                                                        <a class="dropdown-item" href="#" onclick="CargarCatalogo(); return false;" class="dropdown-item">PDF catálogo completo</a>
+                                                    </div>
+                                                </div>
+                                                <label>...</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br><br>
+                                    <div class="table-responsive-xl">
+                                        <table class="table table-striped " id="tabla_catalogo">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th scope="col" style="text-align: center">ID</th>
+                                                    <th scope="col" style="text-align: center">CÓDIGO BARRAS</th>
+                                                    <th scope="col" style="text-align: center">DESCRIPCIÓN</th>
+                                                    <th scope="col" style="text-align: center">UNIDADES</th>
+                                                    <th scope="col" style="text-align: center">PRESENTACIÓN</th>
+                                                    <th scope="col" style="text-align: center">CATEGORÍA 1</th>
+                                                    <th scope="col" style="text-align: center">CATEGORÍA 2</th>
+                                                    <th scope="col" style="text-align: center">$ PRECIO</th>
+                                                    <th scope="col" style="text-align: center">EXISTENCIA</th>
+                                                    <th scope="col" style="text-align: center">ÚLT. COSTO</th>
+                                                    <th scope="col" style="text-align: center">ÚLT. PROV</th>
+                                                    <th scope="col" style="text-align: center">MARGEN</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>                                          
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalValidarPrecio" tabindex="-1" aria-labelledby="modalValidarPrecioLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                                    <!-- Nav tabs -->
+                                    <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalValidarPrecioLabel">Validar Precio</h5></div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="txtCodigoBarrasValidarPrecio" class="col-form-label">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
+                                        <input id="txtCodigoBarrasValidarPrecio" type="text" class="form-control">
+                                        <button type="button" class="btn btn-warning btn-lg btn-block form-control" onclick="validarPrecioCodigoBarras();" id="btnValidarPrecio" style="margin-top: 5px">Consultar</button>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cmbCatalogoValidarPrecio">Descripción</label>
+                                        <div id="Catalogo"></div>
+                                    </div>
+                                    <div id="contenedorValidarPrecio">
+                                        <script src="js/scriptValidarPrecio.js"></script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalInfoAdicionalProducto" tabindex="-1" aria-labelledby="modalInfoAdicionalProducto" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header bg-success">
+                                    <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                                    <!-- Nav tabs -->
+                                    <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalInfoAdicionalProducto">Información Adicional</h5></div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalActualizarPrecio" tabindex="-1" aria-labelledby="modalActualizarPrecioLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                                    <!-- Nav tabs -->
+                                    <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalActualizarPrecioLabel"></h5></div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                          <label for="costoActualizarPrecio" class="font-weight-bold">Costo:</label>
+                                          <small id="idNegocioHelp" class="form-text text-muted">Costo Actual</small>
+                                          <input type="text" class="form-control" id="costoActualizarPrecio" aria-describedby="costoHelp" disabled="true">
+                                          <input type="text" class="form-control" id="codigoBarrasActualizarPrecio" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
+                                          <input type="text" class="form-control" id="rowActualizarPrecio" aria-describedby="rowHelp" hidden="true" disabled="true">
+                                        </div>
+                                        <div class="form-group">
+                                          <label for="precioActualizarPrecio" class="font-weight-bold">Precio:</label>
+                                          <small id="idNegocioHelp" class="form-text text-muted">Captura el nuevo precio de venta</small>
+                                          <input type="text" class="form-control" id="precioActualizarPrecio" aria-describedby="precioHelp">                          
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="margenActualizarPrecio" class="font-weight-bold">Margen:</label>
+                                            <small id="idNegocioHelp" class="form-text text-muted">El margen será de...</small>
+                                            <input type="text" class="form-control" id="margenActualizarPrecio" aria-describedby="margenHelp" disabled="true">
+                                          </div>
+                                        <br>
+                                        <button type="button" class="btn btn-warning" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
+                                      </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastPrecioValidado" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="5000">
+                        <div class="toast-header bg-success">
+                        <img src="img/favicon_16x16.ico" class="mr-2" alt="...">
+                        <strong class="mr-auto text-dark">DEWIS MARKET - $ Precio</strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="toast-body bg-white text-dark">
+                            <small class="text-muted">Descripción</small>
+                            <p class="lead text-dark" id="descripcionPrecioValidado">Descripción</p>
+                            <small class="text-muted">Precio</small>
+                            <span><h3 class="text-dark font-weight-bold " id="precioValidado">5.0</h3><br><br></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <div class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                             Dewis Market © 2020. Todos los derechos reservados. Dashboard by <a href="https://colorlib.com/wp/">Colorlib</a>.
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="text-md-right footer-links d-none d-sm-block">
+                                <a href="javascript: void(0);">A cerca de</a>
+                                <a href="javascript: void(0);">Soporte</a>
+                                <a href="javascript: void(0);">Contáctanos</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- end footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- end wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- end main wrapper  -->
+    <!-- ============================================================== -->
+    <!-- Optional JavaScript -->
+
+    <link href="assets/vendor/fonts/circular-std/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/libs/css/style.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/fontawesome/css/fontawesome-all.css">
+    <link rel="stylesheet" href="assets/vendor/charts/chartist-bundle/chartist.css">
+    <link rel="stylesheet" href="assets/vendor/charts/morris-bundle/morris.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="assets/vendor/charts/c3charts/c3.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
+    <script type="text/javascript" src="js/jspdf.min.js"></script>
+    <script type="text/javascript" src="js/html2pdf.bundle.min.js"></script>
+    <script type="text/javascript" src="js/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
+      <script>
+        var perf = firebase.performance();
+      </script>
+</body>
+</html>

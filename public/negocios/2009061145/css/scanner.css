@@ -1,0 +1,34 @@
+#contenedor video{
+	max-width: 100%;
+	width: 100%;
+	margin-top: 10px;
+	border-radius: 5px;
+	
+}
+#contenedor{
+	max-width: 100%;
+	position:relative;
+	
+}
+
+#contenedorValidarPrecio video{
+	max-width: 100%;
+	width: 100%;
+	margin-top: 10px;
+	border-radius: 5px;
+}
+
+#contenedorValidarPrecio{
+	max-width: 100%;
+	position:relative;
+	margin-top: 10px;
+}
+
+canvas{
+	max-width: 100%;
+}
+canvas.drawingBuffer{
+	position:absolute;
+	top:0;
+	left:0;
+}
