@@ -7,6 +7,8 @@
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Jekyll v4.1.1">
     <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon"/>
+    <script src="https://kit.fontawesome.com/1a068ddec2.js" crossorigin="anonymous"></script>
+
     <!-- Scripts BOOTSTRAP -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -51,6 +53,9 @@
   <body>
     <nav class="navbar sticky-top bg-warning flex-md-nowrap p-0 shadow">
       <a class="navbar-brand bg-warning text-dark col-md-3 col-lg-2 mr-0 px-3 border-0" href="#" id="nombreNegocio" style="font-weight: bold;"></a>
+      <!-- <a class="navbar-brand bg-warning text-dark col-md-3 col-lg-2 mr-0 px-3 border-0" href="#" id="nombreNegocio" style="font-weight: bold;"></a> -->
+      <!-- <span style="margin-left: 0px;"><i class="fas fa-user"></i></span>
+      <span><p id="usuario" class="text-dark" style="font-weight: bold;"></p></span> -->
       <span class="d-none"><p id="idNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
       <button style="border:1px solid black"  class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class=""><i class="fas fa-bars"></i></span>
@@ -68,83 +73,72 @@
         <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
           <div class="sidebar-sticky pt-3">
             <ul class="nav flex-column">
+              <div class="card bg-info text-center text-white">
+                <div class="head">
+                  INICIO
+                </div>
+              </div>
               <li class="nav-item">
                 <a class="nav-link active" href="#">
-                  <span data-feather="home"></span>
-                  Dashboard <span class="sr-only">(current)</span>
+                  <span><i class="fas fa-chart-line"></i></span>
+                  Tablero de Control <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <div class="card bg-info text-center text-white">
+                <div class="head">
+                  INVENTARIO
+                </div>
+              </div>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span><i class="fas fa-pallet"></i></span>
+                  Catálogo
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <span data-feather="file"></span>
-                  Orders
+                  <span><i class="fas fa-plus-square"></i></span>
+                  Agregar Producto
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <span data-feather="shopping-cart"></span>
-                  Products
+                  <span><i class="fas fa-arrow-circle-left"></i></i></span>
+                  Entradas
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <span data-feather="users"></span>
-                  Customers
+                  <span><i class="fas fa-truck"></i></span>
+                  Proveedores
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <span data-feather="bar-chart-2"></span>
-                  Reports
+                  <span><i class="fas fa-arrow-circle-right"></i></span>
+                  Salidas
                 </a>
               </li>
+              <div class="card bg-info text-center text-white">
+                <div class="head">
+                  PUNTO DE VENTA
+                </div>
+              </div>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <span data-feather="layers"></span>
-                  Integrations
-                </a>
-              </li>
-            </ul>
-
-            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Saved reports</span>
-              <a class="d-flex align-items-center text-muted" href="#" aria-label="Add a new report">
-                <span data-feather="plus-circle"></span>
-              </a>
-            </h6>
-            <ul class="nav flex-column mb-2">
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Current month
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Last quarter
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Social engagement
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="file-text"></span>
-                  Year-end sale
+                  <span><i class="fas fa-money-bill-alt"></i></span>
+                  Vender
                 </a>
               </li>
             </ul>
           </div>
         </nav>
-        <br>
+
         <div class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
           <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-              <h1 class="h2">Dashboard</h1>
+              <br>
+              <h1 class="h2">Tablero de Control</h1>
               <div class="btn-toolbar mb-2 mb-md-0 inline-block">
                 <div class="btn-group mr-2">
                   <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -305,11 +299,68 @@
         </main> -->
       </div>
 </div>
+  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastMsg" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="3000">
+    <div class="toast-header bg-dark">
+    <img src="img/favicon_16x16.ico" class="mr-2" alt="...">
+    <strong class="mr-auto text-white">DEWIS MARKET</strong>
+    <!-- <small class="text-muted">just now</small> -->
+    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    </div>
+    <div class="toast-body bg-dark text-white">
+        <p class="lead text-white" id="msgBienvenidoDeNuevo">¡Bienvenido!</p><br>
+        <p>¡Disfruta la experiencia!</p><br><br>
+    </div>
+  </div>
+  <div class="modal fade" id="modalValidarPrecio" tabindex="-1" aria-labelledby="modalValidarPrecioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                <!-- Nav tabs -->
+                <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalValidarPrecioLabel">Validar Precio</h5></div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="txtCodigoBarrasValidarPrecio" class="col-form-label">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
+                    <input id="txtCodigoBarrasValidarPrecio" type="text" class="form-control">
+                    <button type="button" class="btn btn-warning btn-lg btn-block form-control" onclick="validarPrecioCodigoBarras();" id="btnValidarPrecio" style="margin-top: 5px">Consultar</button>
+                </div>
+                <div class="form-group">
+                    <label for="cmbCatalogoValidarPrecio">Descripción</label>
+                    <div id="Catalogo"></div>
+                </div>
+                <div id="contenedorValidarPrecio">
+                    <script src="js/scriptValidarPrecio.js"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastPrecioValidado" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="5000">
+    <div class="toast-header bg-success">
+    <img src="img/favicon_16x16.ico" class="mr-2" alt="...">
+    <strong class="mr-auto text-dark">DEWIS MARKET - $ Precio</strong>
+    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    </div>
+    <div class="toast-body bg-white text-dark">
+        <small class="text-muted">Descripción</small>
+        <p class="lead text-dark" id="descripcionPrecioValidado">Descripción</p>
+        <small class="text-muted">Precio</small>
+        <span><h3 class="text-dark font-weight-bold " id="precioValidado">5.0</h3><br><br></span>
+    </div>
+  </div>
+  </div>
     <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
     <script src="js/app.js"></script>
-    <link rel="stylesheet" href="assets/vendor/fonts/fontawesome/css/fontawesome-all.css">
     <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
     <script>
         var perf = firebase.performance();

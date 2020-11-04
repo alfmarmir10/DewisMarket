@@ -1677,8 +1677,9 @@ function AgregarProducto(){
 function getNombreNegocio(){
     var nombreNegocio = getCookie("nombreNegocio");
     var idNegocio = getCookie("idNegocio");
+    var user = getCookie("username");
     if (nombreNegocio){
-        $('#nombreNegocio').html(nombreNegocio);
+        $('#nombreNegocio').html(nombreNegocio + "   -   " + user + "<span style='margin-left: 5px;'><i class='fas fa-user'></i></span>");
         $('#idNegocio').html(idNegocio);
     }
 }
