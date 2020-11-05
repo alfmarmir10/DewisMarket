@@ -13,6 +13,11 @@ body {
   color: white;
 }
 
+.share_export_btn{
+  color: black;
+  border: 1px solid black;
+}
+
 /*
  * Sidebar
  */

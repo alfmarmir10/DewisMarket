@@ -1,43 +1,125 @@
 function loadDashboardCharts(){
-  var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+  var options = {
+    chart: {
+      type: 'line',
+      height: '400px'
+    },
+    series: [{
+      name: 'sales',
+      data: [30,40,35,50,49,60,70,91,125]
+    }],
+    xaxis: {
+      categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
+    },
+    stroke:{
+      curve: 'straight',
+    },
+    title: {
+      text: 'Ventas',
+      align: 'left',
+      margin: 10,
+      offsetX: 0,
+      offsetY: 0,
+      floating: false,
+      style: {
+        fontSize:  '24px',
+        fontWeight:  'bold',
+        fontFamily:  'Helvetica',
+        color:  '#263238'
+      }
+    },
+      responsive: [
+        {
+          breakpoint: 321,
+          options: {
+            chart: {
+              height: 200,
+            },
+            title:{
+              text: 'Compras',
+            }
+          }
+        }
+      ]
+  }
   
-  var lineChartData = {
-    labels : ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"],
-    datasets : [
+  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  
+  chart.render();
+
+  options = {
+    chart: {
+      width: "100%",
+      height: 380,
+      type: "bar"
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      width: 1,
+      colors: ["#fff"]
+    },
+    series: [
       {
-        label: "Semana Pasada",
-        fillColor : "rgba(220,220,220,0.2)",
-        strokeColor : "rgba(220,220,220,1)",
-        pointColor : "rgba(220,220,220,1)",
-        pointStrokeColor : "#fff",
-        pointHighlightFill : "#fff",
-        pointHighlightStroke : "rgba(220,220,220,1)",
-        data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+        data: [44, 55, 41, 64, 22, 43, 21]
       },
       {
-        label: "Semana Actual",
-        fillColor : "rgba(151,187,205,0.2)",
-        strokeColor : "rgba(151,187,205,1)",
-        pointColor : "rgba(151,187,205,1)",
-        pointStrokeColor : "#fff",
-        pointHighlightFill : "#fff",
-        pointHighlightStroke : "rgba(151,187,205,1)",
-        data : [randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor(),randomScalingFactor()]
+        data: [53, 32, 33, 52, 13, 44, 32]
+      }
+    ],
+    xaxis: {
+      categories: [
+        "Korea",
+        "Canada",
+        "Poland",
+        "Italy",
+        "France",
+        "Japan",
+        "China"
+      ]
+    },
+    legend: {
+      position: "right",
+      verticalAlign: "top",
+      containerMargin: {
+        left: 35,
+        right: 60
+      }
+    },
+    responsive: [
+      {
+        breakpoint: 321,
+        options: {
+          plotOptions: {
+            bar: {
+              horizontal: false
+            }
+          },
+          chart: {
+            height: 200,
+          },
+          legend: {
+            position: "bottom"
+          },
+          title:{
+            text:'Compras2'
+          }
+        }
       }
     ]
-  }
-
-  var ctx = document.getElementById("canvas").getContext("2d");
-  window.myLine = new Chart(ctx).Line(lineChartData, {
-      responsive: true,
-      legend:{
-        position: 'top'
-      },
-      title: {
-        display: true,
-        text: 'Chart.js Line Chart'
-      }
-  })
+  };
+  
+  chart = new ApexCharts(document.querySelector("#chart2"), options);
+  
+  chart.render();
+  
 }
+
 
 
