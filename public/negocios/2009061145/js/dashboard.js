@@ -30,6 +30,9 @@ function loadDashboardCharts(){
   var ctx = document.getElementById("canvas").getContext("2d");
   window.myLine = new Chart(ctx).Line(lineChartData, {
       responsive: true,
+      legend:{
+        position: 'top'
+      },
       title: {
         display: true,
         text: 'Chart.js Line Chart'

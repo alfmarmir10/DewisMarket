@@ -13,14 +13,6 @@ body {
   color: white;
 }
 
-<<<<<<< HEAD
-.share_export_btn{
-  color: black;
-  border: 1px solid black;
-}
-
-=======
->>>>>>> 8e79d8d13b3d2cbf2f954d44595a59698cdf5357
 /*
  * Sidebar
  */
@@ -40,7 +32,6 @@ body {
   .sidebar {
     top: 2rem;
   }
-<<<<<<< HEAD
 
   body{
     background-color: rgba(40, 81, 141, .95);
@@ -52,8 +43,7 @@ body {
     color: white;
     border: 1px solid white;
   }
-=======
->>>>>>> 8e79d8d13b3d2cbf2f954d44595a59698cdf5357
+
 }
 
 .sidebar-sticky {
