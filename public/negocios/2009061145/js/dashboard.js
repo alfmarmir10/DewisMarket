@@ -1,5 +1,6 @@
 function loadDashboardCharts(){
   var randomScalingFactor = function(){ return Math.round(Math.random()*100)};
+  
   var lineChartData = {
     labels : ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"],
     datasets : [
@@ -25,9 +26,14 @@ function loadDashboardCharts(){
       }
     ]
   }
+
   var ctx = document.getElementById("canvas").getContext("2d");
   window.myLine = new Chart(ctx).Line(lineChartData, {
-      responsive: true
+      responsive: true,
+      title: {
+        display: true,
+        text: 'Chart.js Line Chart'
+      }
   })
 }
 
