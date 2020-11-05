@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+=======
+/* Set a background image by replacing the URL below */
+body {
+  /* background: url('https://source.unsplash.com/twukN12EN7c/1920x1080') no-repeat center center fixed; */
+  background: url('../img/bg4.png') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  font-family: 'Spartan', sans-serif;
+}
+>>>>>>> 8e79d8d13b3d2cbf2f954d44595a59698cdf5357
 
 .toast{
   opacity:1;

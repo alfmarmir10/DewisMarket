@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon"/>
+    <!-- Scripts BOOTSTRAP -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <!-- Scripts FIREBASE -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-firestore.js"></script>
+    <title>Dewis Market - Tablero de Control</title>
+    <link type="text/css" rel="stylesheet" href="css/styles.css" />
+    <link href="css/scanner.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script>
+        $(Document).ready(function(){
+            checkCookie();
+            getNombreNegocio();
+            $("#toastMsg").toast('show');
+            loadIndexGraphs();
+        });
+
+        $(document).on("shown.bs.button", "#btnNavBarToogler", function(e) {
+            alert("Show");
+        });
+
+        $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
+            try{
+                StopScanner();
+                var nodes = document.getElementsByTagName("Canvas");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+
+                var nodes = document.getElementsByTagName("video");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+            } catch(error){
+                console.log("Service is not running");
+            };
+        });
+
+        $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
+            llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
+        });
+
+        $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
+            var x = document.getElementById("cmbCatalogoValidarPrecio");
+			var valor = x.value;
+			validarPrecioDescripcion(valor);
+        });
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="./img/logo_editado.png" width="150" height="50" class="d-inline-block align-middle" alt="" loading="lazy">
+        </a>
+        <button id="btnNavBarToogler" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarToggler" style="background-color: RGB(40,81,141);">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item text-center">
+                    <p class="nombreNegocio text-white" id="nombreNegocio"></p>
+                    <div class="dropdown-divider"></div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Tablero de Control
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+
+
+                <li class="nav-item" style="margin-left:3px">
+                    <a class="nav-link active font-weight-bold text-white" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fas fa-money-bill-alt"></i>Tablero de Control</a>
+                    <div id="submenu-1" class="collapse submenu bg-transparent border-left border-info">
+                        <ul class="nav flex-column">
+                            <li class="nav-item text-white" style="margin-left:6px">
+                                <a class="nav-link active" href="index.html">Análisis General</a>
+                                <!-- <span class="badge badge-secondary">New</span> -->
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-1" aria-controls="submenu-1-1">Análisis Detallado</a>
+                                <div id="submenu-1-1" class="collapse submenu bg-transparent border-left border-info">
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="index.html">Ventas</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="compras.html">Compras</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="ecommerce-product-single.html">Gastos</a>
+                                        </li>  
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <!-- <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form> -->
+        </div>
+    </nav>
+
+    <!-- ============================================================== -->
+    <!-- footer -->
+    <!-- ============================================================== -->
+    <div class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                    Dewis Market © 2020. Todos los derechos reservados. Dashboard by <a href="https://colorlib.com/wp/">Colorlib</a>.
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div class="text-md-right footer-links d-none d-sm-block">
+                        <a href="javascript: void(0);">A cerca de</a>
+                        <a href="javascript: void(0);">Soporte</a>
+                        <a href="javascript: void(0);">Contáctanos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- end footer -->
+    <!-- ============================================================== -->
+    <script src="js/app.js"></script>
+    <link rel="stylesheet" href="assets/vendor/fonts/fontawesome/css/fontawesome-all.css">
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
+    <script>
+        var perf = firebase.performance();
+    </script>
+</body>
+</html>
