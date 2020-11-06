@@ -1320,8 +1320,10 @@ function CargarCatalogoFiltroDescripcion(criterio){
             }
         });
 
-        document.getElementById("cmbCategoria1").selectedIndex = 0;
-        document.getElementById("cmbCategoria2").selectedIndex = 0;
+        var x = document.getElementById("cmbCategoria1");
+        x.value = "";
+        x = document.getElementById("cmbCategoria2");
+        x.value = "";
         //document.getElementById("cmbFabricante").selectedIndex = 0;
     });
 }
@@ -1372,9 +1374,10 @@ function CargarCatalogoFiltroCategoria1(criterio){
             }
         });
 
-        document.getElementById("cmbDescripcion").selectedIndex = 0;
-        document.getElementById("cmbCategoria2").selectedIndex = 0;
-        // document.getElementById("cmbFabricante").selectedIndex = 0;
+        var x = document.getElementById("cmbDescripcion");
+        x.value = "";
+        x = document.getElementById("cmbCategoria2");
+        x.value = "";
     });
 }
 
@@ -1424,9 +1427,10 @@ function CargarCatalogoFiltroCategoria2(criterio){
             }
         });
 
-        document.getElementById("cmbDescripcion").selectedIndex = 0;
-        document.getElementById("cmbCategoria1").selectedIndex = 0;
-        // document.getElementById("cmbFabricante").selectedIndex = 0;
+        var x = document.getElementById("cmbDescripcion");
+        x.value = "";
+        x = document.getElementById("cmbCategoria1");
+        x.value = "";
     });
 }
 
