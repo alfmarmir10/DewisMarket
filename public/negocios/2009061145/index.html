@@ -54,55 +54,55 @@
     
     <script>
       $(Document).ready(function(){
-            checkCookie();
-            getNombreNegocio();
-            $("#toastMsg").toast('show');
-            // loadIndexGraphs();
-            loadDashboardCharts();
-        });
+        checkCookie();
+        getNombreNegocio();
+        $("#toastMsg").toast('show');
+        // loadIndexGraphs();
+        loadDashboardCharts();
+      });
         
-        $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
-            try{
-                StopScanner();
-                var nodes = document.getElementsByTagName("Canvas");
+      $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
+          try{
+              StopScanner();
+              var nodes = document.getElementsByTagName("Canvas");
 
-                for (var i = 0, len = nodes.length; i != len; ++i) {
-                    nodes[0].parentNode.removeChild(nodes[0]);
-                }
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
 
-                var nodes = document.getElementsByTagName("video");
+              var nodes = document.getElementsByTagName("video");
 
-                for (var i = 0, len = nodes.length; i != len; ++i) {
-                    nodes[0].parentNode.removeChild(nodes[0]);
-                }
-            } catch(error){
-                console.log("Service is not running");
-            };
-        });
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+          } catch(error){
+              console.log("Service is not running");
+          };
+      });
 
-        $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
-            llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
-        });
+      $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
+          llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
+      });
 
-        $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
-          document.getElementById('toastPrecioValidado').style.zIndex = 999;
-            $("#modalValidarPrecio").modal('toggle');
-        });
+      $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
+        document.getElementById('toastPrecioValidado').style.zIndex = 999;
+          $("#modalValidarPrecio").modal('toggle');
+      });
 
-        $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
-            $("#modalValidarPrecio").modal('toggle');
-            document.getElementById('toastPrecioValidado').style.zIndex = -999;
-        });
+      $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
+          $("#modalValidarPrecio").modal('toggle');
+          document.getElementById('toastPrecioValidado').style.zIndex = -999;
+      });
 
-        $(document).on("hide.bs.toast", "#toastMsg", function(e) {
-            document.getElementById('toastMsg').style.zIndex = -999;
-        });
+      $(document).on("hide.bs.toast", "#toastMsg", function(e) {
+          document.getElementById('toastMsg').style.zIndex = -999;
+      });
 
-        $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
-            var x = document.getElementById("cmbCatalogoValidarPrecio");
-            var valor = x.value;
-            validarPrecioDescripcion(valor);
-        });
+      $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
+          var x = document.getElementById("cmbCatalogoValidarPrecio");
+          var valor = x.value;
+          validarPrecioDescripcion(valor);
+      });
     </script>
     
     <script type="text/javascript">
