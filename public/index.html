@@ -33,6 +33,10 @@
         $('#toast1').toast('show');
       });
 
+      $(document).on("hide.bs.toast", "#toast1", function(e) {
+            document.getElementById('toast1').style.zIndex = -999;
+      });
+
       function loadSignIn(){
         var ui = new firebaseui.auth.AuthUI(firebase.auth());
         var uiConfig = {
@@ -146,7 +150,7 @@
           </div>
         </div>
       </div>
-      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toast1" data-autohide="false" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: -999" data-delay="1500">
+      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toast1" data-autohide="false" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="1500">
         <div class="toast-header bg-dark">
           <img src="img/favicon_16x16.ico" class="mr-2" alt="...">
           <strong class="mr-auto text-white">DEWIS MARKET</strong>

@@ -1524,6 +1524,34 @@ function llenarComboBox(Coleccion, IdSelect, Class){
 
     var getOptions = {source: 'default'};
 
+    db.collection("Negocios").doc(idNegocio).collection(Coleccion).doc(Coleccion)
+    .get(getOptions)
+    .then(function(doc) {
+        console.log(doc.id, " => ", doc.data());
+        documentos = doc.get("Descripcion");
+        var container = document.getElementById(Coleccion);
+        var dlist = document.createElement('datalist');
+        container.setAttribute('list', IdSelect+"_list");
+        dlist.id = IdSelect+"_list";
+        container.className = Class;
+
+        for (const val of documentos){
+            var option = document.createElement("option");
+            option.value = val;
+            option.text = val.charAt(0).toUpperCase() + val.slice(1);
+            dlist.appendChild(option);
+        };
+
+
+        document.getElementById(Coleccion).appendChild(dlist);
+        container.id = IdSelect;
+        ordernarCmb(IdSelect+"_list");
+        //document.getElementById(Coleccion).id = Coleccion+"2";
+    })
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
+
     // db.collection("Negocios").doc(idNegocio).collection(Coleccion).doc(Coleccion)
     // .get(getOptions)
     // .then(function(doc) {
@@ -1549,32 +1577,6 @@ function llenarComboBox(Coleccion, IdSelect, Class){
     // .catch(function(error) {
     //     console.log("Error getting documents: ", error);
     // });
-
-    db.collection("Negocios").doc(idNegocio).collection(Coleccion).doc(Coleccion)
-    .get(getOptions)
-    .then(function(doc) {
-        console.log(doc.id, " => ", doc.data());
-        documentos = doc.get("Descripcion");
-        var dlist = document.createElement('datalist');
-        dlist.name = IdSelect;
-        dlist.id = IdSelect;
-        dlist.className = Class;
-
-        for (const val of documentos){
-            var option = document.createElement("option");
-            option.value = val;
-            option.text = val.charAt(0).toUpperCase() + val.slice(1);
-            dlist.appendChild(option);
-        };
-
-
-        document.getElementById(Coleccion).appendChild(dlist);
-        //ordernarCmb(IdSelect);
-        //document.getElementById(Coleccion).id = Coleccion+"2";
-    })
-    .catch(function(error) {
-        console.log("Error getting documents: ", error);
-    });
 }
 
 function ordernarCmb(id) {
@@ -1587,7 +1589,7 @@ function ordernarCmb(id) {
         return (at > bt) ? 1 : ((at < bt) ? -1 : 0);
     });
     options.appendTo(elemento);
-    document.getElementById(id).selectedIndex = 0;
+    //document.getElementById(id).selectedIndex = 0;
 }
 
 function AgregarCategoria2(){
