@@ -81,43 +81,43 @@
 			CargarCatalogoFiltroCategoria2(valor);
         });
 
-        $(Document).on("keydown", "#precioActualizarPrecio", function(e){
-                var x = event.charCode || event.keyCode;
+    $(Document).on("keydown", "#precioActualizarPrecio", function(e){
+            var x = event.charCode || event.keyCode;
 
-                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
-         });
+            if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+      });
 
-         $(Document).on("keyup", "#precioActualizarPrecio", function(e){
-            var Costo = parseFloat($("#costoActualizarPrecio").val());
-            var Precio = parseFloat($("#precioActualizarPrecio").val());
-            console.log(Costo);
-            console.log(Precio);
-            var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
+      $(Document).on("keyup", "#precioActualizarPrecio", function(e){
+        var Costo = parseFloat($("#costoActualizarPrecio").val());
+        var Precio = parseFloat($("#precioActualizarPrecio").val());
+        console.log(Costo);
+        console.log(Precio);
+        var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
+        $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
+      });
+    
+    function index(x){
+        // var idNegocio = getCookie("idNegocio");
+        var row = x.parentNode.rowIndex;
+        if (confirm("¿Deseas modificar el precio?")) {
+            var idNegocio = getCookie("idNegocio");
+            var CB = $("#"+row+"_codigoBarrasProducto").text();
+            var Des = $("#"+row+"_descripcionProducto").text();
+            var PrecioOriginal = parseFloat($("#"+row+"_precioProducto").text());
+            var Costo = parseFloat($("#"+row+"_costoProducto").text());
+            var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
+            console.log(CB+Des+PrecioOriginal+Costo+Margen);
+            $("#modalActualizarPrecio").modal('toggle');
+            $("#modalActualizarPrecioLabel").text(Des);
+            $("#costoActualizarPrecio").val(Costo);
+            $("#precioActualizarPrecio").val(PrecioOriginal);
             $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
-         });
-        
-        function index(x){
-            // var idNegocio = getCookie("idNegocio");
-            var row = x.parentNode.rowIndex;
-            if (confirm("¿Deseas modificar el precio?")) {
-                var idNegocio = getCookie("idNegocio");
-                var CB = $("#"+row+"_codigoBarrasProducto").text();
-                var Des = $("#"+row+"_descripcionProducto").text();
-                var PrecioOriginal = parseFloat($("#"+row+"_precioProducto").text());
-                var Costo = parseFloat($("#"+row+"_costoProducto").text());
-                var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
-                console.log(CB+Des+PrecioOriginal+Costo+Margen);
-                $("#modalActualizarPrecio").modal('toggle');
-                $("#modalActualizarPrecioLabel").text(Des);
-                $("#costoActualizarPrecio").val(Costo);
-                $("#precioActualizarPrecio").val(PrecioOriginal);
-                $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
-                $("#codigoBarrasActualizarPrecio").val(CB);
-                $("#rowActualizarPrecio").val(row);
-            } else {
+            $("#codigoBarrasActualizarPrecio").val(CB);
+            $("#rowActualizarPrecio").val(row);
+        } else {
 
-            }
         }
+    }
         
         // SCRIPTS GENERALES
         
@@ -270,12 +270,12 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="form-inline">
-                                    <div class="row">
+                                    <div class="row text-center">
                                         <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
                                         <div class="col-sm">
                                             <input id="Catalogo" placeholder="Selecciona..."></input>
                                             <script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script>
-                                            <label>Descripcion</label>
+                                            <label class="text-black" id="labelDescripcionDListCatalogo">Descripcion</label>
                                         </div>
             
                                         <div class="col-sm">
@@ -288,12 +288,12 @@
                                                 <option value="Comestible">Comestible</option>
                                                 <option value="No Comestible">No Comestible</option>
                                             </select> -->
-                                            <label>Categoría 1</label>
+                                            <label class="text-black" id="labelCategoria1DListCatalogo">Categoría 1</label>
                                         </div>
                                         <div class="col-sm">
                                             <input id="Cat2" placeholder="Selecciona.."></input>
                                             <script> llenarComboBox("Cat2", "cmbCategoria2", "form-control"); </script>
-                                            <label>Categoría 2</label>
+                                            <label class="text-black" id="labelCategoria2DListCatalogo">Categoría 2</label>
                                         </div>
             
                                         <div class="col-sm">
@@ -341,21 +341,7 @@
                 </div>
             </div>
         </div>
-        <!-- TOAST Y MODAL LOCALES -->
-        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastMsg" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="3000">
-            <div class="toast-header bg-dark">
-            <img src="../img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px">
-            <strong class="mr-auto text-white">DEWIS MARKET</strong>
-            <!-- <small class="text-muted">just now</small> -->
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            </div>
-            <div class="toast-body bg-dark text-white">
-                <p class="lead text-white" id="msgBienvenidoDeNuevo">¡Bienvenido!</p><br>
-                <p>¡Disfruta la experiencia!</p><br><br>
-            </div>
-        </div>
+        <!-- TOAST Y MODAL GENERALES -->
         <div class="modal fade" id="modalValidarPrecio" tabindex="-1" aria-labelledby="modalValidarPrecioLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -382,6 +368,61 @@
                         <div id="contenedorValidarPrecio">
                             <script src="js/scriptValidarPrecio.js"></script>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- TOAST Y MODAL LOCALES -->
+        <div class="modal fade" id="modalInfoAdicionalProducto" tabindex="-1" aria-labelledby="modalInfoAdicionalProducto" aria-hidden="true">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header bg-success">
+                      <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                      <!-- Nav tabs -->
+                      <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalInfoAdicionalProducto">Información Adicional</h5></div>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      
+                  </div>
+              </div>
+          </div>
+        </div>
+        <div class="modal fade" id="modalActualizarPrecio" tabindex="-1" aria-labelledby="modalActualizarPrecioLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                        <!-- Nav tabs -->
+                        <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalActualizarPrecioLabel"></h5></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                              <label for="costoActualizarPrecio" class="font-weight-bold">Costo:</label>
+                              <small id="idNegocioHelp" class="form-text text-muted">Costo Actual</small>
+                              <input type="text" class="form-control" id="costoActualizarPrecio" aria-describedby="costoHelp" disabled="true">
+                              <input type="text" class="form-control" id="codigoBarrasActualizarPrecio" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
+                              <input type="text" class="form-control" id="rowActualizarPrecio" aria-describedby="rowHelp" hidden="true" disabled="true">
+                            </div>
+                            <div class="form-group">
+                              <label for="precioActualizarPrecio" class="font-weight-bold">Precio:</label>
+                              <small id="idNegocioHelp" class="form-text text-muted">Captura el nuevo precio de venta</small>
+                              <input type="text" class="form-control" id="precioActualizarPrecio" aria-describedby="precioHelp">                          
+                            </div>
+                            <div class="form-group">
+                                <label for="margenActualizarPrecio" class="font-weight-bold">Margen:</label>
+                                <small id="idNegocioHelp" class="form-text text-muted">El margen será de...</small>
+                                <input type="text" class="form-control" id="margenActualizarPrecio" aria-describedby="margenHelp" disabled="true">
+                              </div>
+                            <br>
+                            <button type="button" class="btn btn-warning" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
+                          </form>
                     </div>
                 </div>
             </div>

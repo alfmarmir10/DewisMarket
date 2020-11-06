@@ -94,6 +94,10 @@
             document.getElementById('toastPrecioValidado').style.zIndex = -999;
         });
 
+        $(document).on("hide.bs.toast", "#toastMsg", function(e) {
+            document.getElementById('toastMsg').style.zIndex = -999;
+        });
+
         $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
             var x = document.getElementById("cmbCatalogoValidarPrecio");
             var valor = x.value;
