@@ -1524,27 +1524,53 @@ function llenarComboBox(Coleccion, IdSelect, Class){
 
     var getOptions = {source: 'default'};
 
+    // db.collection("Negocios").doc(idNegocio).collection(Coleccion).doc(Coleccion)
+    // .get(getOptions)
+    // .then(function(doc) {
+    //     console.log(doc.id, " => ", doc.data());
+    //     documentos = doc.get("Descripcion");
+    //     var sel = document.createElement('select');
+    //     sel.name = IdSelect;
+    //     sel.id = IdSelect;
+    //     sel.className = Class;
+
+    //     for (const val of documentos){
+    //         var option = document.createElement("option");
+    //         option.value = val;
+    //         option.text = val.charAt(0).toUpperCase() + val.slice(1);
+    //         sel.appendChild(option);
+    //     };
+
+
+    //     document.getElementById(Coleccion).appendChild(sel);
+    //     ordernarCmb(IdSelect);
+    //     document.getElementById(Coleccion).id = Coleccion+"2";
+    // })
+    // .catch(function(error) {
+    //     console.log("Error getting documents: ", error);
+    // });
+
     db.collection("Negocios").doc(idNegocio).collection(Coleccion).doc(Coleccion)
     .get(getOptions)
     .then(function(doc) {
         console.log(doc.id, " => ", doc.data());
         documentos = doc.get("Descripcion");
-        var sel = document.createElement('select');
-        sel.name = IdSelect;
-        sel.id = IdSelect;
-        sel.className = Class;
+        var dlist = document.createElement('datalist');
+        dlist.name = IdSelect;
+        dlist.id = IdSelect;
+        dlist.className = Class;
 
         for (const val of documentos){
             var option = document.createElement("option");
             option.value = val;
             option.text = val.charAt(0).toUpperCase() + val.slice(1);
-            sel.appendChild(option);
+            dlist.appendChild(option);
         };
 
 
-        document.getElementById(Coleccion).appendChild(sel);
-        ordernarCmb(IdSelect);
-        document.getElementById(Coleccion).id = Coleccion+"2";
+        document.getElementById(Coleccion).appendChild(dlist);
+        //ordernarCmb(IdSelect);
+        //document.getElementById(Coleccion).id = Coleccion+"2";
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);
