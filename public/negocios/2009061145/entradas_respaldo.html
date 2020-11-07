@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="/negocios/img/favicon.ico" type="image/x-icon"/>
+    <!-- Bootstrap CSS -->
+    <!-- Scripts BOOTSTRAP -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <!-- Scripts FIREBASE -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-firestore.js"></script>
+    <!-- <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" /> -->
+    <title>Dewis Market - Entradas</title>
+    <script src="js/app.js"></script>
+    <link href="css/scanner.css" rel="stylesheet" type="text/css" />
+    <link type="text/css" rel="stylesheet" href="css/styles.css" />
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+    <script>
+        $(Document).ready(function(){
+            $("#txtCodigoBarras").focus();
+            checkCookie();
+            getNombreNegocio();
+            validateToken();
+        });
+
+        $(Document).on("change", "#cmbDescripcion", function(e){
+			var x = document.getElementById("cmbDescripcion");
+			var valor = x.value;
+			getInfoProducto_agregar_NE_descripcion(valor);
+		});
+
+        $(Document).on("click","#btnFinalizar", function(){
+            var total = document.getElementById('cantidadTotal').innerHTML;
+            if (total <= 0){
+                alert("No se puede finalizar en 0");
+            } else {
+                var Fol = document.getElementById("txtFolio").value;
+                finalizarNE(Fol);
+            }
+        });
+
+        $(Document).on("click","#btnAgregarATabla", function(){
+            var CB = $("#tdCodigoBarras_agregar").text();
+            var Id = $("#tdIdArticulo_agregar").text();
+
+            try{
+                var Des = document.getElementById("cmbDescripcion").value;
+            }
+            catch{
+                var Des = document.getElementById('tdDescripcion_agregar').innerHTML;
+            }
+
+            var Can = parseFloat($("#tdCantidad_agregar").text());
+            var Cos = parseFloat($("#tdCosto_agregar").text());
+            var Tot = parseFloat($("#tdTotal_agregar").text());
+            var Prov = document.getElementById("cmbProveedores").value;
+            var Fol = document.getElementById("txtFolio").value;
+
+            if (CB == "" || Fol == "" || Can == "" || Cos == "" || Fol == ""){
+                alert("Todos los campos son requeridos");
+            } else {
+                var DES = document.getElementById('tdDescripcion_agregar');
+                DES.innerHTML = '';
+                var node = document.createElement("DIV");
+                var att = document.createAttribute("id");
+                att.value = "Catalogo";
+                node.setAttributeNode(att);
+                document.getElementById('tdDescripcion_agregar').appendChild(node);
+                llenarComboBox("Catalogo", "cmbDescripcion", "form-control");
+                agregarElementosNE(CB, Id, Des, Can, (Cos).toFixed(2), (Tot).toFixed(2), Prov, Fol);
+            }
+        });
+
+        $(Document).on("blur", "#tdCantidad_agregar", function(){
+            var cantidad = $("#tdCantidad_agregar").text();
+            var costo;
+            if ($("#tdCosto_agregar").text() == ""){
+                costo = 0;
+            } else {
+                costo = $("#tdCosto_agregar").text();
+            }
+            var total;
+            total = (cantidad * costo).toFixed(2);
+            $("#tdTotal_agregar").html(total);
+            });
+
+            $(Document).on("keydown", "#tdCantidad_agregar", function(e){
+            if(e.keyCode == 13){
+                $("#tdCosto_agregar").focus();
+            } else {
+                var x = event.charCode || event.keyCode;
+
+                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+            }
+        });
+
+        $(Document).on("keydown", "#tdCosto_agregar", function(e){
+            if(e.keyCode == 13){
+                $("#tdTotal_agregar").focus();
+            } else {
+                var x = event.charCode || event.keyCode;
+
+                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+            }
+        });
+
+        $(Document).on("keydown", "#txtFolio", function(e){
+            if(e.keyCode == 13){
+                $("#tdCodigoBarras_agregar").focus();
+            }
+        });
+
+        $(Document).on("blur", "#tdCosto_agregar", function(){
+            var cantidad = $("#tdCantidad_agregar").text();
+            var costo;
+            if ($("#tdCosto_agregar").text() == ""){
+                costo = 0;
+            } else {
+                costo = $("#tdCosto_agregar").text();
+            }
+            var total;
+            total = (cantidad * costo).toFixed(2);
+            $("#tdTotal_agregar").html(total);
+        });
+
+        $(Document).on("blur", "#txtFolio", function(){
+            var txt;
+            if (document.getElementById("txtFolio").value == "") {
+                alert("El folio es obligatorio");
+                return
+            }
+
+            if (confirm("El folio no se podrá cambiar más tarde. ¿Está correcto?")) {
+                document.getElementById("txtFolio").disabled = true;
+                // var Fol = document.getElementById("txtFolio").value;
+                var d = new Date();
+                var anio = d.getFullYear();
+                $("#anio").text(anio);
+
+                var mes = d.getMonth()+1;
+
+                if(mes <10){
+                $("#mes").text("0"+mes);
+                mes = "0"+mes;
+                } else {
+                $("#mes").text(mes);
+                }
+
+                var dia = d.getDate();
+
+                if(dia <10){
+                $("#dia").text("0"+dia);
+                dia = "0"+dia;
+                } else {
+                $("#dia").text(dia);
+                }
+
+                var hora = d.getHours();
+
+                if(hora <10){
+                $("#hora").text("0"+hora);
+                hora = "0"+hora;
+                } else {
+                $("#hora").text(hora);
+                }
+
+                var minutos = d.getMinutes();
+
+                if(minutos <10){
+                $("#minutos").text("0"+minutos);
+                minutos = "0"+minutos;
+                } else {
+                $("#minutos").text(minutos);
+                }
+
+                var segundos = d.getSeconds();
+
+                if(segundos <10){
+                $("#segundos").text("0"+segundos);
+                segundos = "0"+segundos;
+                } else {
+                $("#segundos").text(segundos);
+                }
+
+                // var idNE = anio+''+mes+''+dia+''+hora+''+minutos+''+segundos+''+Fol;
+                // $("#folio_Documento").text(idNE);
+
+            } else {
+                document.getElementById("txtFolio").value = "";
+            }
+        });
+
+        $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
+            try{
+                StopScanner();
+                var nodes = document.getElementsByTagName("Canvas");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+
+                var nodes = document.getElementsByTagName("video");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+            } catch(error){
+                console.log("Service is not running");
+            };
+        });
+
+        $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
+            llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
+        });
+
+        $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
+            var x = document.getElementById("cmbCatalogoValidarPrecio");
+			var valor = x.value;
+			validarPrecioDescripcion(valor);
+        });
+
+        $(Document).on("change", "#cmbProveedores", function(e){
+			var x = document.getElementById("cmbProveedores");
+			var valor = x.value;
+            var f = $("#docOrigen").html();
+            console.log("Doc Origen cmbProveedores "+f);
+            if (f != "") {
+                editarProveedorNE(valor);
+            }
+		});
+    </script>
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- main wrapper -->
+    <!-- ============================================================== -->
+    <div class="dashboard-main-wrapper">
+        <!-- ============================================================== -->
+        <!-- navbar -->
+        <!-- ============================================================== -->
+        <div class="dashboard-header">
+            <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                <a class="navbar-brand" href="index.html"><img src="/img/logo_editado.png" alt="" width="150" id="logo"></a>
+                <span class=""><p id="nombreNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
+                <span class="d-none"><p id="idNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse " id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto navbar-right-top">
+                        <li class="nav-item">
+                            <div id="custom-search" class="top-search-bar">
+                                <input class="form-control" type="text" placeholder="Buscar...">
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown notification">
+                            <a class="nav-link nav-icons" href="#" id="navbarDropdownMenuLink1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-fw fa-bell"></i> <span class="indicator"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                <li>
+                                    <div class="notification-title"> Notificaciones</div>
+                                    <div class="notification-list">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action active">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-2.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">Jeremy Rakestraw</span>accepted your invitation to join the team.
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-3.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">John Abraham </span>is now following you
+                                                        <div class="notification-date">2 days ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-4.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">Monaan Pechi</span> is watching your main repository
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img src="assets/images/avatar-5.jpg" alt="" class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span class="notification-list-user-name">Jessica Caruso</span>accepted your invitation to join the team.
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="list-footer"> <a href="#">Ver todas las notificaciones</a></div>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown nav-user">
+                            <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img src="assets/images/avatar-1.jpg" alt="" class="user-avatar-md rounded-circle"></a>
+                            <div class="dropdown-menu dropdown-menu-right nav-user-dropdown" aria-labelledby="navbarDropdownMenuLink2">
+                                <div class="nav-user-info">
+                                    <h5 class="mb-0 text-white nav-user-name">Alfonso </h5>
+                                    <span class="status"></span><span class="ml-2">Perfil 1</span>
+                                </div>
+                                <a class="dropdown-item" href="#"><i class="fas fa-user mr-2"></i>Cuenta</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-cog mr-2"></i>Configuración</a>
+                                <a class="dropdown-item" href="#" onclick="CerrarSesion(); return false;"><i class="fas fa-power-off mr-2"></i>Salir</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end navbar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- left sidebar -->
+        <!-- ============================================================== -->
+            <div class="nav-left-sidebar sidebar">
+                <div class="menu-list">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <a class="d-xl-none d-lg-none" href="#">Menú</a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav flex-column">
+
+                                <li class="nav-divider">
+                                    Menú General
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link font-weight-bold" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1" aria-controls="submenu-1"><i class="fas fa-money-bill-alt"></i>Tablero de Control</a>
+                                    <div id="submenu-1" class="collapse submenu bg-transparent border-left border-info">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="index.html">Análisis General</a>
+                                                <!-- <span class="badge badge-secondary">New</span> -->
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-1-1" aria-controls="submenu-1-1">Análisis Detallado</a>
+                                                <div id="submenu-1-1" class="collapse submenu bg-transparent border-left border-info">
+                                                    <ul class="nav flex-column">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="index.html">Ventas</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="ecommerce-product.html">Compras</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="ecommerce-product-single.html">Gastos</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active font-weight-bold" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2" aria-controls="submenu-2"><i class="fa fa-fw fa-boxes"></i>Inventario</a>
+                                        <!-- <span class="badge badge-success">6</span> -->
+                                    <div id="submenu-2" class="collapse submenu bg-transparent border-left border-info">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2-1" aria-controls="submenu-2-1">Catálogo</a>
+                                                <div id="submenu-2-1" class="collapse show submenu bg-transparent border-left border-info">
+                                                    <ul class="nav flex-column">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="catalogo.html">Ver Catálogo</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="agregarProducto.html">Agregar Producto</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="analisisPorProducto.html">Análisis por Producto</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-2-2" aria-controls="submenu-2-1">Entradas</a>
+                                                <div id="submenu-2-2" class="collapse show submenu bg-transparent border-left border-info">
+                                                    <ul class="nav flex-column">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active" href="entradas.html">Entradas</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="proveedores.html">Proveedores</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="salidas.html">Salidas</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link font-weight-bold" href="#" data-toggle="collapse" aria-expanded="false" data-target="#submenu-3" aria-controls="submenu-3"><i class="fas fa-money-bill-alt"></i>Ventas</a>
+                                    <div id="submenu-3" class="collapse submenu bg-transparent border-left border-info">
+                                        <ul class="nav flex-column">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="puntoDeVenta.html">Punto de Venta</a>
+                                                <!-- <span class="badge badge-secondary">New</span> -->
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="pages/general.html">Histórico</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li class="nav-divider">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#" data-toggle="modal" data-target="#modalValidarPrecio"><i class="fas fa-dollar-sign"></i>Validar Precio</a>
+                                    </li>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end left sidebar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="dashboard-ecommerce">
+                <div class="container-fluid dashboard-content ">
+                    <!-- ============================================================== -->
+                    <!-- pageheader  -->
+                    <!-- ============================================================== -->
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="page-header">
+                                <h2 class="pageheader-title">Entradas </h2>
+                                <p class="pageheader-text">Módulo de entradas.</p>
+                                <div class="page-breadcrumb">
+                                    <nav aria-label="breadcrumb">
+                                        <ol class="breadcrumb">
+                                            <li class="breadcrumb-item"><a href="#" class="breadcrumb-link">Inventario</a></li>
+                                            <li class="breadcrumb-item active" aria-current="page">Entradas</li>
+                                        </ol>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ============================================================== -->
+                    <!-- end pageheader  -->
+                    <!-- ============================================================== -->
+
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <button class="btn btn-block btn-success btn-lg" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVA NOTA DE ENTRADA</button>
+                            <br>
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                                    DATOS DE NOTA DE ENTRADA
+                                  </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group">
+                                                <div id="Proveedores"></div>
+                                                <script>llenarComboBox("Proveedores", "cmbProveedores", "form-control"); </script>
+                                                <label style="text-align: center; display: block; font-weight: bold;">Proveedores</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                            <div class="form-group">
+                                                <input id="txtFolio" type="text" class="form-control">
+                                                <label for= "txtFolio" style="text-align: center; display: block; font-weight: bold;">Folio</label>
+                                                <label id="folio_Documento" hidden>folio</label>
+                                                <label id="anio" hidden>2019</label>
+                                                <label id="mes" hidden>7</label>
+                                                <label id="dia" hidden>11</label>
+                                                <label id="hora" hidden>10</label>
+                                                <label id="minutos" hidden>04</label>
+                                                <label id="segundos" hidden>23</label>
+                                                <label id="docOrigen" hidden></label>
+                                                <label id="timestamp" hidden></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                                    AGREGA UN PRODUCTO
+                                  </div>
+                                <div class="card-body">
+                                    <div class="table-responsive-xl">
+
+                                            <table id='entrada-compras-agregar' class='table table-bordered'>
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScanner();" data-toggle="modal" data-target="#modalScanner" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
+                                                        <th hidden>Id Artículo</th>
+                                                        <th scope="col" style="text-align: center">Descripción</th>
+                                                        <th scope="col" style="text-align: center">Cantidad</th>
+                                                        <th scope="col" style="text-align: center">Costo $</th>
+                                                        <th scope="col" style="text-align: center">Total $</th>
+                                                    </tr>
+                                                </thead>
+                                                <tr>
+                                                    <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>
+                                                    <td id='tdIdArticulo_agregar' hidden></td>
+                                                    <td id='tdDescripcion_agregar'><div id="Catalogo"></div><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
+                                                    <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
+                                                    <td id='tdCosto_agregar' contenteditable="true" style="text-align: center"></td>
+                                                    <td id='tdTotal_agregar'></td>
+                                                    <td style="text-align: center;"><button id='btnAgregarATabla' class='btn btn-success btn-sm' focusable="true">Agregar</td>
+                                                  </tr>
+                                            </table>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                                    LISTA DE ARTÍCULOS
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive-xl">
+                                        <table class="table table-striped " id="tablaNE">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th scope="col" style="text-align: center">#</th>
+                                                    <th scope="col" style="text-align: center">Codigo Barras</th>
+                                                    <th hidden>Id Artículo</th>
+                                                    <th scope="col" style="text-align: center">Descripción</th>
+                                                    <th scope="col" style="text-align: center">Cantidad</th>
+                                                    <th scope="col" style="text-align: center">Costo $</th>
+                                                    <th scope="col" style="text-align: center">Total $</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyNE">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="row">
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                            <div class="card bg-white text-white" style="text-align: center; font-weight: bold;">
+                                                <div class="card-header bg-warning">
+                                                    <h2 style="color: black;">TOTAL ($)</h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <h2 id="cantidadTotal" style="color: black;">0</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                            <div class="card bg-white text-white" style="text-align: center; font-weight: bold;">
+                                                <div class="card-header bg-warning">
+                                                    <h2 style="color: black;">ARTÍCULOS (pz)</h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <h2 id="cantidadArticulos" style="color: black;">0</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-success btn-lg btn-block" id="btnFinalizar" hidden="true">Finalizar</button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body" style="text-align: center; margin-top: 0px; background-color: gray;">
+                                    <h2 class="text-white" style="margin-top: 5px;">RELACIÓN DE NOTA DE ENTRADAS</h2>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                                    MES EN CURSO
+                                  </div>
+                                <div class="card-body">
+                                    <div class="table-responsive-xl">
+                                        <table class="table table-dark table-hover" id="tablaRelacionNE">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th scope="col" style="text-align: center; font-weight: bold;">#</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">FECHA</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">HORA</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">FOLIO</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">PROVEEDOR</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">USUARIO</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">ARTICULOS</th>
+                                                    <th scope="col" style="text-align: center; font-weight: bold">TOTAL $</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyRelacionNE">
+                                            </tbody>
+                                            <script>escuchaNE();</script>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modalValidarPrecio" tabindex="-1" aria-labelledby="modalValidarPrecioLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                                    <!-- Nav tabs -->
+                                    <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalValidarPrecioLabel">Validar Precio</h5></div>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="txtCodigoBarrasValidarPrecio" class="col-form-label">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
+                                        <input id="txtCodigoBarrasValidarPrecio" type="text" class="form-control">
+                                        <button type="button" class="btn btn-warning btn-lg btn-block form-control" onclick="validarPrecioCodigoBarras();" id="btnValidarPrecio" style="margin-top: 5px">Consultar</button>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cmbCatalogoValidarPrecio">Descripción</label>
+                                        <div id="Catalogo"></div>
+                                    </div>
+                                    <div id="contenedorValidarPrecio">
+                                        <script src="js/scriptValidarPrecio.js"></script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="modalScanner" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                                <!-- Nav tabs -->
+                                <div class="container text-center font-weight-bold"><h5 class="modal-title" id="exampleModalLabel">Escanea el código de barras</h5></div>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="StopScanner();">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div id="contenedor">
+                                    <script src="js/scriptNE.js"></script>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastPrecioValidado" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 1" data-delay="5000">
+                        <div class="toast-header bg-success">
+                        <img src="img/favicon_16x16.ico" class="mr-2" alt="...">
+                        <strong class="mr-auto text-dark">DEWIS MARKET - $ Precio</strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        </div>
+                        <div class="toast-body bg-white text-dark">
+                            <small class="text-muted">Descripción</small>
+                            <p class="lead text-dark" id="descripcionPrecioValidado">Descripción</p>
+                            <small class="text-muted">Precio</small>
+                            <span><h3 class="text-dark font-weight-bold " id="precioValidado">0.0</h3><br><br></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <div class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                            Dewis Market © 2020. Todos los derechos reservados. Dashboard by <a href="https://colorlib.com/wp/">Colorlib</a>.
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="text-md-right footer-links d-none d-sm-block">
+                                <a href="javascript: void(0);">A cerca de</a>
+                                <a href="javascript: void(0);">Soporte</a>
+                                <a href="javascript: void(0);">Contáctanos</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- end footer -->
+            <!-- ============================================================== -->
+        </div>
+        <!-- ============================================================== -->
+        <!-- end wrapper  -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- end main wrapper  -->
+    <!-- ============================================================== -->
+    <!-- Optional JavaScript -->
+
+    <link href="assets/vendor/fonts/circular-std/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/libs/css/style.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/fontawesome/css/fontawesome-all.css">
+    <link rel="stylesheet" href="assets/vendor/charts/chartist-bundle/chartist.css">
+    <link rel="stylesheet" href="assets/vendor/charts/morris-bundle/morris.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="assets/vendor/charts/c3charts/c3.css">
+    <link rel="stylesheet" href="assets/vendor/fonts/flag-icon-css/flag-icon.min.css">
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
+      <script>
+        var perf = firebase.performance();
+      </script>
+</body>
+
+</html>
