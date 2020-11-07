@@ -22,25 +22,50 @@ function loadDashboardCharts(){
       offsetY: 0,
       floating: false,
       style: {
-        fontSize:  '24px',
+        fontSize:  24,
         fontWeight:  'bold',
         fontFamily:  'Helvetica',
         color:  '#263238'
       }
     },
-      responsive: [
-        {
-          breakpoint: 321,
-          options: {
-            chart: {
-              height: 200,
+    tooltip: {
+      position: "right",
+      verticalAlign: "top",
+      containerMargin: {
+        left: 35,
+        right: 60
+      },
+      style: {
+        color: '#263238',
+        fontSize: 20
+      }
+    },
+    responsive: [
+      {
+        breakpoint: 760,
+        options: {
+          chart: {
+            height: 200,
+          },
+          title:{
+            text: 'Compras',
+          },
+          tooltip: {
+            fillSeriesColor: true,
+            theme: 'dark',
+            marker:{
+              show: true
             },
-            title:{
-              text: 'Compras',
+            style:{
+              fontSize: '14px'
+            },
+            x:{
+              title: 'No'
             }
           }
         }
-      ]
+      }
+    ]
   }
   
   var chart = new ApexCharts(document.querySelector("#chart"), options);
