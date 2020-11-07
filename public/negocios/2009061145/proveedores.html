@@ -78,8 +78,13 @@
         });
 
         $(Document).on("change", "#txtNoExt", function(e){
-            if 
-        }
+          var x = document.getElementById("txtNoExt");
+          var valor = x.value;
+
+          if (valor < 1){
+            x.value = "";
+          }
+        })
 
         $(Document).on("keydown", "#txtTelefono", function(e){
             if(e.keyCode == 13){
@@ -101,7 +106,8 @@
       
       $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
           try{
-              StopScanner();
+              StopScannerValidarPrecio();
+              console.log("Detenido correctamente");
               var nodes = document.getElementsByTagName("Canvas");
 
               for (var i = 0, len = nodes.length; i != len; ++i) {
@@ -241,54 +247,55 @@
                 <br>
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        <div class="card">
+                        <div class="card text-center">
                             <div class="card-body">
                                     <div class="form-group">
-                                        <label for="txtRazonSocial" class="col-form-label">Razón Social</label><br><small class="text-muted">* Obligatorio</small><br>
+                                        <label for="txtRazonSocial" class="col-form-label reclaim-black">Razón Social</label><br><small class="text-muted">* Obligatorio</small><br>
                                         <input id="txtRazonSocial" type="text" class="form-control" placeholder="Ejemplo: Básicos en Alimentos, SA de CV.">
                                     </div>
                                     <div class="form-group">
-                                        <label for="txtRFC" class="col-form-label">RFC</label>
+                                        <label for="txtRFC" class="col-form-label reclaim-black">RFC</label>
                                         <input id="txtRFC" type="text" placeholder="Ejemplo: BAS112311HT8" class="form-control">
                                     </div>
                                     <div class="row">
                                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
-                                                <label for="txtDireccion" class="col-form-label">Dirección</label>
+                                                <label for="txtDireccion" class="col-form-label reclaim-black">Dirección</label>
                                                 <input id="txtDireccion" type="text" class="form-control" height="38px">
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
-                                                <label for="txtNoExt" class="col-form-label">No. Ext</label>
+                                                <label for="txtNoExt" class="col-form-label reclaim-black">No. Ext</label>
                                                 <input id="txtNoExt" pattern="[0-9]*" type="number" class="form-control" height="38px">
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
                                             <div class="form-group">
-                                                <label for="txtNoInt" class="col-form-label">No. Int</label>
+                                                <label for="txtNoInt" class="col-form-label reclaim-black">No. Int</label>
                                                 <input id="txtNoInt" type="text" class="form-control" height="38px">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="txtColonia" class="col-form-label">Colonia</label>
+                                        <label for="txtColonia" class="col-form-label reclaim-black">Colonia</label>
                                         <input id="txtColonia" type="text" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="txtCiudad" class="col-form-label">Ciudad</label>
+                                        <label for="txtCiudad" class="col-form-label reclaim-black">Ciudad</label>
                                         <input id="txtCiudad" type="text" class="form-control">
                                     </div>
                                     <div class="form-group">
-                                        <label for="cmbEstados">Estado</label>
-                                        <div id="Estados"></div>
+                                        <label for="cmbEstados" class="reclaim-black">Estado</label>
+                                        <input id="Estados" placeholder="Selecciona..."></input>
+                                        <script>llenarComboBox("Estados", "cmbEstados", "form-control"); </script>
                                     </div>
                                     <div class="form-group">
-                                        <label for="txtCodigoPostal" class="col-form-label">Código Postal</label>
+                                        <label for="txtCodigoPostal" class="col-form-label reclaim-black">Código Postal</label>
                                         <input id="txtCodigoPostal" type="number" class="form-control" maxlength="5">
                                     </div>
                                     <div class="form-group">
-                                        <label for="txtTelefono" class="col-form-label">Teléfono</label>
+                                        <label for="txtTelefono" class="col-form-label reclaim-black">Teléfono</label>
                                         <input id="txtTelefono" type="number" pattern="[0-9]*" class="form-control" maxlength="10">
                                     </div>
                                     <br>
@@ -305,7 +312,7 @@
                                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                                         <input id="Proveedores" placeholder="Selecciona..."></input>
                                         <script>llenarComboBox("Proveedores", "cmbProveedores", "form-control"); </script>
-                                        <label style="text-align: center; display: block; font-weight: bold;">Proveedores</label>
+                                        <label style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Proveedores</label>
                                     </div>
                                 </div>
                                 <br><br>

@@ -71,6 +71,25 @@
         $(Document).on("focus", "#loadScanner", function(e){
             $("#txtDescripcion").focus();
         });
+
+        $(document).on("hide.bs.modal", "#modalScanner", function(e) {
+          try{
+              StopScanner();
+              var nodes = document.getElementsByTagName("Canvas");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+
+              var nodes = document.getElementsByTagName("video");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+          } catch(error){
+              console.log("Service is not running");
+          };
+      });
     
 
         $(Document).on("keydown", "#txtDescripcionCategoria2", function(e){
@@ -100,7 +119,8 @@
       
       $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
           try{
-              StopScanner();
+              StopScannerValidarPrecio();
+              console.log("Detenido correctamente");
               var nodes = document.getElementsByTagName("Canvas");
 
               for (var i = 0, len = nodes.length; i != len; ++i) {
@@ -234,14 +254,14 @@
                 <div class="row">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <br>
-                    <h1 class="h2">Catálogo</h1>
+                    <h1 class="h2">Agregar Producto</h1>
                   </div>
                 </div>
                 <br>
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                       <div class="card text-black">
-                        <div class="card-body">
+                        <div class="card-body text-center">
                                 <div class="form-group">
                                     <label for="txtCodigoBarras" class="col-form-label reclaim-black">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScanner();" data-toggle="modal" data-target="#modalScanner" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
                                     <input id="txtCodigoBarras" type="text" class="form-control">

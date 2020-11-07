@@ -57,6 +57,25 @@
           getNombreNegocio();
       });
 
+      $(document).on("hide.bs.modal", "#modalScanner", function(e) {
+          try{
+              StopScanner();
+              var nodes = document.getElementsByTagName("Canvas");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+
+              var nodes = document.getElementsByTagName("video");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+          } catch(error){
+              console.log("Service is not running");
+          };
+      });
+
       $(Document).on("change", "#cmbDescripcion", function(e){
         var x = document.getElementById("cmbDescripcion");
         var valor = x.value;
@@ -229,7 +248,8 @@
       
       $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
           try{
-              StopScanner();
+              StopScannerValidarPrecio();
+              console.log("Detenido correctamente");
               var nodes = document.getElementsByTagName("Canvas");
 
               for (var i = 0, len = nodes.length; i != len; ++i) {
@@ -369,7 +389,7 @@
                 <br>
                 <div class="row">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <button class="btn btn-block btn-success btn-lg" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVA NOTA DE ENTRADA</button>
+                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVA NOTA DE ENTRADA</button>
                     <br>
                     <div class="card">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
@@ -381,13 +401,13 @@
                                     <div class="form-group">
                                         <input id="Proveedores" placeholder="Selecciona..."></input>
                                         <script>llenarComboBox("Proveedores", "cmbProveedores", "form-control"); </script>
-                                        <label style="text-align: center; display: block; font-weight: bold;">Proveedores</label>
+                                        <label style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Proveedores</label>
                                     </div>
                                 </div>
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                     <div class="form-group">
                                         <input id="txtFolio" type="text" class="form-control">
-                                        <label for= "txtFolio" style="text-align: center; display: block; font-weight: bold;">Folio</label>
+                                        <label for= "txtFolio" style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Folio</label>
                                         <label id="folio_Documento" hidden>folio</label>
                                         <label id="anio" hidden>2019</label>
                                         <label id="mes" hidden>7</label>
@@ -406,10 +426,9 @@
                     <div class="card">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
                             AGREGA UN PRODUCTO
-                          </div>
+                        </div>
                         <div class="card-body">
                             <div class="table-responsive-xl">
-
                                     <table id='entrada-compras-agregar' class='table table-bordered'>
                                         <thead class="thead-dark">
                                             <tr>
@@ -487,7 +506,7 @@
                     </div>
                     <div class="card">
                         <div class="card-body" style="text-align: center; margin-top: 0px; background-color: gray;">
-                            <h2 class="text-white" style="margin-top: 5px;">RELACIÓN DE NOTA DE ENTRADAS</h2>
+                            <h2 class="text-white font-weight-bold" style="margin-top: 5px;">RELACIÓN DE NOTA DE ENTRADAS</h2>
                         </div>
                     </div>
                     <div class="card">

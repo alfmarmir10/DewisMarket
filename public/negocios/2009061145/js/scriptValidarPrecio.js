@@ -72,6 +72,6 @@ function loadScannerValidarPrecio(){
 	});
 }
 
-function StopScanner(){
+function StopScannerValidarPrecio(){
 	Quagga.stop();
 }

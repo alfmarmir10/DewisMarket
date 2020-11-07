@@ -58,7 +58,7 @@
         });
 
 
-        $(Document).on("change", "#cmbDescripcion", function(e){
+    $(Document).on("change", "#cmbDescripcion", function(e){
 			var x = document.getElementById("cmbDescripcion");
 			var valor = x.value;
 			CargarCatalogoFiltroDescripcion(valor);
@@ -118,7 +118,8 @@
         
         $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
             try{
-                StopScanner();
+                StopScannerValidarPrecio();
+                console.log("Detenido correctamente");
                 var nodes = document.getElementsByTagName("Canvas");
 
                 for (var i = 0, len = nodes.length; i != len; ++i) {
@@ -270,7 +271,7 @@
                                         <div class="col-sm">
                                             <input id="Catalogo" placeholder="Selecciona..."></input>
                                             <script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script>
-                                            <label class="text-black" id="labelDescripcionDListCatalogo">Descripcion</label>
+                                            <label class="reclaim-black" id="labelDescripcionDListCatalogo">Descripcion</label>
                                         </div>
             
                                         <div class="col-sm">
@@ -283,12 +284,12 @@
                                                 <option value="Comestible">Comestible</option>
                                                 <option value="No Comestible">No Comestible</option>
                                             </select> -->
-                                            <label class="text-black" id="labelCategoria1DListCatalogo">Categoría 1</label>
+                                            <label class="reclaim-black" id="labelCategoria1DListCatalogo">Categoría 1</label>
                                         </div>
                                         <div class="col-sm">
                                             <input id="Cat2" placeholder="Selecciona.."></input>
                                             <script> llenarComboBox("Cat2", "cmbCategoria2", "form-control"); </script>
-                                            <label class="text-black" id="labelCategoria2DListCatalogo">Categoría 2</label>
+                                            <label class="reclaim-black" id="labelCategoria2DListCatalogo">Categoría 2</label>
                                         </div>
             
                                         <div class="col-sm">
@@ -350,12 +351,12 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="txtCodigoBarrasValidarPrecio" class="col-form-label text-black" id="labelCodigoBarrasValidarPrecio">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
+                            <label for="txtCodigoBarrasValidarPrecio" class="col-form-label reclaim-black" id="labelCodigoBarrasValidarPrecio">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
                             <input id="txtCodigoBarrasValidarPrecio" type="text" class="form-control">
                             <button type="button" class="btn btn-warning btn-lg btn-block form-control" onclick="validarPrecioCodigoBarras();" id="btnValidarPrecio" style="margin-top: 5px">Consultar</button>
                         </div>
                         <div class="form-group">
-                            <label for="cmbCatalogoValidarPrecio" class="text-black" id="labelDescripcionValidarPrecio">Descripción</label>
+                            <label for="cmbCatalogoValidarPrecio" class="reclaim-black" id="labelDescripcionValidarPrecio">Descripción</label>
                             <div>
                             <input id="Catalogo"></input>
                             </div>

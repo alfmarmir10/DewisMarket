@@ -72,6 +72,6 @@ function loadScanner(){
 	});
 }
 
-function StopScanner(){
+function StopScannerNE(){
 	Quagga.stop();
 }
