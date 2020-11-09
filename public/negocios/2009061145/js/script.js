@@ -25,10 +25,10 @@ function loadScanner(){
 	});
 
 	Quagga.onDetected((data) => {
-		//$resultados.textContent = data.codeResult.code;
+		$resultados.textContent = data.codeResult.code;
 		// Imprimimos todo el data para que puedas depurar
-		var x = document.getElementById("txtCodigoBarras");
-		x.value = data.codeResult.code;
+		// var x = document.getElementById("txtCodigoBarras");
+		// x.value = data.codeResult.code;
 		document.getElementById('txtDescripcion').focus();
 		$('#modalScanner').modal('hide');
 		console.log(data);

@@ -112,14 +112,6 @@
           if (CB == "" || Fol == "" || Can == "" || Cos == "" || Fol == ""){
               alert("Todos los campos son requeridos");
           } else {
-              var DES = document.getElementById('tdDescripcion_agregar');
-              DES.innerHTML = '';
-              var node = document.createElement("DIV");
-              var att = document.createAttribute("id");
-              att.value = "Catalogo";
-              node.setAttributeNode(att);
-              document.getElementById('tdDescripcion_agregar').appendChild(node);
-              llenarComboBox("Catalogo", "cmbDescripcion", "form-control");
               agregarElementosNE(CB, Id, Des, Can, (Cos).toFixed(2), (Tot).toFixed(2), Prov, Fol);
           }
       });
@@ -242,6 +234,16 @@
               document.getElementById("txtFolio").value = "";
           }
       });
+
+      $(Document).on("change", "#cmbProveedores", function(e){
+			var x = document.getElementById("cmbProveedores");
+			var valor = x.value;
+            var f = $("#docOrigen").html();
+            console.log("Doc Origen cmbProveedores "+f);
+            if (f != "") {
+                editarProveedorNE(valor);
+            }
+		});
     
         
       // SCRIPTS GENERALES
@@ -417,6 +419,8 @@
                                         <label id="segundos" hidden>23</label>
                                         <label id="docOrigen" hidden></label>
                                         <label id="timestamp" hidden></label>
+                                        <label id="fecha2" hidden></label>
+                                        <label id="hora2" hidden></label>
                                     </div>
                                 </div>
                             </div>
@@ -432,7 +436,7 @@
                                     <table id='entrada-compras-agregar' class='table table-bordered'>
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScanner();" data-toggle="modal" data-target="#modalScanner" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
+                                                <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerNE" onclick="loadScannerNE();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
                                                 <th hidden>Id Artículo</th>
                                                 <th scope="col" style="text-align: center">Descripción</th>
                                                 <th scope="col" style="text-align: center">Cantidad</th>
@@ -504,6 +508,7 @@
                             <button class="btn btn-success btn-lg btn-block" id="btnFinalizar" hidden="true">Finalizar</button>
                         </div>
                     </div>
+                    <br>
                     <div class="card">
                         <div class="card-body" style="text-align: center; margin-top: 0px; background-color: gray;">
                             <h2 class="text-white font-weight-bold" style="margin-top: 5px;">RELACIÓN DE NOTA DE ENTRADAS</h2>
@@ -589,20 +594,20 @@
 
         <!-- TOAST Y MODAL LOCALES -->
 
-        <div class="modal fade" id="modalScanner" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="modalScannerNE" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
                     <!-- Nav tabs -->
                     <div class="container text-center font-weight-bold"><h5 class="modal-title reclaim-black" id="exampleModalLabel">Escanea el código de barras</h5></div>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="StopScanner();">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="StopScannerNE();">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div id="contenedor">
-                        <script src="js/script.js"></script>
+                        <script src="js/scriptNE.js"></script>
                     </div>                                
                 </div>
             </div>

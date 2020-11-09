@@ -1,4 +1,4 @@
-function loadScanner(){
+function loadScannerNE(){
 	const $resultados = document.querySelector("#tdCodigoBarras_agregar");
 	Quagga.init({
 		inputStream: {
@@ -8,7 +8,6 @@ function loadScanner(){
 			},
 			name: "Live",
 			type: "LiveStream",
-			id: "codigoCanvas",
 			target: document.querySelector('#contenedor'), // Pasar el elemento del DOM
 		},
 		decoder: {
@@ -25,13 +24,13 @@ function loadScanner(){
 	});
 
 	Quagga.onDetected((data) => {
-		//$resultados.textContent = data.codeResult.code;
+		// $resultados.textContent = data.codeResult.code;
 		// Imprimimos todo el data para que puedas depurar
 		var x = document.getElementById("tdCodigoBarras_agregar");
 		x.value = data.codeResult.code;
 		document.getElementById('tdCodigoBarras_agregar').focus();
 		getInfoProducto_agregar_NE_codigo_barras(x.value);
-		$('#modalScanner').modal('hide');
+		$('#modalScannerNE').modal('hide');
 		console.log(data);
 		Quagga.stop();
 		var nodes = document.getElementsByTagName("Canvas");
@@ -57,16 +56,16 @@ function loadScanner(){
 				result.boxes.filter(function (box) {
 					return box !== result.box;
 				}).forEach(function (box) {
-					Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
+					Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 0 });
 				});
 			}
 
 			if (result.box) {
-				Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
+				Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 0 });
 			}
 
 			if (result.codeResult && result.codeResult.code) {
-				Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
+				Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 0 });
 			}
 		}
 	});
