@@ -1461,13 +1461,13 @@ function PDFCatalogoCalcularNombreArchivo(){
 }
 
 function PDF_Prueba(nombreArchivo){
-    var doc = new jsPDF()
+    var doc = new jsPDF('landscape')
     var img = new Image()
         // try{
 
     // } catch {
     //     img.src = "/negocios/img/logo_editado.png"
-    img.src = "img/x.png"
+    img.src = "./img/x.png"
     img.onload = function() {
         var totalPagesExp = '{total_pages_count_ string}'
 
@@ -1477,10 +1477,10 @@ function PDF_Prueba(nombreArchivo){
             // Header
             doc.setFontSize(8)
             doc.setTextColor(40)
-            doc.setFontStyle('normal')
+            doc.setFontStyle('Helvetica')
 
             doc.addImage(img, 'PNG', 8, 10, 45, 14)
-            doc.text(nombreArchivo, data.settings.margin.left + 150, data.settings.margin.top - 5)
+            doc.text(nombreArchivo, data.settings.margin.left + 250, data.settings.margin.top - 5)
 
             // Footer
             var str = 'Página ' + doc.internal.getNumberOfPages()
@@ -1488,14 +1488,14 @@ function PDF_Prueba(nombreArchivo){
             if (typeof doc.putTotalPages === 'function') {
                 str = str + ' de ' + totalPagesExp
             }
-            doc.setFontSize(10)
+            doc.setFontSize(5)
 
             // jsPDF 1.4+ uses getWidth, <1.4 uses .width
             var pageSize = doc.internal.pageSize
             var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
             doc.text(str, data.settings.margin.left, pageHeight - 10)
             },
-            margin: { top: 35, left: 8, right: 8, bottom: 15 },
+            margin: { top: 35, left: 6, right: 6, bottom: 15 },
         })
 
         // Total page number plugin only available in jspdf v1.0+
@@ -1527,7 +1527,7 @@ function CargarCatalogoFiltroDescripcion(criterio){
     .get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
             i = i + 1;
-            console.log(doc.id, " => ", doc.data().Descripcion);
+            // console.log(doc.id, " => ", doc.data().Descripcion);
             if (doc.id != 'Desc'){
                 var existencia = "-";
                 if (doc.data().Existencia != undefined){
@@ -1581,7 +1581,7 @@ function CargarCatalogoFiltroCategoria1(criterio){
     .get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
             i = i + 1;
-            console.log(doc.id, " => ", doc.data().Descripcion);
+            // console.log(doc.id, " => ", doc.data().Descripcion);
             if (doc.id != 'Desc'){
                 var existencia = "-";
                 if (doc.data().Existencia != undefined){
@@ -1634,7 +1634,7 @@ function CargarCatalogoFiltroCategoria2(criterio){
     .get().then((querySnapshot) => {
         querySnapshot.forEach(function(doc) {
             i = i + 1;
-            console.log(doc.id, " => ", doc.data().Descripcion);
+            // console.log(doc.id, " => ", doc.data().Descripcion);
             if (doc.id != 'Desc'){
                 var existencia = "-";
                 if (doc.data().Existencia != undefined){
