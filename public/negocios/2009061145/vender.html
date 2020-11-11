@@ -1,0 +1,650 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v4.1.1">
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon"/>
+    <script src="https://kit.fontawesome.com/1a068ddec2.js" crossorigin="anonymous"></script>
+
+    <!-- Scripts BOOTSTRAP -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <!-- Scripts FIREBASE -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-firestore.js"></script>
+
+    <title>Dewis Market - Vender</title>
+
+    <script src="js/app.js"></script>
+    
+    <!-- LOCAL CSS -->
+    <link type="text/css" rel="stylesheet" href="./css/dashboard.css" />
+
+    <!-- SCANNER -->
+    <link type="text/css" rel="stylesheet" href="css/scanner.css"/>
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    
+    <script>
+      // SCRIPTS LOCALES
+
+      $(Document).ready(function(){
+          $("#txtCodigoBarras").focus();
+          checkCookie();
+          getNombreNegocio();
+          myTimer();
+      });
+
+      $(document).on("hide.bs.modal", "#modalScanner", function(e) {
+          try{
+              StopScanner();
+              var nodes = document.getElementsByTagName("Canvas");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+
+              var nodes = document.getElementsByTagName("video");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+          } catch(error){
+              console.log("Service is not running");
+          };
+      });
+
+      $(Document).on("change", "#cmbDescripcion", function(e){
+        var x = document.getElementById("cmbDescripcion");
+        var valor = x.value;
+        getInfoProducto_agregar_NE_descripcion(valor);
+      });
+
+      $(Document).on("click","#btnAgregarATabla", function(){
+          var CB = $("#tdCodigoBarras_agregar").text();
+          var Id = $("#tdIdArticulo_agregar").text();
+
+          try{
+              var Des = document.getElementById("cmbDescripcion").value;
+          }
+          catch{
+              var Des = document.getElementById('tdDescripcion_agregar').innerHTML;
+          }
+
+          var Can = parseFloat($("#tdCantidad_agregar").text());
+          var Cos = parseFloat($("#tdPrecio_agregar").text());
+          var Tot = parseFloat($("#tdTotal_agregar").text());
+          var Cli = document.getElementById("cmbClientes").value;
+          var Fol = document.getElementById("txtFolio").value;
+
+          if (CB == "" || Fol == "" || Can == "" || Cos == "" || Fol == ""){
+              alert("Todos los campos son requeridos");
+          } else {
+              agregarElementosVentas(CB, Id, Des, Can, (Cos).toFixed(2), (Tot).toFixed(2), Cli, Fol);
+          }
+      });
+
+      $(Document).on("blur", "#tdCantidad_agregar", function(){
+          var cantidad = $("#tdCantidad_agregar").text();
+          var costo;
+          if ($("#tdCosto_agregar").text() == ""){
+              costo = 0;
+          } else {
+              costo = $("#tdCosto_agregar").text();
+          }
+          var total;
+          total = (cantidad * costo).toFixed(2);
+          $("#tdTotal_agregar").html(total);
+          });
+
+          $(Document).on("keydown", "#tdCantidad_agregar", function(e){
+          if(e.keyCode == 13){
+              $("#tdCosto_agregar").focus();
+          } else {
+              var x = event.charCode || event.keyCode;
+
+              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+          }
+      });
+
+      $(Document).on("keydown", "#tdCosto_agregar", function(e){
+          if(e.keyCode == 13){
+              $("#tdTotal_agregar").focus();
+          } else {
+              var x = event.charCode || event.keyCode;
+
+              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+          }
+      });
+
+      $(Document).on("keydown", "#txtFolio", function(e){
+          if(e.keyCode == 13){
+              $("#tdCodigoBarras_agregar").focus();
+          }
+      });
+
+      $(Document).on("blur", "#tdCosto_agregar", function(){
+          var cantidad = $("#tdCantidad_agregar").text();
+          var costo;
+          if ($("#tdCosto_agregar").text() == ""){
+              costo = 0;
+          } else {
+              costo = $("#tdCosto_agregar").text();
+          }
+          var total;
+          total = (cantidad * costo).toFixed(2);
+          $("#tdTotal_agregar").html(total);
+      });
+
+      $(Document).on("blur", "#txtFolio", function(){
+          var txt;
+          if (document.getElementById("txtFolio").value == "") {
+              alert("El folio es obligatorio");
+              return
+          }
+
+          if (confirm("El folio no se podrá cambiar más tarde. ¿Está correcto?")) {
+              document.getElementById("txtFolio").disabled = true;
+              // var Fol = document.getElementById("txtFolio").value;
+              var d = new Date();
+              var anio = d.getFullYear();
+              $("#anio").text(anio);
+
+              var mes = d.getMonth()+1;
+
+              if(mes <10){
+              $("#mes").text("0"+mes);
+              mes = "0"+mes;
+              } else {
+              $("#mes").text(mes);
+              }
+
+              var dia = d.getDate();
+
+              if(dia <10){
+              $("#dia").text("0"+dia);
+              dia = "0"+dia;
+              } else {
+              $("#dia").text(dia);
+              }
+
+              var hora = d.getHours();
+
+              if(hora <10){
+              $("#hora").text("0"+hora);
+              hora = "0"+hora;
+              } else {
+              $("#hora").text(hora);
+              }
+
+              var minutos = d.getMinutes();
+
+              if(minutos <10){
+              $("#minutos").text("0"+minutos);
+              minutos = "0"+minutos;
+              } else {
+              $("#minutos").text(minutos);
+              }
+
+              var segundos = d.getSeconds();
+
+              if(segundos <10){
+              $("#segundos").text("0"+segundos);
+              segundos = "0"+segundos;
+              } else {
+              $("#segundos").text(segundos);
+              }
+
+              // var idNE = anio+''+mes+''+dia+''+hora+''+minutos+''+segundos+''+Fol;
+              // $("#folio_Documento").text(idNE);
+
+          } else {
+              document.getElementById("txtFolio").value = "";
+          }
+      });
+
+      $(Document).on("change", "#cmbProveedores", function(e){
+			var x = document.getElementById("cmbProveedores");
+			var valor = x.value;
+            var f = $("#docOrigen").html();
+            console.log("Doc Origen cmbProveedores "+f);
+            if (f != "") {
+                editarProveedorNE(valor);
+            }
+		});
+    
+        
+      // SCRIPTS GENERALES
+      
+      $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
+          try{
+              StopScannerValidarPrecio();
+              console.log("Detenido correctamente");
+              var nodes = document.getElementsByTagName("Canvas");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+
+              var nodes = document.getElementsByTagName("video");
+
+              for (var i = 0, len = nodes.length; i != len; ++i) {
+                  nodes[0].parentNode.removeChild(nodes[0]);
+              }
+          } catch(error){
+              console.log("Service is not running");
+          };
+      });
+
+      $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
+          llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
+      });
+
+      $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
+        document.getElementById('toastPrecioValidado').style.zIndex = 999;
+          $("#modalValidarPrecio").modal('toggle');
+      });
+
+      $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
+          $("#modalValidarPrecio").modal('toggle');
+          document.getElementById('toastPrecioValidado').style.zIndex = -999;
+      });
+
+      $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
+          var x = document.getElementById("cmbCatalogoValidarPrecio");
+          var valor = x.value;
+          validarPrecioDescripcion(valor);
+      });
+    </script>
+    <script>
+        var myVar = setInterval(myTimer, 60000);
+        
+        function myTimer(){
+            var d = new Date();
+            var minutos, horas, dia, mes;
+            if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
+            if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
+            if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
+            if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
+
+            var fecha = dia+'/'+mes+'/'+d.getFullYear();
+            var hora = horas+':'+minutos;
+
+            var x = document.getElementById("txtFecha");
+            x.value = fecha;
+            var y = document.getElementById("txtHora");
+            y.value = hora;
+        }
+        myTimer();
+    </script>
+	</head>
+	<body>
+		<nav class="navbar sticky-top bg-warning flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand bg-warning text-dark col-md-3 col-lg-2 mr-0 px-3 border-0" href="index.html" id="nombreNegocio" style="font-weight: bold;"></a>
+            <span class="d-none"><p id="idNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
+            <button style="border:1px solid black"  class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class=""><i class="fas fa-bars"></i></span>
+            </button>
+            <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
+            <ul class="navbar-nav px-3">
+                <li class="nav-item text-nowrap">
+                <a class="nav-link" href="#" onclick="CerrarSesion(); return false;">Salir</a>
+                </li>
+            </ul>
+        </nav>
+      
+        <div class="container-fluid">
+            <div class="row">
+              <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="sidebar-sticky pt-3">
+                  <ul class="nav flex-column">
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        INICIO
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link" href="index.html">
+                        <span><i class="fas fa-chart-line"></i></span>
+                        Tablero de Control <span class="sr-only">(current)</span>
+                      </a>
+                    </li>
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        INVENTARIO
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link" href="catalogo.html">
+                        <span><i class="fas fa-pallet"></i></span>
+                        Catálogo
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="agregarProducto.html">
+                        <span><i class="fas fa-plus-square"></i></span>
+                        Agregar Producto
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="entradas.html">
+                        <span><i class="fas fa-arrow-circle-left"></i></i></span>
+                        Entradas 
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="proveedores.html">
+                        <span><i class="fas fa-truck"></i></span>
+                        Proveedores
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="salidas.html">
+                        <span><i class="fas fa-arrow-circle-right"></i></span>
+                        Salidas
+                      </a>
+                    </li>
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        PUNTO DE VENTA
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="vender.html">
+                        <span><i class="fas fa-money-bill-alt"></i></span>
+                        Vender<span class="sr-only">(current)</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="clientes.html">
+                            <span><i class="fas fa-user-friends"></i></span>
+                            Clientes
+                        </a>
+                    </li>
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        ESCÁNER
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#" data-toggle="modal" data-target="#modalValidarPrecio">
+                        <span><i class="fas fa-dollar-sign"></i></span>
+                        Verificar Precio
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+      
+              <div class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <br>
+                    <h1 class="h2 font-weight-bold">Vender</h1>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <!-- <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVO FOLIO DE VENTA</button> -->
+                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="clearInterval(myVar);">CREAR NUEVO FOLIO DE VENTA</button>
+                    <br>
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                            DATOS DEL FOLIO DE VENTA
+                          </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input id="Clientes" placeholder="Selecciona..."></input>
+                                        <script>llenarComboBox("Clientes", "cmbClientes", "form-control"); </script>
+                                        <label style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Clientes</label>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input id="txtFecha" type="text" class="form-control text-center" disabled>
+                                        <label for= "txtFecha" style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Fecha</label>
+                                        <label id="folio_Documento" hidden>folio</label>
+                                        <label id="anio" hidden>2019</label>
+                                        <label id="mes" hidden>7</label>
+                                        <label id="dia" hidden>11</label>
+                                        <label id="hora" hidden>10</label>
+                                        <label id="minutos" hidden>04</label>
+                                        <label id="segundos" hidden>23</label>
+                                        <label id="docOrigen" hidden></label>
+                                        <label id="timestamp" hidden></label>
+                                        <label id="fecha2" hidden></label>
+                                        <label id="hora2" hidden></label>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                                    <div class="form-group">
+                                        <input id="txtHora" type="text" class="form-control text-center" disabled>
+                                        <label for= "txtHora" style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Hora</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                            AGREGA UN PRODUCTO
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive-xl">
+                                    <table id='entrada-compras-agregar' class='table table-bordered'>
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerNE" onclick="loadScannerNE();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
+                                                <th hidden>Id Artículo</th>
+                                                <th scope="col" style="text-align: center">Descripción</th>
+                                                <th scope="col" style="text-align: center">Cantidad</th>
+                                                <th scope="col" style="text-align: center">Precio $</th>
+                                                <th scope="col" style="text-align: center">Total $</th>
+                                            </tr>
+                                        </thead>
+                                        <tr>
+                                            <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>
+                                            <td id='tdIdArticulo_agregar' hidden></td>
+                                            <td id='tdDescripcion_agregar'><input id="Catalogo" placeholder="Selecciona..."></input><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
+                                            <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
+                                            <td id='tdPrecio_agregar' contenteditable="true" style="text-align: center"></td>
+                                            <td id='tdTotal_agregar'></td>
+                                            <td style="text-align: center;"><button id='btnAgregarATabla' class='btn btn-success btn-sm' focusable="true">Agregar</td>
+                                          </tr>
+                                    </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                            LISTA DE ARTÍCULOS
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive-xl">
+                                <table class="table table-striped " id="tablaNE">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col" style="text-align: center">#</th>
+                                            <th scope="col" style="text-align: center">Codigo Barras</th>
+                                            <th hidden>Id Artículo</th>
+                                            <th scope="col" style="text-align: center">Descripción</th>
+                                            <th scope="col" style="text-align: center">Cantidad</th>
+                                            <th scope="col" style="text-align: center">Precio $</th>
+                                            <th scope="col" style="text-align: center">Total $</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyVentas">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="card bg-white text-white" style="text-align: center; font-weight: bold;">
+                                        <div class="card-header bg-warning">
+                                            <h2 style="color: black;">TOTAL ($)</h2>
+                                        </div>
+                                        <div class="card-body">
+                                            <h2 id="cantidadTotal" style="color: black;">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                                    <div class="card bg-white text-white" style="text-align: center; font-weight: bold;">
+                                        <div class="card-header bg-warning">
+                                            <h2 style="color: black;">ARTÍCULOS (pz)</h2>
+                                        </div>
+                                        <div class="card-body">
+                                            <h2 id="cantidadArticulos" style="color: black;">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success btn-lg btn-block" id="btnFinalizar" hidden="true">Finalizar</button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="card">
+                        <div class="card-body" style="text-align: center; margin-top: 0px; background-color: gray;">
+                            <h2 class="text-white font-weight-bold" style="margin-top: 5px;">RELACIÓN DE FOLIOS DE VENTA</h2>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                            MES EN CURSO
+                          </div>
+                        <div class="card-body">
+                            <div class="table-responsive-xl">
+                                <table class="table table-dark table-hover" id="tablaRelacionVentas">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col" style="text-align: center; font-weight: bold;">#</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">FECHA</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">HORA</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">FOLIO</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">PROVEEDOR</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">USUARIO</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">ARTICULOS</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">TOTAL $</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyRelacionVentas">
+                                    </tbody>
+                                    <script>escuchaVentas();</script>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- TOAST Y MODAL GENERALES -->
+        <div class="modal fade" id="modalValidarPrecio" tabindex="-1" aria-labelledby="modalValidarPrecioLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                        <!-- Nav tabs -->
+                        <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalValidarPrecioLabel">Validar Precio</h5></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="txtCodigoBarrasValidarPrecio" class="col-form-label text-black" id="labelCodigoBarrasValidarPrecio">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
+                            <input id="txtCodigoBarrasValidarPrecio" type="text" class="form-control">
+                            <button type="button" class="btn btn-warning btn-lg btn-block form-control" onclick="validarPrecioCodigoBarras();" id="btnValidarPrecio" style="margin-top: 5px">Consultar</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="cmbCatalogoValidarPrecio" class="text-black" id="labelDescripcionValidarPrecio">Descripción</label>
+                            <div>
+                            <input id="Catalogo"></input>
+                            </div>
+                        </div>
+                        <div id="contenedorValidarPrecio">
+                            <script src="js/scriptValidarPrecio.js"></script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastPrecioValidado" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: -999" data-delay="5000">
+          <div class="toast-header bg-success">
+              <img src="../img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px;">
+              <strong class="mr-auto text-dark">DEWIS MARKET - $ Precio</strong>
+              <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="toast-body bg-white text-dark">
+              <small class="text-muted">Descripción</small>
+              <p class="lead text-dark" id="descripcionPrecioValidado">Descripción</p>
+              <small class="text-muted">Precio</small>
+              <span><h3 class="text-dark font-weight-bold " id="precioValidado">5.0</h3><br><br></span>
+          </div>
+        </div>
+
+        <!-- TOAST Y MODAL LOCALES -->
+
+        <div class="modal fade" id="modalScannerNE" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                    <!-- Nav tabs -->
+                    <div class="container text-center font-weight-bold"><h5 class="modal-title reclaim-black" id="exampleModalLabel">Escanea el código de barras</h5></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="StopScannerNE();">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="contenedor">
+                        <script src="js/scriptNE.js"></script>
+                    </div>                                
+                </div>
+            </div>
+            </div>
+        </div>
+        
+        <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
+        <script>
+            var perf = firebase.performance();
+        </script>
+        <script>
+            //loadDashboardCharts();
+        </script>
+	</body>
+</html>
