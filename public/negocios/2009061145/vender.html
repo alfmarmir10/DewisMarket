@@ -58,9 +58,9 @@
           myTimer();
       });
 
-      $(document).on("hide.bs.modal", "#modalScanner", function(e) {
+      $(document).on("hide.bs.modal", "#modalScannerVender", function(e) {
           try{
-              StopScanner();
+              StopScannerVender();
               var nodes = document.getElementsByTagName("Canvas");
 
               for (var i = 0, len = nodes.length; i != len; ++i) {
@@ -80,7 +80,7 @@
       $(Document).on("change", "#cmbDescripcion", function(e){
         var x = document.getElementById("cmbDescripcion");
         var valor = x.value;
-        getInfoProducto_agregar_NE_descripcion(valor);
+        getInfoProducto_agregar_Ventas_descripcion(valor);
       });
 
       $(Document).on("click","#btnAgregarATabla", function(){
@@ -95,42 +95,46 @@
           }
 
           var Can = parseFloat($("#tdCantidad_agregar").text());
-          var Cos = parseFloat($("#tdPrecio_agregar").text());
+          var Prec = parseFloat($("#tdPrecio_agregar").text());
           var Tot = parseFloat($("#tdTotal_agregar").text());
           var Cli = document.getElementById("cmbClientes").value;
           var Fol = document.getElementById("txtFolio").value;
+          var Cos = parseFloat($("#tdCosto_agregar").text());
+          var Gan = parseFloat($("#tdGanancia_agregar").text());
 
-          if (CB == "" || Fol == "" || Can == "" || Cos == "" || Fol == ""){
+
+          if (CB == "" || Can == "" || Prec == "" || Cli == ""){
               alert("Todos los campos son requeridos");
           } else {
-              agregarElementosVentas(CB, Id, Des, Can, (Cos).toFixed(2), (Tot).toFixed(2), Cli, Fol);
+              if (Cos == "" || Cos == 0 || Cos == NaN){
+                  alert("No existe un costo establecido en sistema. Verifica.");
+              } else {
+                setFolio();
+                agregarElementosVentas(CB, Id, Des, Can, (Prec).toFixed(2), (Tot).toFixed(2), Cli, Fol, Cos, Gan);
+              }
+              
           }
       });
 
-      $(Document).on("blur", "#tdCantidad_agregar", function(){
-          var cantidad = $("#tdCantidad_agregar").text();
-          var costo;
-          if ($("#tdCosto_agregar").text() == ""){
-              costo = 0;
-          } else {
-              costo = $("#tdCosto_agregar").text();
-          }
-          var total;
-          total = (cantidad * costo).toFixed(2);
-          $("#tdTotal_agregar").html(total);
-          });
+    $(Document).on("keyup", "#tdCantidad_agregar", function(){
+          calcularTotal();
+     });
 
-          $(Document).on("keydown", "#tdCantidad_agregar", function(e){
-          if(e.keyCode == 13){
-              $("#tdCosto_agregar").focus();
-          } else {
-              var x = event.charCode || event.keyCode;
+     $(Document).on("keyup", "#tdPrecio_agregar", function(){
+          calcularTotal();
+     });
 
-              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
-          }
-      });
+    $(Document).on("keydown", "#tdCantidad_agregar", function(e){
+        if(e.keyCode == 13){
+            $("#tdPrecio_agregar").focus();
+        } else {
+            var x = event.charCode || event.keyCode;
 
-      $(Document).on("keydown", "#tdCosto_agregar", function(e){
+            if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+        }
+    });
+
+      $(Document).on("keydown", "#tdPrecio_agregar", function(e){
           if(e.keyCode == 13){
               $("#tdTotal_agregar").focus();
           } else {
@@ -140,99 +144,91 @@
           }
       });
 
-      $(Document).on("keydown", "#txtFolio", function(e){
-          if(e.keyCode == 13){
-              $("#tdCodigoBarras_agregar").focus();
-          }
-      });
-
-      $(Document).on("blur", "#tdCosto_agregar", function(){
+      $(Document).on("blur", "#tdPrecio_agregar", function(){
           var cantidad = $("#tdCantidad_agregar").text();
-          var costo;
-          if ($("#tdCosto_agregar").text() == ""){
-              costo = 0;
+          var precio;
+          if ($("#tdPrecio_agregar").text() == ""){
+             precio = 0;
           } else {
-              costo = $("#tdCosto_agregar").text();
+             precio = $("#tdPrecio_agregar").text();
           }
           var total;
-          total = (cantidad * costo).toFixed(2);
+          total = (cantidad * precio).toFixed(2);
           $("#tdTotal_agregar").html(total);
       });
 
-      $(Document).on("blur", "#txtFolio", function(){
-          var txt;
-          if (document.getElementById("txtFolio").value == "") {
-              alert("El folio es obligatorio");
-              return
-          }
+      function setFolio(){
+        clearInterval(myVar);
+        var d = new Date();
+        var anio = d.getFullYear();
+        $("#anio").text(anio);
 
-          if (confirm("El folio no se podrá cambiar más tarde. ¿Está correcto?")) {
-              document.getElementById("txtFolio").disabled = true;
-              // var Fol = document.getElementById("txtFolio").value;
-              var d = new Date();
-              var anio = d.getFullYear();
-              $("#anio").text(anio);
+        var mes = d.getMonth()+1;
 
-              var mes = d.getMonth()+1;
+        if(mes <10){
+        $("#mes").text("0"+mes);
+        mes = "0"+mes;
+        } else {
+        $("#mes").text(mes);
+        }
 
-              if(mes <10){
-              $("#mes").text("0"+mes);
-              mes = "0"+mes;
-              } else {
-              $("#mes").text(mes);
-              }
+        var dia = d.getDate();
 
-              var dia = d.getDate();
+        if(dia <10){
+        $("#dia").text("0"+dia);
+        dia = "0"+dia;
+        } else {
+        $("#dia").text(dia);
+        }
 
-              if(dia <10){
-              $("#dia").text("0"+dia);
-              dia = "0"+dia;
-              } else {
-              $("#dia").text(dia);
-              }
+        var hora = d.getHours();
 
-              var hora = d.getHours();
+        if(hora <10){
+        $("#hora").text("0"+hora);
+        hora = "0"+hora;
+        } else {
+        $("#hora").text(hora);
+        }
 
-              if(hora <10){
-              $("#hora").text("0"+hora);
-              hora = "0"+hora;
-              } else {
-              $("#hora").text(hora);
-              }
+        var minutos = d.getMinutes();
 
-              var minutos = d.getMinutes();
+        if(minutos <10){
+        $("#minutos").text("0"+minutos);
+        minutos = "0"+minutos;
+        } else {
+        $("#minutos").text(minutos);
+        }
 
-              if(minutos <10){
-              $("#minutos").text("0"+minutos);
-              minutos = "0"+minutos;
-              } else {
-              $("#minutos").text(minutos);
-              }
+        var segundos = d.getSeconds();
 
-              var segundos = d.getSeconds();
+        if(segundos <10){
+        $("#segundos").text("0"+segundos);
+        segundos = "0"+segundos;
+        } else {
+        $("#segundos").text(segundos);
+        }
 
-              if(segundos <10){
-              $("#segundos").text("0"+segundos);
-              segundos = "0"+segundos;
-              } else {
-              $("#segundos").text(segundos);
-              }
+        var milisegundos = d.getMilliseconds();
 
-              // var idNE = anio+''+mes+''+dia+''+hora+''+minutos+''+segundos+''+Fol;
-              // $("#folio_Documento").text(idNE);
+        if(milisegundos <10){
+        $("#milisegundos").text("0"+milisegundos);
+        milisegundos = "0"+milisegundos;
+        } else {
+        $("#milisegundos").text(milisegundos);
+        }
 
-          } else {
-              document.getElementById("txtFolio").value = "";
-          }
-      });
+        document.getElementById("txtFolio").value = anio+mes+dia+hora+minutos+segundos+milisegundos;
+        
+        console.log(anio+mes+dia+hora+minutos+segundos+milisegundos);
+      }
 
-      $(Document).on("change", "#cmbProveedores", function(e){
-			var x = document.getElementById("cmbProveedores");
+      $(Document).on("change", "#cmbClientes", function(e){
+			var x = document.getElementById("cmbClientes");
 			var valor = x.value;
             var f = $("#docOrigen").html();
-            console.log("Doc Origen cmbProveedores "+f);
+            console.log("Doc Origen cmbClientes "+f);
             if (f != "") {
-                editarProveedorNE(valor);
+                editarClienteVentas(valor);
             }
 		});
     
@@ -410,7 +406,7 @@
                 <div class="row">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <!-- <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVO FOLIO DE VENTA</button> -->
-                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="clearInterval(myVar);">CREAR NUEVO FOLIO DE VENTA</button>
+                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" >CREAR NUEVO FOLIO DE VENTA</button>
                     <br>
                     <div class="card">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
@@ -420,7 +416,7 @@
                             <div class="row">
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                     <div class="form-group">
-                                        <input id="Clientes" placeholder="Selecciona..."></input>
+                                        <input id="Clientes" placeholder="Selecciona..." value="Genérico"></input>
                                         <script>llenarComboBox("Clientes", "cmbClientes", "form-control"); </script>
                                         <label style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Clientes</label>
                                     </div>
@@ -430,12 +426,13 @@
                                         <input id="txtFecha" type="text" class="form-control text-center" disabled>
                                         <label for= "txtFecha" style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Fecha</label>
                                         <label id="folio_Documento" hidden>folio</label>
-                                        <label id="anio" hidden>2019</label>
-                                        <label id="mes" hidden>7</label>
-                                        <label id="dia" hidden>11</label>
-                                        <label id="hora" hidden>10</label>
-                                        <label id="minutos" hidden>04</label>
-                                        <label id="segundos" hidden>23</label>
+                                        <label id="anio" hidden></label>
+                                        <label id="mes" hidden></label>
+                                        <label id="dia" hidden></label>
+                                        <label id="hora" hidden></label>
+                                        <label id="minutos" hidden></label>
+                                        <label id="segundos" hidden></label>
+                                        <label id="milisegundos" hidden></label>
                                         <label id="docOrigen" hidden></label>
                                         <label id="timestamp" hidden></label>
                                         <label id="fecha2" hidden></label>
@@ -446,6 +443,7 @@
                                     <div class="form-group">
                                         <input id="txtHora" type="text" class="form-control text-center" disabled>
                                         <label for= "txtHora" style="text-align: center; display: block; font-weight: bold;" class="reclaim-black">Hora</label>
+                                        <input id="txtFolio" type="text" class="form-control text-center" hidden>
                                     </div>
                                 </div>
                             </div>
@@ -461,7 +459,7 @@
                                     <table id='entrada-compras-agregar' class='table table-bordered'>
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerNE" onclick="loadScannerNE();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
+                                                <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerVender" onclick="loadScannerVender();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
                                                 <th hidden>Id Artículo</th>
                                                 <th scope="col" style="text-align: center">Descripción</th>
                                                 <th scope="col" style="text-align: center">Cantidad</th>
@@ -475,7 +473,9 @@
                                             <td id='tdDescripcion_agregar'><input id="Catalogo" placeholder="Selecciona..."></input><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
                                             <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
                                             <td id='tdPrecio_agregar' contenteditable="true" style="text-align: center"></td>
-                                            <td id='tdTotal_agregar'></td>
+                                            <td id='tdCosto_agregar' hidden></td>
+                                            <td id='tdGanancia_agregar' hidden></td>
+                                            <td id='tdTotal_agregar' style="text-align: center"></td>
                                             <td style="text-align: center;"><button id='btnAgregarATabla' class='btn btn-success btn-sm' focusable="true">Agregar</td>
                                           </tr>
                                     </table>
@@ -619,20 +619,20 @@
 
         <!-- TOAST Y MODAL LOCALES -->
 
-        <div class="modal fade" id="modalScannerNE" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="modalScannerVender" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
                     <!-- Nav tabs -->
                     <div class="container text-center font-weight-bold"><h5 class="modal-title reclaim-black" id="exampleModalLabel">Escanea el código de barras</h5></div>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="StopScannerNE();">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="StopScannerVender();">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div id="contenedor">
-                        <script src="js/scriptNE.js"></script>
+                        <script src="js/scriptVender.js"></script>
                     </div>                                
                 </div>
             </div>
