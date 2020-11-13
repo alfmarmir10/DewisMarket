@@ -20,13 +20,22 @@ var listenerTablaNE;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function getIdCliente(nombre){
+    var idNegocio = getCookie("idNegocio");
     var documentos = Array();
-    var clienteRef = db.collection("Negocios").doc(idNegocio).collection("Clientes").where("nombreCompleto", "=", nombre );
+    var ids = Array();
+    var clienteRef = db.collection("Negocios").doc(idNegocio).collection("Clientes").where("RazonSocial", "==", nombre);
     clienteRef.get()
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
-            documentos.push(doc.id);
+            documentos.push(doc.data());
+            ids.push(doc.id);
         })
+        if (documentos.length > 1){
+            alert("Existe más de un cliente con la misma razón social");
+        } else {
+            console.log(documentos);
+            document.getElementById('idCliente').innerHTML = ids[0];
+        }
     })
 }
 
@@ -160,7 +169,7 @@ function editarClienteVentas(prov){
     });
 }
 
-function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan){
+function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan, IdCli){
     var creado = firebase.firestore.Timestamp.now();
     var fecha7 = new Date();
     var idNegocio = getCookie("idNegocio");
@@ -218,7 +227,8 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan)
                         EstatusVentaMesPz: "No Aplicado",
                         EstatusVentaMesDinero: "No Aplicado",
                         EstatusVentaAnioPz: "No Aplicado",
-                        EstatusVentaAnioDinero: "No Aplicado"
+                        EstatusVentaAnioDinero: "No Aplicado",
+                        EstatusGanancia: "No Aplicado"
                     })
                     .then(function(docRef) {
                         console.log("Artículo Agregado a Folio de Venta.", docRef.id);
@@ -253,12 +263,13 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan)
                         // ---- ACTUALIZAR EXISTENCIA ---- //
 
                         var updateRef = db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(doc.data().Id);
+                        var RefArticulosVenta = db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(anio).collection(mes).doc(idVenta).collection("Articulos");
                         updateRef.update({
                             Existencia: firebase.firestore.FieldValue.increment(cantidad * -1),
                         })
                         .then(function(){
                             console.log("Existencia actualizada.");
-                            docRef.update({
+                            RefArticulosVenta.update({
                                 [[docId]+".EstatusExistencia"] : "Aplicado"
                             })
                         })
@@ -274,7 +285,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan)
                         })
                         .then(function(){
                             console.log("Existencia actualizada.");
-                            docRef.update({
+                            RefArticulosVenta.update({
                                 [[docId]+".EstatusVentaDiaPz"] : "Aplicado",
                                 [[docId]+".EstatusVentaDiaDinero"] : "Aplicado" 
                             })
@@ -291,7 +302,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan)
                         })
                         .then(function(){
                             console.log("Existencia actualizada.");
-                            docRef.update({
+                            RefArticulosVenta.update({
                                 [[docId]+".EstatusVentaMesPz"] : "Aplicado",
                                 [[docId]+".EstatusVentaMesDinero"] : "Aplicado" 
                             })
@@ -309,7 +320,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan)
                         })
                         .then(function(){
                             console.log("Existencia actualizada.");
-                            docRef.update({
+                            RefArticulosVenta.update({
                                 [[docId]+".EstatusVentaAnioPz"] : "Aplicado",
                                 [[docId]+".EstatusVentaAnioDinero"] : "Aplicado" 
                             })
@@ -503,6 +514,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan)
                     Hora: hora2,
                     Folio: Fol,
                     Cliente: Cli,
+                    IdCliente: IdCli,
                     Usuario: Usuario,
                     Creado: firebase.firestore.Timestamp.now(),
                     DocOrigen: idVenta,
@@ -893,34 +905,41 @@ function AgregarCliente(){
         });
 
         if (bandera == 0){
-            db.collection("Negocios").doc(idNegocio).collection("Clientes").add({
-                RazonSocial: Raz,
-                RFC: RFC,
-                Direccion: Dir,
-                Ciudad: Ciu,
-                NoExt: NoExt,
-                NoInt: NoInt,
-                Colonia: Col,
-                Estado: Estado,
-                CodigoPostal: CP,
-                Telefono: parseInt(Tel)
-            })
-            .then(function(docRef) {
-                db.collection("Negocios").doc(idNegocio).collection("Clientes").doc("Clientes").update({
-                    Descripcion: firebase.firestore.FieldValue.arrayUnion(Raz)
-                }).then(function() {
-                    console.log("Document written with ID: ", docRef.id);
-                    alert("¡Agregado correctamente!");
-                    location.reload();
-                }).catch(function(error) {
-                    alert("Ocurrió algún error, reintenta por favor." + error)
+            var RefAddCliente = db.collection("Negocios").doc(idNegocio).collection("Clientes");
+            firebase.auth().
+            onAuthStateChanged(function(user) {
+                var Usuario = user.email;
+                RefAddCliente.add({
+                    RazonSocial: Raz,
+                    RFC: RFC,
+                    Direccion: Dir,
+                    Ciudad: Ciu,
+                    NoExt: NoExt,
+                    NoInt: NoInt,
+                    Colonia: Col,
+                    Estado: Estado,
+                    CodigoPostal: CP,
+                    Telefono: parseInt(Tel),
+                    UsuarioAlta: Usuario,
+                    Creado: firebase.firestore.Timestamp.now()
+                })
+                .then(function(docRef) {
+                    db.collection("Negocios").doc(idNegocio).collection("Clientes").doc("Clientes").update({
+                        Descripcion: firebase.firestore.FieldValue.arrayUnion(Raz)
+                    }).then(function() {
+                        console.log("Document written with ID: ", docRef.id);
+                        alert("¡Agregado correctamente!");
+                        location.reload();
+                    }).catch(function(error) {
+                        alert("Ocurrió algún error, reintenta por favor." + error)
+                        document.getElementById('txtRazonSocial').focus();
+                    });
+                })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                    alert("Ocurrió algún error, reintenta por favor.")
                     document.getElementById('txtRazonSocial').focus();
                 });
-            })
-            .catch(function(error) {
-                console.error("Error adding document: ", error);
-                alert("Ocurrió algún error, reintenta por favor.")
-                document.getElementById('txtRazonSocial').focus();
             });
         } else {
             alert("¡Esa razón social ya existe!");

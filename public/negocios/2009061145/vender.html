@@ -56,6 +56,42 @@
           checkCookie();
           getNombreNegocio();
           myTimer();
+          getIdCliente(document.getElementById('Clientes').value);
+      });
+
+      $(Document).on("click","#btnAgregarATabla", function(){
+          var CB = $("#tdCodigoBarras_agregar").text();
+          var Id = $("#tdIdArticulo_agregar").text();
+          var IdCliente = document.getElementById("idCliente").innerHTML;
+          return;
+
+          try{
+              var Des = document.getElementById("cmbDescripcion").value;
+          }
+          catch{
+              var Des = document.getElementById('tdDescripcion_agregar').innerHTML;
+          }
+
+          var Can = parseFloat($("#tdCantidad_agregar").text());
+          var Prec = parseFloat($("#tdPrecio_agregar").text());
+          var Tot = parseFloat($("#tdTotal_agregar").text());
+          var Cli = document.getElementById("cmbClientes").value;
+          var Fol = document.getElementById("txtFolio").value;
+          var Cos = parseFloat($("#tdCosto_agregar").text());
+          var Gan = parseFloat($("#tdGanancia_agregar").text());
+
+
+          if (CB == "" || Can == "" || Prec == "" || Cli == "" || IdCliente == ""){
+              alert("Todos los campos son requeridos");
+          } else {
+              if (Cos == "" || Cos == 0 || Cos == NaN){
+                  alert("No existe un costo establecido en sistema. Verifica.");
+              } else {
+                setFolio();
+                agregarElementosVentas(CB, Id, Des, Can, (Prec).toFixed(2), (Tot).toFixed(2), Cli, Fol, Cos, Gan, IdCliente);
+              }
+              
+          }
       });
 
       $(document).on("hide.bs.modal", "#modalScannerVender", function(e) {
@@ -81,39 +117,6 @@
         var x = document.getElementById("cmbDescripcion");
         var valor = x.value;
         getInfoProducto_agregar_Ventas_descripcion(valor);
-      });
-
-      $(Document).on("click","#btnAgregarATabla", function(){
-          var CB = $("#tdCodigoBarras_agregar").text();
-          var Id = $("#tdIdArticulo_agregar").text();
-
-          try{
-              var Des = document.getElementById("cmbDescripcion").value;
-          }
-          catch{
-              var Des = document.getElementById('tdDescripcion_agregar').innerHTML;
-          }
-
-          var Can = parseFloat($("#tdCantidad_agregar").text());
-          var Prec = parseFloat($("#tdPrecio_agregar").text());
-          var Tot = parseFloat($("#tdTotal_agregar").text());
-          var Cli = document.getElementById("cmbClientes").value;
-          var Fol = document.getElementById("txtFolio").value;
-          var Cos = parseFloat($("#tdCosto_agregar").text());
-          var Gan = parseFloat($("#tdGanancia_agregar").text());
-
-
-          if (CB == "" || Can == "" || Prec == "" || Cli == ""){
-              alert("Todos los campos son requeridos");
-          } else {
-              if (Cos == "" || Cos == 0 || Cos == NaN){
-                  alert("No existe un costo establecido en sistema. Verifica.");
-              } else {
-                setFolio();
-                agregarElementosVentas(CB, Id, Des, Can, (Prec).toFixed(2), (Tot).toFixed(2), Cli, Fol, Cos, Gan);
-              }
-              
-          }
       });
 
     $(Document).on("keyup", "#tdCantidad_agregar", function(){
@@ -227,6 +230,7 @@
 			var valor = x.value;
             var f = $("#docOrigen").html();
             console.log("Doc Origen cmbClientes "+f);
+            getIdCliente(document.getElementById('cmbClientes').value);
             if (f != "") {
                 editarClienteVentas(valor);
             }
@@ -643,9 +647,6 @@
         <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
         <script>
             var perf = firebase.performance();
-        </script>
-        <script>
-            //loadDashboardCharts();
         </script>
 	</body>
 </html>
