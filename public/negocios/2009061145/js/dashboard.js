@@ -1,5 +1,5 @@
 function loadDashboardCharts(){
-  var options = {
+ /*  var options = {
     chart: {
       type: 'line',
       height: '400px'
@@ -66,9 +66,9 @@ function loadDashboardCharts(){
         }
       }
     ]
-  }
+  } */
   
-  var chart = new ApexCharts(document.querySelector("#chart"), options);
+  /* var chart = new ApexCharts(document.querySelector("#chart"), options); */
   
   chart.render();
 

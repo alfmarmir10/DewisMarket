@@ -60,10 +60,10 @@
       });
 
       $(Document).on("click","#btnAgregarATabla", function(){
+          myTimer();
           var CB = $("#tdCodigoBarras_agregar").text();
           var Id = $("#tdIdArticulo_agregar").text();
           var IdCliente = document.getElementById("idCliente").innerHTML;
-          return;
 
           try{
               var Des = document.getElementById("cmbDescripcion").value;
@@ -76,7 +76,7 @@
           var Prec = parseFloat($("#tdPrecio_agregar").text());
           var Tot = parseFloat($("#tdTotal_agregar").text());
           var Cli = document.getElementById("cmbClientes").value;
-          var Fol = document.getElementById("txtFolio").value;
+          
           var Cos = parseFloat($("#tdCosto_agregar").text());
           var Gan = parseFloat($("#tdGanancia_agregar").text());
 
@@ -88,6 +88,8 @@
                   alert("No existe un costo establecido en sistema. Verifica.");
               } else {
                 setFolio();
+                var Fol = document.getElementById("txtFolio").value;
+                console.log(Fol);
                 agregarElementosVentas(CB, Id, Des, Can, (Prec).toFixed(2), (Tot).toFixed(2), Cli, Fol, Cos, Gan, IdCliente);
               }
               
@@ -220,7 +222,7 @@
         $("#milisegundos").text(milisegundos);
         }
 
-        document.getElementById("txtFolio").value = anio+mes+dia+hora+minutos+segundos+milisegundos;
+        document.getElementById("txtFolio").value = anio+""+mes+""+dia+""+hora+""+minutos+""+segundos+""+milisegundos;
         
         console.log(anio+mes+dia+hora+minutos+segundos+milisegundos);
       }
@@ -290,7 +292,7 @@
             if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
             if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
 
-            var fecha = dia+'/'+mes+'/'+d.getFullYear();
+            var fecha = dia+'-'+mes+'-'+d.getFullYear();
             var hora = horas+':'+minutos;
 
             var x = document.getElementById("txtFecha");
@@ -410,7 +412,7 @@
                 <div class="row">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <!-- <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVO FOLIO DE VENTA</button> -->
-                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" >CREAR NUEVO FOLIO DE VENTA</button>
+                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloFolioVenta" style="margin-top: 5px; font-size: x-large;" >CREAR NUEVO FOLIO DE VENTA</button>
                     <br>
                     <div class="card">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
@@ -495,7 +497,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive-xl">
-                                <table class="table table-striped " id="tablaNE">
+                                <table class="table table-striped " id="tablaVentas">
                                     <thead class="thead-dark">
                                         <tr>
                                             <th scope="col" style="text-align: center">#</th>
@@ -557,7 +559,7 @@
                                             <th scope="col" style="text-align: center; font-weight: bold">FECHA</th>
                                             <th scope="col" style="text-align: center; font-weight: bold">HORA</th>
                                             <th scope="col" style="text-align: center; font-weight: bold">FOLIO</th>
-                                            <th scope="col" style="text-align: center; font-weight: bold">PROVEEDOR</th>
+                                            <th scope="col" style="text-align: center; font-weight: bold">CLIENTE</th>
                                             <th scope="col" style="text-align: center; font-weight: bold">USUARIO</th>
                                             <th scope="col" style="text-align: center; font-weight: bold">ARTICULOS</th>
                                             <th scope="col" style="text-align: center; font-weight: bold">TOTAL $</th>

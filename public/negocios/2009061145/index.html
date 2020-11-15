@@ -58,8 +58,11 @@
         getNombreNegocio();
         $("#toastMsg").toast('show');
         // loadIndexGraphs();
-        loadDashboardCharts();
+        /* loadDashboardCharts(); */
+        
       });
+
+
         
       $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
           try{
@@ -218,9 +221,21 @@
                         <button type="button" class="btn btn-sm share_export_btn">Export</button>
                       </div>
                       <button type="button" class="btn btn-sm dropdown-toggle share_export_btn">
-                        <span data-feather="calendar"></span>
+                        <span><i clas="fas fa-calendar"></i></span>
                         This week
                       </button>
+                      <div class="btn-group">
+                        <button type="button" class="btn share_export_btn" id="btnUnidadesCharts">Dinero</button>
+                        <button type="button" class="btn share_export_btn dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                          <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
+                          <a class="dropdown-item" onclick="loadIndexGraphs('Dinero');">Dinero</a>
+                          <a class="dropdown-item" onclick="loadIndexGraphs('Tickets');">Tickets</a>
+                          <a class="dropdown-item" onclick="loadIndexGraphs('TicketPromedio');">Ticket Promedio</a>
+                        </div>
+                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -321,7 +336,8 @@
                 var perf = firebase.performance();
             </script>
             <script>
-                //loadDashboardCharts();
+                console.log($('#btnUnidadesCharts').text());
+                loadIndexGraphs($('#btnUnidadesCharts').text());
             </script>
 	</body>
 </html>
