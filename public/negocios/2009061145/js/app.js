@@ -385,8 +385,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
     docRef.get().then(function(doc) {
         if (doc.exists) {
             console.log("Folio de Venta ya existe:", doc.data());
-
-            $("docOrigen").html(idVenta);
+            document.getElementById('docOrigen').innerHTML = idVenta;
             db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").where('CodigoBarras', '==', CB)
             .get()
             .then((querySnapshot) => {
@@ -394,166 +393,186 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                     bandera = true;
                 })
                 if (bandera == false){
-                    document.getElementById('docOrigen').innerHTML = idVenta;
-                    db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").where('CodigoBarras', '==', CB)
-                    .get()
-                    .then((querySnapshot) => {
-                        querySnapshot.forEach(function(){
-                            bandera = true;
+                    docRef = db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos");
+                    docRef.add({
+                        CodigoBarras: CB,
+                        Id: Id,
+                        Descripcion: Des,
+                        Cantidad: parseFloat(Can),
+                        Costo: parseFloat(Cos),
+                        Precio: parseFloat(Prec),
+                        Total: parseFloat(Tot),
+                        Creado: firebase.firestore.Timestamp.now(),
+                        DocOrigen: idVenta,
+                        Estatus: "No Aplicado"
+                    })
+                    .then(function(docRef) {
+                        console.log("Artículo Agregado a Folio de Venta.", docRef.id);
+                        var DES = document.getElementById('tdDescripcion_agregar');
+                        DES.innerHTML = '';
+                        var node = document.createElement("input");
+                        var att = document.createAttribute("id");
+                        att.value = "Catalogo";
+                        node.setAttributeNode(att);
+                        var att2 = document.createAttribute("placeholder");
+                        att2.value = "Selecciona...";
+                        node.setAttributeNode(att2);
+                        document.getElementById('tdDescripcion_agregar').appendChild(node);
+
+                        // $("#cmbDescripcion").text("");
+                        $("#tdCodigoBarras_agregar").text("");
+                        $("#tdCantidad_agregar").text("");
+                        $("#tdCosto_agregar").text("");
+                        $("#tdTotal_agregar").text("");
+                        $("#tdPrecio_agregar").text("");
+                        $("#tdGanancia_agregar").text("");
+                        document.getElementById('btnAgregarATabla').disabled = false;
+
+                        llenarComboBox("Catalogo", "cmbDescripcion", "form-control");
+
+                        var docIdCatalogo = Id;
+                        var docId = docRef.id;
+                        var cantidad = Can;
+                        var updateRef = db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo);
+                        updateRef.update({
+                            Existencia: firebase.firestore.FieldValue.increment(cantidad * -1)
                         })
-                        if (bandera == false){
-                            docRef = db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos");
-                            docRef.add({
-                                CodigoBarras: CB,
-                                Id: Id,
-                                Descripcion: Des,
-                                Cantidad: parseFloat(Can),
-                                Costo: parseFloat(Cos),
-                                Precio: parseFloat(Prec),
-                                Total: parseFloat(Tot),
-                                Creado: firebase.firestore.Timestamp.now(),
-                                DocOrigen: idVenta,
-                                Estatus: "No Aplicado"
-                            })
-                            .then(function(docRef) {
-                                console.log("Artículo Agregado a Folio de Venta.", docRef.id);
+                        .then(function(){
+                            console.log("Existencia actualizada.");
+                            
+                            var historicoVentasProdRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas");
 
-                                var DES = document.getElementById('tdDescripcion_agregar');
-                                DES.innerHTML = '';
-                                var node = document.createElement("input");
-                                var att = document.createAttribute("id");
-                                att.value = "Catalogo";
-                                node.setAttributeNode(att);
-                                var att2 = document.createAttribute("placeholder");
-                                att2.value = "Selecciona...";
-                                node.setAttributeNode(att2);
-                                document.getElementById('tdDescripcion_agregar').appendChild(node);
-
-                                // $("#cmbDescripcion").text("");
-                                $("#tdCodigoBarras_agregar").text("");
-                                $("#tdCantidad_agregar").text("");
-                                $("#tdCosto_agregar").text("");
-                                $("#tdTotal_agregar").text("");
-                                $("#tdPrecio_agregar").text("");
-                                $("#tdGanancia_agregar").text("");
-                                document.getElementById('btnAgregarATabla').disabled = false;
-
-                                llenarComboBox("Catalogo", "cmbDescripcion", "form-control");
-
-                                var docIdCatalogo = Id;
-                                var docId = docRef.id;
-                                var cantidad = Can;
-                                var updateRef = db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo);
-                                updateRef.update({
-                                    Existencia: firebase.firestore.FieldValue.increment(cantidad * -1)
-                                })
-                                .then(function(){
-                                    console.log("Existencia actualizada.");
-                                    db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas")
-                                    .set({
+                            historicoVentasProdRef.get().then(function(doc) {
+                                if (doc.exists) {
+                                    historicoVentasProdRef.update({
+                                        [[fecha2+".Piezas"]]:firebase.firestore.FieldValue.increment(cantidad),
+                                        [[fecha2+".Dinero"]]:firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                    })
+                                } else {
+                                    historicoVentasProdRef.set({
                                         [fecha2]:{
-                                           Piezas: firebase.firestore.FieldValue.increment(cantidad),
-                                           Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                            Piezas: firebase.firestore.FieldValue.increment(cantidad),
+                                            Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot))
                                         }
-                                    }),{ merge: true }
-                                    .then(function() {
-                                        console.log("Histórico de Venta establecido correctamente.");
-                                        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta")
-                                        .set({
-                                            [idVenta]:{
-                                                Estatus: "Aplicado"
-                                            }
-                                        })
-                                        .then(function() {
-                                            updateRef = db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").doc(docId);
-                                            updateRef.update({
-                                                Estatus: "Aplicado"
-                                            })
-                                            .then(function(){
-                                                console.log("Estatus actualizado.");
-                                                db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
-                                                .get()
-                                                .then(function(querySnapshot){
-                                                    var tablaVentas = document.getElementById('tablaVentas').getElementsByTagName('tbody')[0];
-                                                    tablaVentas.innerHTML = '';
-                                                //   document.getElementById('btnFinalizar').hidden = true;
-                                                    var i = 0;
-                                                    var msg2 = "";
+                                    })
+                                }
+                            });
+                            console.log("Histórico de Venta establecido correctamente.");
+                            historicoFoliosVentasProdRef.get().then(function(doc) {
+                                if (doc.exists) {
+                                    historicoFoliosVentasProdRef.update({
+                                        [[idVenta+".Estatus"]]:"Aplicado"
+                                    })
+                                } else {
+                                    historicoFoliosVentasProdRef.set({
+                                        [idVenta]:{
+                                            Estatus: "Aplicado"
+                                        }
+                                    })
+                                }
+                            })
+                            
+                            var tickets;
+                            var dinero;
+                            updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
+                            updateRef2.update({
+                                [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                            })
+                            .then(function(){
+                                var KPI = Array();
+                                db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(anio).doc(mes)
+                                .get()
+                                .then(function(doc){
+                                    KPI.push(doc.data());
+                                    tickets = KPI[0][fecha2]['Tickets'];
+                                    dinero = KPI[0][fecha2]['Dinero'];
+                                    console.log("Tickets: "+tickets);
+                                    console.log("Dinero: "+dinero);
 
-                                                    var docs = [];
-                                                    querySnapshot.forEach(function(doc) {
-                                                        docs.push(doc.data().Descripcion);
-                                                        i += 1;
-                                                        // msg3 = "<script> var docOrigen= '"+ doc.data().DocOrigen +"'; </script>";
-                                                        if (doc.data().Estatus == "Aplicado"){
-                                                            msg2 = msg2 + "<tr>"
-                                                            +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
-                                                            +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
-                                                            +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
-                                                            +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
-                                                            +"<td style='text-align: center' id='"+doc.id+"_Costo'>"+doc.data().Precio+"</td>"
-                                                            +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                                            +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                                                            +"</tr>";
-                                                        } else {
-                                                            msg2 = msg2 + "<tr>"
-                                                            +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
-                                                            +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
-                                                            +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
-                                                            +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
-                                                            +"<td style='text-align: center' id='"+doc.id+"_Costo'>"+doc.data().Costo+"</td>"
-                                                            +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                                            +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                                                            +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
-                                                            +"</tr>";
-                                                        }
-                                                    });
-                                                //   if (i>0){
-                                                //       document.getElementById('btnFinalizar').hidden = false;
-                                                //       document.getElementById('btnFinalizar').disabled = false;
-                                                //   }
-                                                    $("#tbodyVentas").html(msg2);
-                                                    // console.log("Current cities in CA: ", docs.join(", "));
-                                                    // alert(docs);
-                                                    document.getElementById('btnAgregarATabla').disabled = false;
-                                                    totalizarFolioVenta(idVenta);
+                                    updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
+                                    updateRef2.update({
+                                        [[fecha2+".TicketPromedio"]]: dinero / tickets
+                                        
+                                    })
+                                    .then(function(){
+                                        updateRef = db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").doc(docId);
+                                        updateRef.update({
+                                            Estatus: "Aplicado"
+                                        })
+                                        .then(function(){
+                                            console.log("Estatus actualizado.");
+                                            db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
+                                            .get()
+                                            .then(function(querySnapshot){
+                                                var tablaVentas = document.getElementById('tablaVentas').getElementsByTagName('tbody')[0];
+                                                tablaVentas.innerHTML = '';
+                                                var i = 0;
+                                                var msg2 = "";
+
+                                                var docs = [];
+                                                querySnapshot.forEach(function(doc) {
+                                                    docs.push(doc.data().Descripcion);
+                                                    i += 1;
+                                                    if (doc.data().Estatus == "Aplicado"){
+                                                        msg2 = msg2 + "<tr>"
+                                                        +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
+                                                        +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
+                                                        +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
+                                                        +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
+                                                        +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
+                                                        +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
+                                                        +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                                        +"</tr>";
+                                                    } else {
+                                                        msg2 = msg2 + "<tr>"
+                                                        +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
+                                                        +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
+                                                        +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
+                                                        +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
+                                                        +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Costo+"</td>"
+                                                        +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
+                                                        +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                                        +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
+                                                        +"</tr>";
+                                                    }
                                                 });
-                                            })
-                                            .catch(function(error){
-                                                console.error("Error updating status of document: ", error);
+                                                $("#tbodyVentas").html(msg2);
+                                                document.getElementById('btnAgregarATabla').disabled = false;
+                                                totalizarFolioVenta(idVenta);
                                             });
                                         })
                                         .catch(function(error){
-                                            console.log("Error al incrementar valor de venta por artículo");
+                                            console.error("Error updating status of document: ", error);
                                         });
                                     })
-                                    .catch(function(error) {
-                                        console.error("Error writing document: ", error);
+                                    .catch(function(error){
+                                        console.error("Error actualizando Ticket Promedio", error);
                                     });
                                 })
                                 .catch(function(error){
-                                    console.error("Error updating existencia of document: ", error);
-                                });                                      
+                                    console.error("Error obteniendo tickets y total dinero", error);
+                                });
                             })
-                            .catch(function(error) {
-                                console.error("Error adding document: ", error);
-                                alert("Ocurrió algún error, reintenta por favor." + error);
+                            .catch(function(error){
+                                console.error("Error actualizando el KPI Venta Total", error);
                             });
-                        } else {
-                            alert("El artículo existe en el documento. Elimínalo primero.");
-                        }
+                        })
+                        .catch(function(error){
+                            console.error("Error updating existencia of document: ", error);
+                        });                                      
                     })
-                    .catch(function(){
-
-                    })
+                    .catch(function(error) {
+                        console.error("Error adding document: ", error);
+                        alert("Ocurrió algún error, reintenta por favor." + error);
+                    });
                 } else {
                     alert("El artículo existe en el documento. Elimínalo primero.");
-                    document.getElementById('btnAgregarATabla').disabled = false;
                 }
             })
-            .catch(function(error){
-                console.log(error);
+            .catch(function(error) {
+                console.error("Error: "+error);
             })
+            
         } else {
             console.log("Folio de Venta NO EXISTE, creando");
             firebase.auth().
@@ -573,8 +592,23 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                 })
                 .then(function() {
                     console.log("Folio de Venta CREADA con éxito. Agregando artículo.");
-                    // document.getElementById('timestamp').innerHTML = firebase.firestore.Timestamp.now().toMillis;
-                    //alert($("#timestamp").html());
+                    var updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
+
+                    updateRef2.get().then(function(doc) {
+                        if (doc.exists) {
+                            console.log("Existe");
+                            updateRef2.update({
+                                [[fecha2+".Tickets"]]: firebase.firestore.FieldValue.increment(1)
+                            });
+                        } else {
+                            console.log("No Existe");
+                            updateRef2.set({
+                                [fecha2]:{
+                                    Tickets: firebase.firestore.FieldValue.increment(1)
+                                }
+                            });
+                        }
+                    });
                     document.getElementById('docOrigen').innerHTML = idVenta;
                     db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").where('CodigoBarras', '==', CB)
                     .get()
@@ -598,24 +632,6 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                             })
                             .then(function(docRef) {
                                 console.log("Artículo Agregado a Folio de Venta.", docRef.id);
-
-                                var updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
-
-                                updateRef2.get().then(function(doc) {
-                                    if (doc.exists) {
-                                        console.log("Existe");
-                                        updateRef2.update({
-                                            [[fecha2+".Tickets"]]: firebase.firestore.FieldValue.increment(1)
-                                        });
-                                    } else {
-                                        console.log("No Existe");
-                                        updateRef2.set({
-                                            [fecha2]:{
-                                                Tickets: firebase.firestore.FieldValue.increment(1)
-                                            }
-                                        });
-                                    }
-                                });
                                 var DES = document.getElementById('tdDescripcion_agregar');
                                 DES.innerHTML = '';
                                 var node = document.createElement("input");
@@ -647,113 +663,124 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                 })
                                 .then(function(){
                                     console.log("Existencia actualizada.");
-                                    db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas")
-                                    .set({
-                                        [fecha2]:{
-                                           Piezas: firebase.firestore.FieldValue.increment(cantidad),
-                                           Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                    
+                                    var historicoVentasProdRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas");
+
+                                    historicoVentasProdRef.get().then(function(doc) {
+                                        if (doc.exists) {
+                                            historicoVentasProdRef.update({
+                                                [[fecha2+".Piezas"]]:firebase.firestore.FieldValue.increment(cantidad),
+                                                [[fecha2+".Dinero"]]:firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                            })
+                                        } else {
+                                            historicoVentasProdRef.set({
+                                                [fecha2]:{
+                                                    Piezas: firebase.firestore.FieldValue.increment(cantidad),
+                                                    Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                                }
+                                            })
+                                        }
+                                    });
+                                    console.log("Histórico de Venta establecido correctamente.");
+                                    var historicoFoliosVentasProdRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta");
+
+                                    historicoFoliosVentasProdRef.get().then(function(doc) {
+                                        if (doc.exists) {
+                                            historicoFoliosVentasProdRef.update({
+                                                [[idVenta+".Estatus"]]:"Aplicado"
+                                            })
+                                        } else {
+                                            historicoFoliosVentasProdRef.set({
+                                                [idVenta]:{
+                                                    Estatus: "Aplicado"
+                                                }
+                                            })
                                         }
                                     })
-                                    .then(function() {
-                                        console.log("Histórico de Venta establecido correctamente.");
-                                        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta")
-                                        .set({
-                                            [idVenta]:{
-                                                Estatus: "Aplicado"
-                                            }
-                                        })
-                                        .then(function() {
-                                            var tickets;
-                                            var dinero;
+
+                                    var tickets;
+                                    var dinero;
+                                    updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
+                                    updateRef2.update({
+                                        [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                    })
+                                    .then(function(){
+                                        var KPI = Array();
+                                        db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(anio).doc(mes)
+                                        .get()
+                                        .then(function(doc){
+                                            KPI.push(doc.data());
+                                            tickets = KPI[0][fecha2]['Tickets'];
+                                            dinero = KPI[0][fecha2]['Dinero'];
+                                            console.log("Tickets: "+tickets);
+                                            console.log("Dinero: "+dinero);
+
                                             updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
                                             updateRef2.update({
-                                                [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                                [[fecha2+".TicketPromedio"]]: dinero / tickets
+                                                
                                             })
                                             .then(function(){
-                                                var KPI = Array();
-                                                db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(anio).doc(mes)
-                                                .get()
-                                                .then(function(doc){
-                                                    KPI.push(doc.data());
-                                                    tickets = KPI[0][fecha2]['Tickets'];
-                                                    dinero = KPI[0][fecha2]['Dinero'];
-                                                    console.log("Tickets: "+tickets);
-                                                    console.log("Dinero: "+dinero);
+                                                updateRef = db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").doc(docId);
+                                                updateRef.update({
+                                                    Estatus: "Aplicado"
+                                                })
+                                                .then(function(){
+                                                    console.log("Estatus actualizado.");
+                                                    db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
+                                                    .get()
+                                                    .then(function(querySnapshot){
+                                                        var tablaVentas = document.getElementById('tablaVentas').getElementsByTagName('tbody')[0];
+                                                        tablaVentas.innerHTML = '';
+                                                        var i = 0;
+                                                        var msg2 = "";
 
-                                                    updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
-                                                    updateRef2.update({
-                                                        [[fecha2+".TicketPromedio"]]: dinero / tickets
-                                                        
-                                                    })
-                                                    .then(function(){
-                                                        updateRef = db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").doc(docId);
-                                                        updateRef.update({
-                                                            Estatus: "Aplicado"
-                                                        })
-                                                        .then(function(){
-                                                            console.log("Estatus actualizado.");
-                                                            db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
-                                                            .get()
-                                                            .then(function(querySnapshot){
-                                                                var tablaVentas = document.getElementById('tablaVentas').getElementsByTagName('tbody')[0];
-                                                                tablaVentas.innerHTML = '';
-                                                                var i = 0;
-                                                                var msg2 = "";
-
-                                                                var docs = [];
-                                                                querySnapshot.forEach(function(doc) {
-                                                                    docs.push(doc.data().Descripcion);
-                                                                    i += 1;
-                                                                    if (doc.data().Estatus == "Aplicado"){
-                                                                        msg2 = msg2 + "<tr>"
-                                                                        +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
-                                                                        +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
-                                                                        +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
-                                                                        +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
-                                                                        +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
-                                                                        +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                                                        +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                                                                        +"</tr>";
-                                                                    } else {
-                                                                        msg2 = msg2 + "<tr>"
-                                                                        +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
-                                                                        +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
-                                                                        +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
-                                                                        +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
-                                                                        +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Costo+"</td>"
-                                                                        +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                                                        +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                                                                        +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
-                                                                        +"</tr>";
-                                                                    }
-                                                                });
-                                                                $("#tbodyVentas").html(msg2);
-                                                                document.getElementById('btnAgregarATabla').disabled = false;
-                                                                totalizarFolioVenta(idVenta);
-                                                            });
-                                                        })
-                                                        .catch(function(error){
-                                                            console.error("Error updating status of document: ", error);
+                                                        var docs = [];
+                                                        querySnapshot.forEach(function(doc) {
+                                                            docs.push(doc.data().Descripcion);
+                                                            i += 1;
+                                                            if (doc.data().Estatus == "Aplicado"){
+                                                                msg2 = msg2 + "<tr>"
+                                                                +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
+                                                                +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
+                                                                +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
+                                                                +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
+                                                                +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
+                                                                +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
+                                                                +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                                                +"</tr>";
+                                                            } else {
+                                                                msg2 = msg2 + "<tr>"
+                                                                +"<th scope='row' style='text-align: center' id='"+doc.id+"_Num'>"+i+"</th>"
+                                                                +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
+                                                                +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
+                                                                +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
+                                                                +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Costo+"</td>"
+                                                                +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
+                                                                +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                                                +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
+                                                                +"</tr>";
+                                                            }
                                                         });
-                                                    })
-                                                    .catch(function(error){
-                                                        console.error("Error actualizando Ticket Promedio", error);
+                                                        $("#tbodyVentas").html(msg2);
+                                                        document.getElementById('btnAgregarATabla').disabled = false;
+                                                        totalizarFolioVenta(idVenta);
                                                     });
                                                 })
                                                 .catch(function(error){
-                                                    console.error("Error obteniendo tickets y total dinero", error);
+                                                    console.error("Error updating status of document: ", error);
                                                 });
                                             })
                                             .catch(function(error){
-                                                console.error("Error actualizando el KPI Venta Total", error);
+                                                console.error("Error actualizando Ticket Promedio", error);
                                             });
                                         })
                                         .catch(function(error){
-                                            console.error("Error al incrementar valor de venta por artículo", error);
+                                            console.error("Error obteniendo tickets y total dinero", error);
                                         });
                                     })
-                                    .catch(function(error) {
-                                        console.error("Error writing document: ", error);
+                                    .catch(function(error){
+                                        console.error("Error actualizando el KPI Venta Total", error);
                                     });
                                 })
                                 .catch(function(error){
@@ -768,8 +795,8 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                             alert("El artículo existe en el documento. Elimínalo primero.");
                         }
                     })
-                    .catch(function(){
-
+                    .catch(function(error) {
+                        console.error("Error: "+error);
                     })
                 })
                 .catch(function(error) {
@@ -2243,30 +2270,30 @@ function getNum(val) {
  }
 
 function loadIndexGraphs(unidades){
-    document.getElementById('chart').innerHTML = '';
     var idNegocio = getCookie("idNegocio");
-    document.getElementById('btnUnidadesCharts').innerHTML = unidades;
     var fecha7 = new Date();
-    var fecha7String = validarFecha(fecha7)[0] + "-" + validarFecha(fecha7)[1] + "-" + fecha7.getFullYear().toString().substr(2,2);
-    var fecha6 = new Date(fecha7 - 86400000);
-    var fecha6String = validarFecha(fecha6)[0] + "-" + validarFecha(fecha6)[1] + "-" + fecha6.getFullYear().toString().substr(2,2);
-    var fecha5 = new Date(fecha6 - 86400000);
-    var fecha5String = validarFecha(fecha5)[0] + "-" + validarFecha(fecha5)[1] + "-" + fecha5.getFullYear().toString().substr(2,2);
-    var fecha4 = new Date(fecha5 - 86400000);
-    var fecha4String = validarFecha(fecha4)[0] + "-" + validarFecha(fecha4)[1] + "-" + fecha4.getFullYear().toString().substr(2,2);
-    var fecha3 = new Date(fecha4 - 86400000);
-    var fecha3String = validarFecha(fecha3)[0] + "-" + validarFecha(fecha3)[1] + "-" + fecha3.getFullYear().toString().substr(2,2);
-    var fecha2 = new Date(fecha3 - 86400000);
-    var fecha2String = validarFecha(fecha2)[0] + "-" + validarFecha(fecha2)[1] + "-" + fecha2.getFullYear().toString().substr(2,2);
-    var fecha1 = new Date(fecha2 - 86400000);
-    var fecha1String = validarFecha(fecha1)[0] + "-" + validarFecha(fecha1)[1] + "-" + fecha1.getFullYear().toString().substr(2,2);
-
-    var documentos = Array();
 
     db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
-    .get()
-    .then(function(doc) {
+    .onSnapshot(function(doc) {
         console.log(doc.id, " => ", doc.data());
+        document.getElementById('chart').innerHTML = '';
+        document.getElementById('btnUnidadesCharts').innerHTML = unidades;
+        
+        var fecha7String = validarFecha(fecha7)[0] + "-" + validarFecha(fecha7)[1] + "-" + fecha7.getFullYear().toString().substr(2,2);
+        var fecha6 = new Date(fecha7 - 86400000);
+        var fecha6String = validarFecha(fecha6)[0] + "-" + validarFecha(fecha6)[1] + "-" + fecha6.getFullYear().toString().substr(2,2);
+        var fecha5 = new Date(fecha6 - 86400000);
+        var fecha5String = validarFecha(fecha5)[0] + "-" + validarFecha(fecha5)[1] + "-" + fecha5.getFullYear().toString().substr(2,2);
+        var fecha4 = new Date(fecha5 - 86400000);
+        var fecha4String = validarFecha(fecha4)[0] + "-" + validarFecha(fecha4)[1] + "-" + fecha4.getFullYear().toString().substr(2,2);
+        var fecha3 = new Date(fecha4 - 86400000);
+        var fecha3String = validarFecha(fecha3)[0] + "-" + validarFecha(fecha3)[1] + "-" + fecha3.getFullYear().toString().substr(2,2);
+        var fecha2 = new Date(fecha3 - 86400000);
+        var fecha2String = validarFecha(fecha2)[0] + "-" + validarFecha(fecha2)[1] + "-" + fecha2.getFullYear().toString().substr(2,2);
+        var fecha1 = new Date(fecha2 - 86400000);
+        var fecha1String = validarFecha(fecha1)[0] + "-" + validarFecha(fecha1)[1] + "-" + fecha1.getFullYear().toString().substr(2,2);
+
+        var documentos = Array();
         documentos.push(doc.data());
         var v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0;
         //console.log(getNum(documentos[0][fecha1String][unidades]));
@@ -2366,7 +2393,7 @@ function loadIndexGraphs(unidades){
                     height: 200,
                   },
                   title:{
-                    text: 'Compras',
+                    text: 'Ventas - '+unidades
                   },
                   tooltip: {
                     fillSeriesColor: true,
@@ -3103,7 +3130,7 @@ function checkCookie() {
 
 function CerrarSesion(){
     firebase.auth().signOut().then(function() {
-        window.location.href="/DewisMarket/public/negocios/index.html";
+        window.location.href="./index.html";
         document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "idNegocio=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "nombreNegocio=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
