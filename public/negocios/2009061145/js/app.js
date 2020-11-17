@@ -2349,15 +2349,13 @@ function loadIndexGraphs(unidades){
             },
             series: [{
               name: unidades,
-              /* data: [getNum(documentos[0][fecha1String]['Dinero']),getNum(documentos[0][fecha2String]['Dinero']),getNum(documentos[0][fecha3String]['Dinero']),getNum(documentos[0][fecha4String]['Dinero']),
-              getNum(documentos[0][fecha5String]['Dinero']),getNum(documentos[0][fecha6String]['Dinero']),getNum(documentos[0][fecha7String]['Dinero'])] */
               data: [v1,v2,v3,v4,v5,v6,v7]
             }],
             xaxis: {
               categories: [fecha1String,fecha2String, fecha3String, fecha4String, fecha5String, fecha6String, fecha7String]
             },
             stroke:{
-              curve: 'straight',
+              curve: 'smooth',
             },
             title: {
               text: 'Ventas - '+unidades,
@@ -2415,6 +2413,79 @@ function loadIndexGraphs(unidades){
 
           var chart = new ApexCharts(document.querySelector("#chart"), options);
 
+          chart.render();
+
+          var options = {
+            series: [{
+            name: 'TEAM A',
+            type: 'column',
+            data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
+          }, {
+            name: 'TEAM B',
+            type: 'area',
+            data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
+          }, {
+            name: 'TEAM C',
+            type: 'line',
+            data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39]
+          }],
+            chart: {
+            height: 350,
+            type: 'line',
+            stacked: false,
+          },
+          stroke: {
+            width: [0, 2, 5],
+            curve: 'smooth'
+          },
+          plotOptions: {
+            bar: {
+              columnWidth: '50%'
+            }
+          },
+          
+          fill: {
+            opacity: [0.85, 0.25, 1],
+            gradient: {
+              inverseColors: false,
+              shade: 'light',
+              type: "vertical",
+              opacityFrom: 0.85,
+              opacityTo: 0.55,
+              stops: [0, 100, 100, 100]
+            }
+          },
+          labels: ['01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003',
+            '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'
+          ],
+          markers: {
+            size: 0
+          },
+          xaxis: {
+            type: 'datetime'
+          },
+          yaxis: {
+            title: {
+              text: 'Points',
+            },
+            min: 0
+          },
+          tooltip: {
+            shared: true,
+            intersect: false,
+            y: {
+              formatter: function (y) {
+                if (typeof y !== "undefined") {
+                  return y.toFixed(0) + " points";
+                }
+                return y;
+          
+              }
+            }
+          }
+          };
+  
+          var chart = new ApexCharts(document.querySelector("#chart2"), options);
           chart.render();
         /* $("#graphVentaTotal").sparkline([getNum(documentos[0][fecha1String]), getNum(documentos[0][fecha2String]),
         getNum(documentos[0][fecha3String]), getNum(documentos[0][fecha4String]), getNum(documentos[0][fecha5String]), getNum(documentos[0][fecha6String]), getNum(documentos[0][fecha7String])], {
