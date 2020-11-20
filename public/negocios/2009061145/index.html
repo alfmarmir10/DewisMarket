@@ -62,7 +62,9 @@
         
       });
 
-
+      window.addEventListener('unload', function(event) {
+        stopListenerIndexGraphs();
+      });
         
       $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
           try{

@@ -14,6 +14,8 @@ var db = firebase.firestore();
 var idNE;
 var idVenta;
 var listenerTablaNE;
+var listenerTablaVentas;
+var listenerIndexGraphs;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
@@ -105,29 +107,33 @@ function totalizarFolioVenta(Fol){
 
 function eliminarElementosFolioVenta(btn) {
     var idNegocio = getCookie("idNegocio");
+    var anio = $("#anio").text();
+    var fecha2 = $("#fecha2").text();
+    console.log(fecha2);
 
     db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").doc(btn.name)
     .get()
     .then(function(doc) {
         var docIdCatalogo = doc.data().Id;
         var cantidad = doc.data().Cantidad;
+        var Tot = doc.data().Total;
         db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo)
         .get()
         .then(function(doc){
             var updateRef = db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo);
             updateRef.update({
-                Existencia: firebase.firestore.FieldValue.increment((cantidad * -1))
+                Existencia: firebase.firestore.FieldValue.increment((cantidad))
             })
             .then(function(){
                 console.log("Existencia actualizada.");
-                db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVenta").doc(anio).collection("Ventas").doc("Ventas")
+                db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas")
                 .update({
                     [[fecha2+".Piezas"]]: firebase.firestore.FieldValue.increment((cantidad * -1)),
                     [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment((Tot * -1))
                 })
                 .then(function() {
                     console.log("Histórico de Costos establecido correctamente.");
-                    db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVenta").doc(anio).collection("FoliosVenta").doc("FoliosVenta")
+                    db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta")
                     .update({
                         [[idVenta]+".Estatus"]: "No Aplicado"
                     })
@@ -137,8 +143,8 @@ function eliminarElementosFolioVenta(btn) {
                             db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
                             .get()
                             .then(function(querySnapshot){
-                                var tablaNE = document.getElementById('tablaNE').getElementsByTagName('tbody')[0];
-                                tablaNE.innerHTML = '';
+                                var tablaVentas = document.getElementById('tablaVentas').getElementsByTagName('tbody')[0];
+                                tablaVentas.innerHTML = '';
                             //   document.getElementById('btnFinalizar').hidden = true;
                                 var i = 0;
                                 var msg2 = "";
@@ -154,9 +160,9 @@ function eliminarElementosFolioVenta(btn) {
                                     +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
                                     +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
                                     +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
-                                    +"<td style='text-align: center' id='"+doc.id+"_Costo'>"+doc.data().Costo+"</td>"
+                                    +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
                                     +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                    +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosNE(this);>Eliminar</button></td>"
+                                    +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
                                     +"</tr>";
                                     } else {
                                     msg2 = msg2 + "<tr>"
@@ -164,10 +170,10 @@ function eliminarElementosFolioVenta(btn) {
                                     +"<td style='text-align: center' id='"+doc.id+"_CodigoBarras'>"+doc.data().CodigoBarras+"</td>"
                                     +"<td style='text-align: center' id='"+doc.id+"_Descripcion'>"+doc.data().Descripcion+"</td>"
                                     +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
-                                    +"<td style='text-align: center' id='"+doc.id+"_Costo'>"+doc.data().Costo+"</td>"
+                                    +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
                                     +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                    +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosNE(this);>Eliminar</button></td>"
-                                    +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=aplicarElementosNE(this);>Aplicar</button></td>"
+                                    +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                    +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=aplicarElementosFolioVenta(this);>Aplicar</button></td>"
                                     +"</tr>";
                                     }
                                 });
@@ -175,22 +181,22 @@ function eliminarElementosFolioVenta(btn) {
                             //       document.getElementById('btnFinalizar').hidden = false;
                             //       document.getElementById('btnFinalizar').disabled = false;
                             //   }
-                                $("#tbodyNE").html(msg2);
+                                $("#tbodyVentas").html(msg2);
                                 // console.log("Current cities in CA: ", docs.join(", "));
                                 // alert(docs);
                                 document.getElementById('btnAgregarATabla').disabled = false;
-                                totalizarNE(1);
+                                totalizarFolioVenta(idVenta);
                             });
                         }).catch(function(error) {
                             console.error("Error removing document: ", error);
                         });
                     })
                     .catch(function(error){
-                        console.log("Error actualizando Estatus de artículo en Folio de Venta");
+                        console.error("Error actualizando Estatus de artículo en Folio de Venta", error);
                     });
                 })
                 .catch(function(error){
-                    console.log("Error actualizando Estatus de artículo en Folio de Venta");
+                    console.error("Error actualizando totales de venta de artículo en Folio de Venta", error);
                 });
             })
             .catch(function(error){
@@ -366,8 +372,8 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
     var hora2 = $("#hora").text()+":"+$("#minutos").text()+":"+$("#segundos").text();
     idVenta = Fol;
     var f = $("#docOrigen").html();
-    var h2 = $("#fecha2").html();
-    var f2 = $("#hora2").html();
+    var f2 = $("#fecha2").html();
+    var h2 = $("#hora2").html();
     if (f != ""){
         idVenta = f;
     }
@@ -458,6 +464,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                 }
                             });
                             console.log("Histórico de Venta establecido correctamente.");
+                            var historicoFoliosVentasProdRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta");
                             historicoFoliosVentasProdRef.get().then(function(doc) {
                                 if (doc.exists) {
                                     historicoFoliosVentasProdRef.update({
@@ -875,11 +882,15 @@ function editarElementosVentas(btn) {
 
 }
 
+function stopListenerTablaVentas(){
+    listenerTablaVentas();
+}
+
 function escuchaVentas(){
     var idNegocio = getCookie("idNegocio");
     var fecha7 = new Date();
     var msg2;
-    db.collection("Negocios").doc(idNegocio).collection("Ventas").doc("Ventas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
+    listenerTablaVentas=db.collection("Negocios").doc(idNegocio).collection("Ventas").doc("Ventas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
     .onSnapshot(function(doc) {
         // console.log(doc.data());
         var docs = Array();
@@ -919,7 +930,7 @@ function escuchaVentas(){
             }
             // controlador += 1;
         }
-    })
+    });
 }
 
 function CargarClientesFiltroRazonSocial(criterio){
@@ -1271,11 +1282,15 @@ function totalizarNE(Fol){
     });
 }
 
+function stopListenerTablaNE(){
+    listenerTablaNE();
+}
+
 function escuchaNE(){
     var idNegocio = getCookie("idNegocio");
     var fecha7 = new Date();
     var msg2;
-    db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
+    listenerTablaNE=db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
     .onSnapshot(function(doc) {
         // console.log(doc.data());
         var docs = Array();
@@ -1330,7 +1345,7 @@ function escuchaNE(){
             }
             // controlador += 1;
         }
-    })
+    });
 }
 
 function eliminarElementosNE(btn) {
@@ -2269,11 +2284,15 @@ function getNum(val) {
     return val;
  }
 
+ function stopListenerIndexGraphs(){
+     listenerIndexGraphs();
+ }
+
 function loadIndexGraphs(unidades){
     var idNegocio = getCookie("idNegocio");
     var fecha7 = new Date();
 
-    db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
+    listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
     .onSnapshot(function(doc) {
         console.log(doc.id, " => ", doc.data());
         document.getElementById('chart').innerHTML = '';
@@ -2505,11 +2524,7 @@ function loadIndexGraphs(unidades){
 
         document.getElementById('totalVentaTotal').innerHTML = "$"+(getNum(documentos[0][fecha1String])+getNum(documentos[0][fecha2String])+getNum(documentos[0][fecha3String])+getNum(documentos[0][fecha4String])+
         getNum(documentos[0][fecha5String])+getNum(documentos[0][fecha6String])+getNum(documentos[0][fecha7String])).toString(); */
-    })
-    .catch(function(error) {
-        console.log("Error getting documents: ", error);
     });
-    
 }
 
 
