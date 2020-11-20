@@ -59,6 +59,10 @@
           getIdCliente(document.getElementById('Clientes').value);
       });
 
+      window.addEventListener('unload', function(event) {
+        stopListenerTablaVentas();
+      });
+
       $(Document).on("click","#btnAgregarATabla", function(){
           myTimer();
           var CB = $("#tdCodigoBarras_agregar").text();
@@ -463,30 +467,31 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive-xl">
-                                    <table id='entrada-compras-agregar' class='table table-bordered'>
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerVender" onclick="loadScannerVender();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
-                                                <th hidden>Id Artículo</th>
-                                                <th scope="col" style="text-align: center">Descripción</th>
-                                                <th scope="col" style="text-align: center">Cantidad</th>
-                                                <th scope="col" style="text-align: center">Precio $</th>
-                                                <th scope="col" style="text-align: center">Total $</th>
-                                            </tr>
-                                        </thead>
+                                <table id='entrada-compras-agregar' class='table table-bordered'>
+                                    <thead class="thead-dark">
                                         <tr>
-                                            <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>
-                                            <td id='tdIdArticulo_agregar' hidden></td>
-                                            <td id='tdDescripcion_agregar'><input id="Catalogo" placeholder="Selecciona..."></input><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
-                                            <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
-                                            <td id='tdPrecio_agregar' contenteditable="true" style="text-align: center"></td>
-                                            <td id='tdCosto_agregar' hidden></td>
-                                            <td id='tdGanancia_agregar' hidden></td>
-                                            <td id='tdTotal_agregar' style="text-align: center"></td>
-                                            <td style="text-align: center;"><button id='btnAgregarATabla' class='btn btn-success btn-sm' focusable="true">Agregar</td>
-                                          </tr>
-                                    </table>
-
+                                            <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerVender" onclick="loadScannerVender();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
+                                            <th hidden>Id Artículo</th>
+                                            <th scope="col" style="text-align: center">Descripción</th>
+                                            <th scope="col" style="text-align: center">Cantidad</th>
+                                            <th scope="col" style="text-align: center">Precio $</th>
+                                            <th scope="col" style="text-align: center">Total $</th>
+                                            <th hidden>Costo $</th>
+                                            <th hidden>Ganancia $</th>
+                                        </tr>
+                                    </thead>
+                                    <tr>
+                                        <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>
+                                        <td id='tdIdArticulo_agregar' hidden></td>
+                                        <td id='tdDescripcion_agregar'><input id="Catalogo" placeholder="Selecciona..."></input><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
+                                        <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
+                                        <td id='tdPrecio_agregar' contenteditable="true" style="text-align: center"></td>
+                                        <td id='tdTotal_agregar' style="text-align: center"></td>
+                                        <td id='tdCosto_agregar' hidden></td>
+                                        <td id='tdGanancia_agregar' hidden></td>
+                                        <td style="text-align: center;"><button id='btnAgregarATabla' class='btn btn-success btn-sm' focusable="true">Agregar</td>
+                                        </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -507,6 +512,8 @@
                                             <th scope="col" style="text-align: center">Cantidad</th>
                                             <th scope="col" style="text-align: center">Precio $</th>
                                             <th scope="col" style="text-align: center">Total $</th>
+                                            <th hidden>Costo $</th>
+                                            <th hidden>Ganancia $</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tbodyVentas">

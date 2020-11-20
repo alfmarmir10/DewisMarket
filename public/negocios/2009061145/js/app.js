@@ -16,6 +16,7 @@ var idVenta;
 var listenerTablaNE;
 var listenerTablaVentas;
 var listenerIndexGraphs;
+var documentos = Array();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
@@ -117,6 +118,7 @@ function eliminarElementosFolioVenta(btn) {
         var docIdCatalogo = doc.data().Id;
         var cantidad = doc.data().Cantidad;
         var Tot = doc.data().Total;
+        var Gan = doc.data().Ganancia;
         db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo)
         .get()
         .then(function(doc){
@@ -129,7 +131,8 @@ function eliminarElementosFolioVenta(btn) {
                 db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas")
                 .update({
                     [[fecha2+".Piezas"]]: firebase.firestore.FieldValue.increment((cantidad * -1)),
-                    [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment((Tot * -1))
+                    [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment((Tot * -1)),
+                    [[fecha2+".Ganancia"]]: firebase.firestore.FieldValue.increment((Gan * -1))
                 })
                 .then(function() {
                     console.log("Histórico de Costos establecido correctamente.");
@@ -408,6 +411,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                         Costo: parseFloat(Cos),
                         Precio: parseFloat(Prec),
                         Total: parseFloat(Tot),
+                        Ganancia: parseFloat(Gan),
                         Creado: firebase.firestore.Timestamp.now(),
                         DocOrigen: idVenta,
                         Estatus: "No Aplicado"
@@ -452,13 +456,15 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                 if (doc.exists) {
                                     historicoVentasProdRef.update({
                                         [[fecha2+".Piezas"]]:firebase.firestore.FieldValue.increment(cantidad),
-                                        [[fecha2+".Dinero"]]:firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                        [[fecha2+".Dinero"]]:firebase.firestore.FieldValue.increment(parseFloat(Tot)),
+                                        [[fecha2+".Ganancia"]]:firebase.firestore.FieldValue.increment(parseFloat(Gan))
                                     })
                                 } else {
                                     historicoVentasProdRef.set({
                                         [fecha2]:{
                                             Piezas: firebase.firestore.FieldValue.increment(cantidad),
-                                            Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                            Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot)),
+                                            Ganancia: firebase.firestore.FieldValue.increment(parseFloat(Gan))
                                         }
                                     })
                                 }
@@ -483,7 +489,8 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                             var dinero;
                             updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
                             updateRef2.update({
-                                [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot)),
+                                [[fecha2+".Ganancia"]]: firebase.firestore.FieldValue.increment(parseFloat(Gan))
                             })
                             .then(function(){
                                 var KPI = Array();
@@ -633,6 +640,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                 Costo: parseFloat(Cos),
                                 Precio: parseFloat(Prec),
                                 Total: parseFloat(Tot),
+                                Ganancia: parseFloat(Gan),
                                 Creado: firebase.firestore.Timestamp.now(),
                                 DocOrigen: idVenta,
                                 Estatus: "No Aplicado"
@@ -677,13 +685,15 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                         if (doc.exists) {
                                             historicoVentasProdRef.update({
                                                 [[fecha2+".Piezas"]]:firebase.firestore.FieldValue.increment(cantidad),
-                                                [[fecha2+".Dinero"]]:firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                                [[fecha2+".Dinero"]]:firebase.firestore.FieldValue.increment(parseFloat(Tot)),
+                                                [[fecha2+".Ganancia"]]:firebase.firestore.FieldValue.increment(parseFloat(Gan))
                                             })
                                         } else {
                                             historicoVentasProdRef.set({
                                                 [fecha2]:{
                                                     Piezas: firebase.firestore.FieldValue.increment(cantidad),
-                                                    Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                                    Dinero: firebase.firestore.FieldValue.increment(parseFloat(Tot)),
+                                                    Ganancia: firebase.firestore.FieldValue.increment(parseFloat(Gan))
                                                 }
                                             })
                                         }
@@ -709,7 +719,8 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                     var dinero;
                                     updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
                                     updateRef2.update({
-                                        [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot))
+                                        [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot)),
+                                        [[fecha2+".Ganancia"]]: firebase.firestore.FieldValue.increment(parseFloat(Gan))
                                     })
                                     .then(function(){
                                         var KPI = Array();
@@ -2288,224 +2299,218 @@ function getNum(val) {
      listenerIndexGraphs();
  }
 
-function loadIndexGraphs(unidades){
-    var idNegocio = getCookie("idNegocio");
+ function renderIndexGraphs(documentos, unidades){
     var fecha7 = new Date();
+    document.getElementById('chart').innerHTML = '';
+    document.getElementById('btnUnidadesCharts').innerHTML = unidades;
+    
+    var fecha7String = validarFecha(fecha7)[0] + "-" + validarFecha(fecha7)[1] + "-" + fecha7.getFullYear().toString().substr(2,2);
+    var fecha6 = new Date(fecha7 - 86400000);
+    var fecha6String = validarFecha(fecha6)[0] + "-" + validarFecha(fecha6)[1] + "-" + fecha6.getFullYear().toString().substr(2,2);
+    var fecha5 = new Date(fecha6 - 86400000);
+    var fecha5String = validarFecha(fecha5)[0] + "-" + validarFecha(fecha5)[1] + "-" + fecha5.getFullYear().toString().substr(2,2);
+    var fecha4 = new Date(fecha5 - 86400000);
+    var fecha4String = validarFecha(fecha4)[0] + "-" + validarFecha(fecha4)[1] + "-" + fecha4.getFullYear().toString().substr(2,2);
+    var fecha3 = new Date(fecha4 - 86400000);
+    var fecha3String = validarFecha(fecha3)[0] + "-" + validarFecha(fecha3)[1] + "-" + fecha3.getFullYear().toString().substr(2,2);
+    var fecha2 = new Date(fecha3 - 86400000);
+    var fecha2String = validarFecha(fecha2)[0] + "-" + validarFecha(fecha2)[1] + "-" + fecha2.getFullYear().toString().substr(2,2);
+    var fecha1 = new Date(fecha2 - 86400000);
+    var fecha1String = validarFecha(fecha1)[0] + "-" + validarFecha(fecha1)[1] + "-" + fecha1.getFullYear().toString().substr(2,2);
 
-    listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
-    .onSnapshot(function(doc) {
-        console.log(doc.id, " => ", doc.data());
-        document.getElementById('chart').innerHTML = '';
-        document.getElementById('btnUnidadesCharts').innerHTML = unidades;
+    
+    var v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0;
+    //console.log(getNum(documentos[0][fecha1String][unidades]));
+    console.log(fecha7String);
+
+    try {
+        v1 = getNum(documentos[0][fecha1String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+    try {
+        v2 = getNum(documentos[0][fecha2String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+    try {
+        v3 = getNum(documentos[0][fecha3String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+    try {
+        v4 = getNum(documentos[0][fecha4String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+
+    try {
+        v5 = getNum(documentos[0][fecha5String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+    try {
+        v6 = getNum(documentos[0][fecha6String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+    try {
+        v7 = getNum(documentos[0][fecha7String][unidades]);   
+    } catch (error) {
+        console.log(error);
+    }
+
+    options = {
+        chart: {
+            type: 'line',
+            height: '400px'
+        },
+        series: [{
+            name: unidades,
+            data: [v1,v2,v3,v4,v5,v6,v7]
+        }],
+        xaxis: {
+            categories: [fecha1String,fecha2String, fecha3String, fecha4String, fecha5String, fecha6String, fecha7String]
+        },
+        stroke:{
+            curve: 'smooth',
+        },
+        title: {
+            text: 'Ventas - '+unidades,
+            align: 'left',
+            margin: 10,
+            offsetX: 0,
+            offsetY: 0,
+            floating: false,
+            style: {
+            fontSize:  24,
+            fontWeight:  'bold',
+            fontFamily:  'Helvetica',
+            color:  '#263238'
+            }
+        },
+        tooltip: {
+            position: "right",
+            verticalAlign: "top",
+            containerMargin: {
+            left: 35,
+            right: 60
+            },
+            style: {
+            color: '#263238',
+            fontSize: 20
+            }
+        },
+        responsive: [
+            {
+            breakpoint: 760,
+            options: {
+                chart: {
+                height: 200,
+                },
+                title:{
+                text: 'Ventas - '+unidades
+                },
+                tooltip: {
+                fillSeriesColor: true,
+                theme: 'dark',
+                marker:{
+                    show: true
+                },
+                style:{
+                    fontSize: '14px'
+                },
+                x:{
+                    title: 'No'
+                }
+                }
+            }
+            }
+        ]
+        }
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+        chart.render();
+
+        var options = {
+        series: [{
+        name: 'TEAM A',
+        type: 'column',
+        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
+        }, {
+        name: 'TEAM B',
+        type: 'area',
+        data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
+        }, {
+        name: 'TEAM C',
+        type: 'line',
+        data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39]
+        }],
+        chart: {
+        height: 350,
+        type: 'line',
+        stacked: false,
+        },
+        stroke: {
+        width: [0, 2, 5],
+        curve: 'smooth'
+        },
+        plotOptions: {
+        bar: {
+            columnWidth: '50%'
+        }
+        },
         
-        var fecha7String = validarFecha(fecha7)[0] + "-" + validarFecha(fecha7)[1] + "-" + fecha7.getFullYear().toString().substr(2,2);
-        var fecha6 = new Date(fecha7 - 86400000);
-        var fecha6String = validarFecha(fecha6)[0] + "-" + validarFecha(fecha6)[1] + "-" + fecha6.getFullYear().toString().substr(2,2);
-        var fecha5 = new Date(fecha6 - 86400000);
-        var fecha5String = validarFecha(fecha5)[0] + "-" + validarFecha(fecha5)[1] + "-" + fecha5.getFullYear().toString().substr(2,2);
-        var fecha4 = new Date(fecha5 - 86400000);
-        var fecha4String = validarFecha(fecha4)[0] + "-" + validarFecha(fecha4)[1] + "-" + fecha4.getFullYear().toString().substr(2,2);
-        var fecha3 = new Date(fecha4 - 86400000);
-        var fecha3String = validarFecha(fecha3)[0] + "-" + validarFecha(fecha3)[1] + "-" + fecha3.getFullYear().toString().substr(2,2);
-        var fecha2 = new Date(fecha3 - 86400000);
-        var fecha2String = validarFecha(fecha2)[0] + "-" + validarFecha(fecha2)[1] + "-" + fecha2.getFullYear().toString().substr(2,2);
-        var fecha1 = new Date(fecha2 - 86400000);
-        var fecha1String = validarFecha(fecha1)[0] + "-" + validarFecha(fecha1)[1] + "-" + fecha1.getFullYear().toString().substr(2,2);
-
-        var documentos = Array();
-        documentos.push(doc.data());
-        var v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0;
-        //console.log(getNum(documentos[0][fecha1String][unidades]));
-        console.log(fecha7String);
-
-        try {
-            v1 = getNum(documentos[0][fecha1String][unidades]);   
-        } catch (error) {
-            console.log(error);
+        fill: {
+        opacity: [0.85, 0.25, 1],
+        gradient: {
+            inverseColors: false,
+            shade: 'light',
+            type: "vertical",
+            opacityFrom: 0.85,
+            opacityTo: 0.55,
+            stops: [0, 100, 100, 100]
         }
-
-        try {
-            v2 = getNum(documentos[0][fecha2String][unidades]);   
-        } catch (error) {
-            console.log(error);
-        }
-
-        try {
-            v3 = getNum(documentos[0][fecha3String][unidades]);   
-        } catch (error) {
-            console.log(error);
-        }
-
-        try {
-            v4 = getNum(documentos[0][fecha4String][unidades]);   
-        } catch (error) {
-            console.log(error);
-        }
-
-
-        try {
-            v5 = getNum(documentos[0][fecha5String][unidades]);   
-        } catch (error) {
-            console.log(error);
-        }
-
-        try {
-            v6 = getNum(documentos[0][fecha6String][unidades]);   
-        } catch (error) {
-            console.log(error);
-        }
-
-        try {
-            v7 = getNum(documentos[0][fecha7String][unidades]);   
-        } catch (error) {
-            console.log(error);
-        }
-
-        options = {
-            chart: {
-              type: 'line',
-              height: '400px'
-            },
-            series: [{
-              name: unidades,
-              data: [v1,v2,v3,v4,v5,v6,v7]
-            }],
-            xaxis: {
-              categories: [fecha1String,fecha2String, fecha3String, fecha4String, fecha5String, fecha6String, fecha7String]
-            },
-            stroke:{
-              curve: 'smooth',
-            },
-            title: {
-              text: 'Ventas - '+unidades,
-              align: 'left',
-              margin: 10,
-              offsetX: 0,
-              offsetY: 0,
-              floating: false,
-              style: {
-                fontSize:  24,
-                fontWeight:  'bold',
-                fontFamily:  'Helvetica',
-                color:  '#263238'
-              }
-            },
-            tooltip: {
-              position: "right",
-              verticalAlign: "top",
-              containerMargin: {
-                left: 35,
-                right: 60
-              },
-              style: {
-                color: '#263238',
-                fontSize: 20
-              }
-            },
-            responsive: [
-              {
-                breakpoint: 760,
-                options: {
-                  chart: {
-                    height: 200,
-                  },
-                  title:{
-                    text: 'Ventas - '+unidades
-                  },
-                  tooltip: {
-                    fillSeriesColor: true,
-                    theme: 'dark',
-                    marker:{
-                      show: true
-                    },
-                    style:{
-                      fontSize: '14px'
-                    },
-                    x:{
-                      title: 'No'
-                    }
-                  }
-                }
-              }
-            ]
-          }
-
-          var chart = new ApexCharts(document.querySelector("#chart"), options);
-
-          chart.render();
-
-          var options = {
-            series: [{
-            name: 'TEAM A',
-            type: 'column',
-            data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
-          }, {
-            name: 'TEAM B',
-            type: 'area',
-            data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
-          }, {
-            name: 'TEAM C',
-            type: 'line',
-            data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39]
-          }],
-            chart: {
-            height: 350,
-            type: 'line',
-            stacked: false,
-          },
-          stroke: {
-            width: [0, 2, 5],
-            curve: 'smooth'
-          },
-          plotOptions: {
-            bar: {
-              columnWidth: '50%'
+        },
+        labels: ['01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003',
+        '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'
+        ],
+        markers: {
+        size: 0
+        },
+        xaxis: {
+        type: 'datetime'
+        },
+        yaxis: {
+        title: {
+            text: 'Points',
+        },
+        min: 0
+        },
+        tooltip: {
+        shared: true,
+        intersect: false,
+        y: {
+            formatter: function (y) {
+            if (typeof y !== "undefined") {
+                return y.toFixed(0) + " points";
             }
-          },
-          
-          fill: {
-            opacity: [0.85, 0.25, 1],
-            gradient: {
-              inverseColors: false,
-              shade: 'light',
-              type: "vertical",
-              opacityFrom: 0.85,
-              opacityTo: 0.55,
-              stops: [0, 100, 100, 100]
+            return y;
+        
             }
-          },
-          labels: ['01/01/2003', '02/01/2003', '03/01/2003', '04/01/2003', '05/01/2003', '06/01/2003', '07/01/2003',
-            '08/01/2003', '09/01/2003', '10/01/2003', '11/01/2003'
-          ],
-          markers: {
-            size: 0
-          },
-          xaxis: {
-            type: 'datetime'
-          },
-          yaxis: {
-            title: {
-              text: 'Points',
-            },
-            min: 0
-          },
-          tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-              formatter: function (y) {
-                if (typeof y !== "undefined") {
-                  return y.toFixed(0) + " points";
-                }
-                return y;
-          
-              }
-            }
-          }
-          };
-  
-          var chart = new ApexCharts(document.querySelector("#chart2"), options);
-          chart.render();
+        }
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart2"), options);
+        chart.render();
         /* $("#graphVentaTotal").sparkline([getNum(documentos[0][fecha1String]), getNum(documentos[0][fecha2String]),
         getNum(documentos[0][fecha3String]), getNum(documentos[0][fecha4String]), getNum(documentos[0][fecha5String]), getNum(documentos[0][fecha6String]), getNum(documentos[0][fecha7String])], {
             type: 'line',
@@ -2524,6 +2529,16 @@ function loadIndexGraphs(unidades){
 
         document.getElementById('totalVentaTotal').innerHTML = "$"+(getNum(documentos[0][fecha1String])+getNum(documentos[0][fecha2String])+getNum(documentos[0][fecha3String])+getNum(documentos[0][fecha4String])+
         getNum(documentos[0][fecha5String])+getNum(documentos[0][fecha6String])+getNum(documentos[0][fecha7String])).toString(); */
+ }
+
+function loadIndexGraphs(unidades){
+    var idNegocio = getCookie("idNegocio");
+    var fecha7 = new Date();
+
+    listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
+    .onSnapshot(function(doc) {
+        documentos.push(doc.data());
+        renderIndexGraphs(documentos, unidades);
     });
 }
 

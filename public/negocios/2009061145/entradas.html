@@ -57,6 +57,10 @@
           getNombreNegocio();
       });
 
+      window.addEventListener('unload', function(event) {
+        stopListenerTablaNE();
+      });
+
       $(document).on("hide.bs.modal", "#modalScanner", function(e) {
           try{
               StopScanner();
