@@ -17,6 +17,7 @@ var listenerTablaNE;
 var listenerTablaVentas;
 var listenerIndexGraphs;
 var documentos = Array();
+var unidades;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
@@ -1270,22 +1271,42 @@ function totalizarNE(Fol){
         .get()
         .then(function(doc) {
             documentos.push(doc.data());
-            db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(anio).doc(mes)
-            .update({
-                [documentos[0]["DocOrigen"]]:{
-                    Creado: documentos[0]["Creado"],
-                    Fecha: documentos[0]["Fecha"],
-                    Folio: documentos[0]["Folio"],
-                    Hora: documentos[0]["Hora"],
-                    Proveedor: documentos[0]["Proveedor"],
-                    Usuario: documentos[0]["Usuario"],
-                    DocOrigen: documentos[0]["DocOrigen"],
-                    Articulos: documentos[0]["Articulos"],
-                    Total: parseFloat(documentos[0]["Total"]).toFixed(2),
-                    Anio: documentos[0]["Anio"]
+
+            var entradasListRef = db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(anio).doc(mes);
+
+            entradasListRef.get().then(function(doc) {
+                if (doc.exists) {
+                    entradasListRef.update({
+                        [documentos[0]["DocOrigen"]]:{
+                            Creado: documentos[0]["Creado"],
+                            Fecha: documentos[0]["Fecha"],
+                            Folio: documentos[0]["Folio"],
+                            Hora: documentos[0]["Hora"],
+                            Proveedor: documentos[0]["Proveedor"],
+                            Usuario: documentos[0]["Usuario"],
+                            DocOrigen: documentos[0]["DocOrigen"],
+                            Articulos: documentos[0]["Articulos"],
+                            Total: parseFloat(documentos[0]["Total"]).toFixed(2),
+                            Anio: documentos[0]["Anio"]
+                        }
+                    });
+                } else {
+                    entradasListRef.set({
+                        [documentos[0]["DocOrigen"]]:{
+                            Creado: documentos[0]["Creado"],
+                            Fecha: documentos[0]["Fecha"],
+                            Folio: documentos[0]["Folio"],
+                            Hora: documentos[0]["Hora"],
+                            Proveedor: documentos[0]["Proveedor"],
+                            Usuario: documentos[0]["Usuario"],
+                            DocOrigen: documentos[0]["DocOrigen"],
+                            Articulos: documentos[0]["Articulos"],
+                            Total: parseFloat(documentos[0]["Total"]).toFixed(2),
+                            Anio: documentos[0]["Anio"]
+                        }
+                    });
                 }
-            })
-            
+            });
         })
     })
     .catch(function(error){
@@ -1628,12 +1649,12 @@ function finalizarNE(Fol){
                         }
                     })
 
-                    var updateRef = db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString());
+                    // var updateRef = db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString());
 
-                    // Atomically increment the population of the city by 50.
-                    updateRef.update({
-                        Index: firebase.firestore.FieldValue.increment(1)
-                    })
+                    // // Atomically increment the population of the city by 50.
+                    // updateRef.update({
+                    //     Index: firebase.firestore.FieldValue.increment(1)
+                    // })
                 })
             })
         })
@@ -2302,7 +2323,14 @@ function getNum(val) {
  function renderIndexGraphs(documentos, unidades){
     var fecha7 = new Date();
     document.getElementById('chart').innerHTML = '';
-    document.getElementById('btnUnidadesCharts').innerHTML = unidades;
+    if (unidades == 'TicketPromedio'){
+        document.getElementById('btnUnidadesCharts').innerHTML = 'Ticket Promedio';
+    } else {
+        document.getElementById('btnUnidadesCharts').innerHTML = unidades;
+    }
+    
+    console.log(unidades);
+    console.log(documentos);
     
     var fecha7String = validarFecha(fecha7)[0] + "-" + validarFecha(fecha7)[1] + "-" + fecha7.getFullYear().toString().substr(2,2);
     var fecha6 = new Date(fecha7 - 86400000);
@@ -2321,49 +2349,49 @@ function getNum(val) {
     
     var v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0;
     //console.log(getNum(documentos[0][fecha1String][unidades]));
-    console.log(fecha7String);
+    // console.log(fecha7String);
 
     try {
-        v1 = getNum(documentos[0][fecha1String][unidades]);   
+        v1 = parseFloat(getNum(documentos[0][fecha1String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
     try {
-        v2 = getNum(documentos[0][fecha2String][unidades]);   
+        v2 = parseFloat(getNum(documentos[0][fecha2String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
     try {
-        v3 = getNum(documentos[0][fecha3String][unidades]);   
+        v3 = parseFloat(getNum(documentos[0][fecha3String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
     try {
-        v4 = getNum(documentos[0][fecha4String][unidades]);   
+        v4 = parseFloat(getNum(documentos[0][fecha4String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
 
     try {
-        v5 = getNum(documentos[0][fecha5String][unidades]);   
+        v5 = parseFloat(getNum(documentos[0][fecha5String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
     try {
-        v6 = getNum(documentos[0][fecha6String][unidades]);   
+        v6 = parseFloat(getNum(documentos[0][fecha6String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
     try {
-        v7 = getNum(documentos[0][fecha7String][unidades]);   
+        v7 = parseFloat(getNum(documentos[0][fecha7String][unidades])).toFixed(2);   
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 
     options = {
@@ -2395,6 +2423,10 @@ function getNum(val) {
             color:  '#263238'
             }
         },
+        dataLabels:{
+            enabled: true,
+            enabledOnSeries: undefined
+        },
         tooltip: {
             position: "right",
             verticalAlign: "top",
@@ -2422,6 +2454,10 @@ function getNum(val) {
                 theme: 'dark',
                 marker:{
                     show: true
+                },
+                dataLabels:{
+                    enabled: true,
+                    enabledOnSeries: undefined
                 },
                 style:{
                     fontSize: '14px'
@@ -2531,12 +2567,14 @@ function getNum(val) {
         getNum(documentos[0][fecha5String])+getNum(documentos[0][fecha6String])+getNum(documentos[0][fecha7String])).toString(); */
  }
 
-function loadIndexGraphs(unidades){
+function loadIndexGraphs(unidadesBtn){
     var idNegocio = getCookie("idNegocio");
     var fecha7 = new Date();
+    unidades = unidadesBtn;
 
     listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
     .onSnapshot(function(doc) {
+        documentos = [];
         documentos.push(doc.data());
         renderIndexGraphs(documentos, unidades);
     });
