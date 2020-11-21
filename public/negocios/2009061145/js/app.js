@@ -107,18 +107,47 @@ function totalizarFolioVenta(Fol){
     });
 }
 
+function calcularTicketPromedioKPI() {
+    var idNegocio = getCookie("idNegocio");
+    var anio = $("#anio").text();
+    var mes = $("#mes").text();
+    var fecha2 = $("#fecha2").text();
+    var KPI = Array();
+    var updateRef2 = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(anio).doc(mes)
+    .get()
+    .then(function(doc){
+        KPI.push(doc.data());
+        tickets = KPI[0][fecha2]['Tickets'];
+        dinero = KPI[0][fecha2]['Dinero'];
+        updateRef2.update({
+            [[fecha2+".TicketPromedio"]]: dinero / tickets
+        })
+        .then(function(){
+            console.log("KPI Ticket Promedio actualizado correctamente");
+        })
+    });
+
+}
+
 function eliminarElementosFolioVenta(btn) {
     var idNegocio = getCookie("idNegocio");
     var anio = $("#anio").text();
+    var mes = $("#mes").text();
     var fecha2 = $("#fecha2").text();
+    var totalFolio = document.getElementById('cantidadTotal');
     console.log(fecha2);
 
     db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").doc(btn.name)
     .get()
     .then(function(doc) {
+        var banderaActualizarTickets = false;
         var docIdCatalogo = doc.data().Id;
         var cantidad = doc.data().Cantidad;
         var Tot = doc.data().Total;
+        if ((getNum(totalFolio.textContent) - Tot) == 0){
+            banderaActualizarTickets = true;
+        }
+        
         var Gan = doc.data().Ganancia;
         db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo)
         .get()
@@ -136,6 +165,26 @@ function eliminarElementosFolioVenta(btn) {
                     [[fecha2+".Ganancia"]]: firebase.firestore.FieldValue.increment((Gan * -1))
                 })
                 .then(function() {
+                    var updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
+                    if (banderaActualizarTickets == true){
+                        updateRef2.update({
+                            [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot * -1)),
+                            [[fecha2+".Ganancia"]]: firebase.firestore.FieldValue.increment(parseFloat(Gan * -1)),
+                            [[fecha2+".Tickets"]]: firebase.firestore.FieldValue.increment(-1)
+                        })
+                        .then(function(){
+                            calcularTicketPromedioKPI();
+                        })
+                    } else {
+                        updateRef2.update({
+                            [[fecha2+".Dinero"]]: firebase.firestore.FieldValue.increment(parseFloat(Tot * -1)),
+                            [[fecha2+".Ganancia"]]: firebase.firestore.FieldValue.increment(parseFloat(Gan * -1))
+                        })
+                        .then(function(){
+                            calcularTicketPromedioKPI();
+                        })
+                    }
+
                     console.log("Histórico de Costos establecido correctamente.");
                     db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta")
                     .update({
@@ -241,7 +290,7 @@ function calcularTotal(){
     var total;
     total = (cantidad * precio).toFixed(2);
     $("#tdTotal_agregar").html(total);
-    console.log(precio);
+    document.getElementById('btnAgregarATabla').disabled = false;
     if (parseFloat(precio) > 0){
         var costo = $("#tdCosto_agregar").text();
         var ganancia;
@@ -268,14 +317,33 @@ function getInfoProducto_agregar_Ventas_codigo_barras(codigo){
     db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', codigo).get()
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
+            bandera = true;
             // DES.innerHTML='';
+            var banderaCosto = true;
+            var banderaPrecio = true;
             DES.value = doc.get("Descripcion");
             ID.innerHTML = doc.id;
             Prec.innerHTML = doc.get("Precio");
             Cos.innerHTML = doc.get("UltimoCosto");
-            console.log("ID: "+ doc.id);
+            if (Cos == undefined || Cos == 0){
+                banderaCosto = false;
+            }
+            if (Prec == undefined || Prec == 0){
+                banderaPrecio = false;
+            }
+
+            if (banderaCosto == false || banderaPrecio == false){
+                if (banderaCosto == false){
+                    alert("Este artículo no tiene un COSTO asignado todavía");
+                }
+                if (banderaCosto == false){
+                    alert("Este artículo no tiene un PRECIO asignado todavía");
+                }
+                document.getElementById('btnAgregarATabla').disabled = false;
+                return;
+            }
+
             $("#tdCantidad_agregar").focus();
-            bandera = true;
             calcularTotal();
         })
         if (bandera == false){
@@ -304,11 +372,35 @@ function getInfoProducto_agregar_Ventas_descripcion(descripcion){
     db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('Descripcion', '==', descripcion).get()
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
+            var banderaCosto = true;
+            var banderaPrecio = true;
             CB.innerHTML = doc.get("CodigoBarras");
             ID.innerHTML = doc.id;
+            
+            console.log("Costo:"+getNum(doc.data().UltimoCosto));
+            console.log("Precio:"+getNum(doc.data().Precio));
+            if (getNum(doc.data().UltimoCosto) == undefined || getNum(doc.data().UltimoCosto) == 0){
+                banderaCosto = false;
+            }
+            if (getNum(doc.data().Precio) == undefined || getNum(doc.data().Precio) == 0){
+                banderaPrecio = false;
+            }
+            console.log("Bandera Costo:"+banderaCosto);
+            console.log("Bandera Precio:"+banderaPrecio);
+
+            if (banderaCosto == false || banderaPrecio == false){
+                if (banderaCosto == false){
+                    alert("Este artículo no tiene un COSTO asignado todavía");
+                }
+                if (banderaPrecio == false){
+                    alert("Este artículo no tiene un PRECIO asignado todavía");
+                }
+                document.getElementById('btnAgregarATabla').disabled = true;
+                return;
+            }
+            console.log("ID: "+ doc.id);
             Prec.innerHTML = doc.get("Precio");
             Cos.innerHTML = doc.get("UltimoCosto");
-            console.log("ID: "+ doc.id);
             $("#tdCantidad_agregar").focus();
             calcularTotal();
         })
@@ -394,6 +486,16 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
 
     docRef.get().then(function(doc) {
         if (doc.exists) {
+            var totalFolio = document.getElementById('cantidadTotal');
+            if (getNum(totalFolio.textContent) == 0){
+                var updateRef2 = db.collection("Negocios").doc(idNegocio).collection('KPI').doc("VentaTotal").collection(anio).doc(mes);
+                updateRef2.update({
+                    [[fecha2+".Tickets"]]: firebase.firestore.FieldValue.increment(1)
+                })
+                .then(function(){
+                    console.log("KPI tickets aumentado correctamente");
+                })
+            }
             console.log("Folio de Venta ya existe:", doc.data());
             document.getElementById('docOrigen').innerHTML = idVenta;
             db.collection("Negocios").doc(idNegocio).collection('Ventas').doc(idVenta).collection("Articulos").where('CodigoBarras', '==', CB)
