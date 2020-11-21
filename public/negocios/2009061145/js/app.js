@@ -18,6 +18,14 @@ var listenerTablaVentas;
 var listenerIndexGraphs;
 var documentos = Array();
 var unidades;
+var idCatalogoGraphs;
+var getDaysInMonth = function(month,year) {
+    // Here January is 1 based
+    //Day 0 is the last day in the previous month
+   return new Date(year, month, 0).getDate();
+  // Here January is 0 based
+  // return new Date(year, month+1, 0).getDate();
+  };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
@@ -2422,7 +2430,161 @@ function getNum(val) {
      listenerIndexGraphs();
  }
 
- function renderIndexGraphs(documentos, unidades){
+ function loadGraphsProducto(unidadesBtn, Cod){
+    var idNegocio = getCookie("idNegocio");
+    var fecha7 = new Date();
+    unidades = unidadesBtn;
+    idCatalogoGraphs = Cod;
+
+    listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(Cod).collection("HistoricoVentas").doc(fecha7.getFullYear().toString()).collection("Ventas").doc("Ventas")
+    .onSnapshot(function(doc) {
+        documentos = [];
+        documentos.push(doc.data());
+        renderGraphsProducto(documentos, unidades);
+    });
+}
+
+function loadGraphsProductoSinRecargar(unidadesBtn){
+    unidades = unidadesBtn;
+    renderGraphsProducto(documentos, unidades);
+}
+
+function renderGraphsProducto(documentos, unidades){
+    var fecha7 = new Date();
+    document.getElementById('chartProducto').innerHTML = '';
+
+    var fechasString = Array();
+    var valores = Array();
+    var diasEnMes = getDaysInMonth(fecha7.getMonth()+1, fecha7.getFullYear());
+    console.log(diasEnMes);
+
+    for (x=0;x<30;x++){
+        var fechaTemp = new Date(fecha7.getFullYear(),fecha7.getMonth(),fecha7.getDate());
+        if (x>0){
+            fechaTemp = new Date(fecha7.getFullYear(),fecha7.getMonth(),fecha7.getDate()-x);
+        }
+        var fechaTempString = validarFecha(fechaTemp)[0] + "-" + validarFecha(fechaTemp)[1] + "-" + fechaTemp.getFullYear().toString().substr(2,2);
+        fechasString.push(fechaTempString);
+    }
+
+    for (x=0;x<(fechasString.length);x++){
+        try {
+            var vTemp = parseFloat(getNum(documentos[0][fechasString[x]][unidades])).toFixed(2);
+            valores.push(vTemp);
+        } catch (error) {
+            valores.push(0);
+        }
+    }
+
+    console.log(fechasString);
+    console.log(valores);
+
+    options = {
+        chart: {
+            type: 'line',
+            height: '400px'
+        },
+        series: [{
+            name: unidades,
+            data: [valores[29],valores[28],valores[27],valores[26],valores[25],valores[24],valores[23],valores[22],valores[21],valores[20]
+            ,valores[19],valores[18],valores[17],valores[16],valores[15],valores[14],valores[13],valores[12],valores[11],valores[10]
+            ,valores[9],valores[8],valores[7],valores[6],valores[5],valores[4],valores[3],valores[2],valores[1],valores[0]]
+        }],
+        xaxis: {
+            categories: [fechasString[29],fechasString[28],fechasString[27],fechasString[26],fechasString[25],fechasString[24],fechasString[23],fechasString[22],fechasString[21],fechasString[20]
+            ,fechasString[19],fechasString[18],fechasString[17],fechasString[16],fechasString[15],fechasString[14],fechasString[13],fechasString[12],fechasString[11],fechasString[10]
+            ,fechasString[9],fechasString[8],fechasString[7],fechasString[6],fechasString[5],fechasString[4],fechasString[3],fechasString[2],fechasString[1],fechasString[0]]
+        },
+        stroke:{
+            curve: 'smooth',
+        },
+        title: {
+            text: 'Ventas - '+unidades,
+            align: 'left',
+            margin: 10,
+            offsetX: 0,
+            offsetY: 0,
+            floating: false,
+            style: {
+            fontSize:  24,
+            fontWeight:  'bold',
+            fontFamily:  'Helvetica',
+            color:  '#263238'
+            }
+        },
+        dataLabels:{
+            enabled: true,
+            enabledOnSeries: undefined
+        },
+        tooltip: {
+            position: "right",
+            verticalAlign: "top",
+            containerMargin: {
+            left: 35,
+            right: 60
+            },
+            style: {
+            color: '#263238',
+            fontSize: 20
+            }
+        },
+        responsive: [
+            {
+            breakpoint: 760,
+            options: {
+                chart: {
+                height: 200,
+                },
+                title:{
+                text: 'Ventas - '+unidades
+                },
+                tooltip: {
+                fillSeriesColor: true,
+                theme: 'dark',
+                marker:{
+                    show: true
+                },
+                dataLabels:{
+                    enabled: true,
+                    enabledOnSeries: undefined
+                },
+                style:{
+                    fontSize: '14px'
+                },
+                x:{
+                    title: 'No'
+                }
+                }
+            }
+            }
+        ]
+        }
+
+        var chart = new ApexCharts(document.querySelector("#chartProducto"), options);
+
+        chart.render();
+ }
+
+function loadIndexGraphs(unidadesBtn){
+    var idNegocio = getCookie("idNegocio");
+    var fecha7 = new Date();
+    unidades = unidadesBtn;
+
+    listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
+    .onSnapshot(function(doc) {
+        documentos = [];
+        documentos.push(doc.data());
+        renderIndexGraphs(documentos, unidades);
+    });
+}
+
+function loadIndexGraphsSinRecargar(unidadesBtn){
+    unidades = unidadesBtn;
+    renderIndexGraphs(documentos, unidades);
+}
+
+
+function renderIndexGraphs(documentos, unidades){
     var fecha7 = new Date();
     document.getElementById('chart').innerHTML = '';
     if (unidades == 'TicketPromedio'){
@@ -2669,20 +2831,6 @@ function getNum(val) {
         getNum(documentos[0][fecha5String])+getNum(documentos[0][fecha6String])+getNum(documentos[0][fecha7String])).toString(); */
  }
 
-function loadIndexGraphs(unidadesBtn){
-    var idNegocio = getCookie("idNegocio");
-    var fecha7 = new Date();
-    unidades = unidadesBtn;
-
-    listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
-    .onSnapshot(function(doc) {
-        documentos = [];
-        documentos.push(doc.data());
-        renderIndexGraphs(documentos, unidades);
-    });
-}
-
-
 
 function RegistrarVentaHistorico(){
     document.getElementById('btnRegistrarVenta').disabled = true;
@@ -2923,19 +3071,32 @@ function CargarCatalogoFiltroDescripcion(criterio){
                 if (doc.data().MargenActual != undefined){
                     MargenActual = doc.data().MargenActual;
                 }
+                var Categoria1 = "-";
+                if (doc.data().Categoria1 != undefined){
+                    Categoria1 = doc.data().Categoria1;
+                }
+                var Categoria2 = "-";
+                if (doc.data().Categoria2 != undefined){
+                    Categoria2 = doc.data().Categoria2;
+                }
+                var Precio = "-";
+                if (doc.data().Precio != undefined){
+                    Precio = doc.data().Precio;
+                }
                 var msg = "<tr>"
                 +"<th scope='row' style='text-align: center'>"+i+"</th>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
-                +"<td style='text-align: center' id='"+i+"_descripcionProducto'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
+                +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
                 +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
                 +"<td style='text-align: center'>"+doc.data().Presentacion+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Categoria1+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Categoria2+"</td>"
-                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+doc.data().Precio+"</td>"
+                +"<td style='text-align: center'>"+Categoria1+"</td>"
+                +"<td style='text-align: center'>"+Categoria2+"</td>"
+                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
                 +"<td style='text-align: center'>"+existencia+"</td>"
                 +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
                 +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
                 +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
@@ -2977,19 +3138,32 @@ function CargarCatalogoFiltroCategoria1(criterio){
                 if (doc.data().MargenActual != undefined){
                     MargenActual = doc.data().MargenActual;
                 }
+                var Categoria1 = "-";
+                if (doc.data().Categoria1 != undefined){
+                    Categoria1 = doc.data().Categoria1;
+                }
+                var Categoria2 = "-";
+                if (doc.data().Categoria2 != undefined){
+                    Categoria2 = doc.data().Categoria2;
+                }
+                var Precio = "-";
+                if (doc.data().Precio != undefined){
+                    Precio = doc.data().Precio;
+                }
                 var msg = "<tr>"
                 +"<th scope='row' style='text-align: center'>"+i+"</th>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
-                +"<td style='text-align: center' id='"+i+"_descripcionProducto'>"+doc.data().Descripcion+"</td>"
+                +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
                 +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
                 +"<td style='text-align: center'>"+doc.data().Presentacion+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Categoria1+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Categoria2+"</td>"
-                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+doc.data().Precio+"</td>"
+                +"<td style='text-align: center'>"+Categoria1+"</td>"
+                +"<td style='text-align: center'>"+Categoria2+"</td>"
+                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
                 +"<td style='text-align: center'>"+existencia+"</td>"
                 +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
                 +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
                 +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
@@ -3030,19 +3204,32 @@ function CargarCatalogoFiltroCategoria2(criterio){
                 if (doc.data().MargenActual != undefined){
                     MargenActual = doc.data().MargenActual;
                 }
+                var Categoria1 = "-";
+                if (doc.data().Categoria1 != undefined){
+                    Categoria1 = doc.data().Categoria1;
+                }
+                var Categoria2 = "-";
+                if (doc.data().Categoria2 != undefined){
+                    Categoria2 = doc.data().Categoria2;
+                }
+                var Precio = "-";
+                if (doc.data().Precio != undefined){
+                    Precio = doc.data().Precio;
+                }
                 var msg = "<tr>"
                 +"<th scope='row' style='text-align: center'>"+i+"</th>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
-                +"<td style='text-align: center' id='"+i+"_descripcionProducto'>"+doc.data().Descripcion+"</td>"
+                +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
                 +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
                 +"<td style='text-align: center'>"+doc.data().Presentacion+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Categoria1+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Categoria2+"</td>"
-                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+doc.data().Precio+"</td>"
+                +"<td style='text-align: center'>"+Categoria1+"</td>"
+                +"<td style='text-align: center'>"+Categoria2+"</td>"
+                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
                 +"<td style='text-align: center'>"+existencia+"</td>"
                 +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
                 +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
                 +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
@@ -3256,10 +3443,10 @@ function AgregarProducto(){
     var Cat1 = cmbCat1.value;
     var cmbCat2 = document.getElementById('cmbCategoria2');
     var Cat2 = cmbCat2.value;
-    var Prec = parseFloat(document.getElementById('txtPrecio').value);
+    //var Prec = parseFloat(document.getElementById('txtPrecio').value);
 
 
-    if (Cod == "" || Des == "" || Uni == "" || Prec == "") {
+    if (Cod == "" || Des == "" || Uni == "" || Pres == "") {
         alert("Todos los campos son requeridos");
         document.getElementById('txtCodigoBarras').focus();
         document.getElementById('btnAgregar').disabled = false;
@@ -3283,8 +3470,7 @@ function AgregarProducto(){
                 Unidades: Uni,
                 Presentacion: Pres,
                 Categoria1: Cat1,
-                Categoria2: Cat2,
-                Precio: Prec
+                Categoria2: Cat2                
             })
             .then(function(docRef) {
                 db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo").update({
@@ -3299,11 +3485,12 @@ function AgregarProducto(){
                     y.value = "";
                     var w = document.getElementById("txtUnidades");
                     w.value = "";
-                    var z = document.getElementById("txtPrecio");
+                    var z = document.getElementById("cmbPresentacion");
                     z.value = "";
-                    document.getElementById("cmbPresentacion").selectedIndex = 0;
-                    document.getElementById("cmbCategoria1").selectedIndex = 0;
-                    document.getElementById("cmbCategoria2").selectedIndex = 0;
+                    var a = document.getElementById("cmbCategoria1");
+                    a.value = "";
+                    var b = document.getElementById("cmbCategoria2");
+                    b.value = "";
                 }).catch(function() {
                     alert("Ocurrió algún error, reintenta por favor.")
                     document.getElementById('txtDescripcion').focus();
@@ -3322,7 +3509,7 @@ function AgregarProducto(){
     })
     .catch(function(error) {
         console.log("Error getting documents: ", error);
-        alert("Ocurrió algún error, reintenta por favor.")
+        alert("Ocurrió algún error, reintenta por favor.");
         document.getElementById('txtCodigoBarras').focus();
         document.getElementById('btnAgregar').disabled = false;
     });

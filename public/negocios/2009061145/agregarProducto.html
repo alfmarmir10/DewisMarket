@@ -104,15 +104,15 @@
             }
         });
 
-        $(Document).on("keydown", "#txtPrecio", function(e){
-		    if(e.keyCode == 13){
-              $("#btnAgregar").click();
-            } else {
-                var x = event.charCode || event.keyCode;
+        // $(Document).on("keydown", "#txtPrecio", function(e){
+		    // if(e.keyCode == 13){
+        //       $("#btnAgregar").click();
+        //     } else {
+        //         var x = event.charCode || event.keyCode;
 
-                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8) e.preventDefault();
-            }
-        });
+        //         if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8) e.preventDefault();
+        //     }
+        // });
     
         
       // SCRIPTS GENERALES
@@ -280,7 +280,7 @@
                                     <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                                       <div class="form-group">
                                           <label for="cmbPresentacion" class="reclaim-black">Medida</label>
-                                          <input list="Presentaciones" id="cmbCategoria1" class="form-control" placeholder="Selecciona...">
+                                          <input list="Presentaciones" id="cmbPresentacion" class="form-control" placeholder="Selecciona...">
                                           <datalist id="Presentaciones">
                                               <option value="pz">pz (Piezas)</option>
                                               <option value="kg">kg (Kilogramos)</option>
@@ -317,10 +317,10 @@
                                     <input id="Cat2" placeholder="Selecciona...">
                                     <script> llenarComboBox("Cat2", "cmbCategoria2", "form-control"); </script>
                                 </div>
-                                <div class="form-group">
+                                <!-- <div class="form-group">
                                     <label for="txtPrecio" class="col-form-label reclaim-black">Precio</label>
                                     <input id="txtPrecio" type="text" placeholder="Ingresa el precio de venta" class="form-control">
-                                </div>
+                                </div> -->
                                 <br>
                                 <br>
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
