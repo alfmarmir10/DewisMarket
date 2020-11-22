@@ -105,17 +105,15 @@
             var row = x.parentNode.rowIndex;
             if (confirm("¿Deseas modificar el precio?")) {
               var Costo = parseFloat($("#"+row+"_costoProducto").text());
-              console.log(Costo);
               if (isNaN(Costo)){
                 alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
                 return;
-              }  
+              }
               var idNegocio = getCookie("idNegocio");
               var CB = $("#"+row+"_codigoBarrasProducto").text();
               var Des = $("#"+row+"_descripcionProducto").text();
               var PrecioOriginal = parseFloat($("#"+row+"_precioProducto").text());
               var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
-              //console.log(CB+Des+PrecioOriginal+Costo+Margen);
               $("#modalActualizarPrecio").modal('toggle');
               $("#modalActualizarPrecioLabel").text(Des);
               $("#costoActualizarPrecio").val(Costo);
@@ -124,7 +122,7 @@
               $("#codigoBarrasActualizarPrecio").val(CB);
               $("#rowActualizarPrecio").val(row);
             } else {
-
+              
             }
         }
 
@@ -132,6 +130,7 @@
           var row = x.parentNode.rowIndex;
           var IdCatalogo = $("#"+row+"_idCatalogo").text();
           loadGraphsProducto('Dinero', IdCatalogo);
+          document.getElementById('chartDescripcionArticulo').innerHTML = $("#"+row+"_descripcionProducto").text()
         }
         
         // SCRIPTS GENERALES
@@ -427,6 +426,8 @@
                                 <div id="chartProducto"></div>
                               </div>
                             </div>
+                            <h2 class="text-center font-weight-bold text-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2>
+                            
                           </div>
                         </div>
                       </div>

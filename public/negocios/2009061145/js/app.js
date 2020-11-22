@@ -2451,6 +2451,7 @@ function renderGraphsProducto(documentos, unidades){
     
     fechasString = [];
     valores = [];
+    document.getElementById('btnUnidadesCharts').innerHTML = unidades;
 
     for (x=0;x<30;x++){
         var fechaTemp = new Date(fecha7.getFullYear(),fecha7.getMonth(),fecha7.getDate());
@@ -2490,6 +2491,17 @@ function renderGraphsProducto(documentos, unidades){
         },
         stroke:{
             curve: 'smooth',
+            width: 1.5
+        },
+        theme: {
+            mode: 'light', 
+            palette: 'palette7', 
+            monochrome: {
+                enabled: false,
+                color: '#255aee',
+                shadeTo: 'light',
+                shadeIntensity: 0.65
+            },
         },
         title: {
             text: 'Ventas - '+unidades,
