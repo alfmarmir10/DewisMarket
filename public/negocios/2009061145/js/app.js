@@ -19,13 +19,9 @@ var listenerIndexGraphs;
 var documentos = Array();
 var unidades;
 var idCatalogoGraphs;
-var getDaysInMonth = function(month,year) {
-    // Here January is 1 based
-    //Day 0 is the last day in the previous month
-   return new Date(year, month, 0).getDate();
-  // Here January is 0 based
-  // return new Date(year, month+1, 0).getDate();
-  };
+var fechasString = Array();
+var valores = Array();
+var chart;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
@@ -2451,12 +2447,15 @@ function loadGraphsProductoSinRecargar(unidadesBtn){
 
 function renderGraphsProducto(documentos, unidades){
     var fecha7 = new Date();
-    document.getElementById('chartProducto').innerHTML = '';
-
-    var fechasString = Array();
-    var valores = Array();
-    var diasEnMes = getDaysInMonth(fecha7.getMonth()+1, fecha7.getFullYear());
-    console.log(diasEnMes);
+    document.getElementById('cardProductoBody').innerHTML = '';
+    var div = document.createElement("DIV");
+    div.id = "chartProducto";
+    var parentx = document.getElementById('cardProductoBody');
+    parentx.appendChild(div);
+    document.getElementById('btnUnidadesCharts').innerHTML = unidades;
+    
+    fechasString = [];
+    valores = [];
 
     for (x=0;x<30;x++){
         var fechaTemp = new Date(fecha7.getFullYear(),fecha7.getMonth(),fecha7.getDate());
@@ -2476,13 +2475,11 @@ function renderGraphsProducto(documentos, unidades){
         }
     }
 
-    console.log(fechasString);
-    console.log(valores);
-
     options = {
         chart: {
             type: 'line',
-            height: '400px'
+            height: '400px',
+            redrawOnParentResize: true
         },
         series: [{
             name: unidades,
@@ -2514,7 +2511,15 @@ function renderGraphsProducto(documentos, unidades){
         },
         dataLabels:{
             enabled: true,
-            enabledOnSeries: undefined
+            enabledOnSeries: undefined,
+            formatter: function (value) {
+                if (value == 0){
+                    return "";
+                } else {
+                    return value;
+                }
+                
+            }
         },
         tooltip: {
             position: "right",
@@ -2533,35 +2538,46 @@ function renderGraphsProducto(documentos, unidades){
             breakpoint: 760,
             options: {
                 chart: {
-                height: 200,
+                    height: 200,
                 },
                 title:{
-                text: 'Ventas - '+unidades
+                    text: 'Ventas - '+unidades
                 },
                 tooltip: {
-                fillSeriesColor: true,
-                theme: 'dark',
-                marker:{
-                    show: true
+                    fillSeriesColor: true,
+                    theme: 'dark',
+                    marker:{
+                        show: true
+                    },
+                    dataLabels:{
+                        enabled: true,
+                        enabledOnSeries: undefined
+                    },
+                    style:{
+                        fontSize: '14px'
+                    },
+                    x:{
+                        title: 'No'
+                    }
+                },
+                xaxis:{
+                    labels:{
+                        show: false
+                    }
                 },
                 dataLabels:{
-                    enabled: true,
-                    enabledOnSeries: undefined
-                },
-                style:{
-                    fontSize: '14px'
-                },
-                x:{
-                    title: 'No'
-                }
+                    enabled: false
                 }
             }
             }
         ]
         }
-
-        var chart = new ApexCharts(document.querySelector("#chartProducto"), options);
-
+        try {
+            chart.destroy();
+        } catch (error) {
+            alert("Error: "+error);
+        }
+        chart = new ApexCharts(document.querySelector("#chartProducto"), options);
         chart.render();
  }
 
