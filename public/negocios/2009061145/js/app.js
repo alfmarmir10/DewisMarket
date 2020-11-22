@@ -21,7 +21,8 @@ var unidades;
 var idCatalogoGraphs;
 var fechasString = Array();
 var valores = Array();
-var chart;
+var banderaX = false;
+var chartProducto;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
@@ -2447,12 +2448,6 @@ function loadGraphsProductoSinRecargar(unidadesBtn){
 
 function renderGraphsProducto(documentos, unidades){
     var fecha7 = new Date();
-    document.getElementById('cardProductoBody').innerHTML = '';
-    var div = document.createElement("DIV");
-    div.id = "chartProducto";
-    var parentx = document.getElementById('cardProductoBody');
-    parentx.appendChild(div);
-    document.getElementById('btnUnidadesCharts').innerHTML = unidades;
     
     fechasString = [];
     valores = [];
@@ -2477,6 +2472,7 @@ function renderGraphsProducto(documentos, unidades){
 
     options = {
         chart: {
+            id: 'chartProducto',
             type: 'line',
             height: '400px',
             redrawOnParentResize: true
@@ -2571,14 +2567,13 @@ function renderGraphsProducto(documentos, unidades){
             }
             }
         ]
-        }
-        try {
-            chart.destroy();
-        } catch (error) {
-            alert("Error: "+error);
-        }
-        chart = new ApexCharts(document.querySelector("#chartProducto"), options);
-        chart.render();
+    }
+
+    if (banderaX == true){
+        chart.destroy();
+    }
+    chart = new ApexCharts(document.querySelector("#chartProducto"), options);
+    chart.render().then(banderaX = true);
  }
 
 function loadIndexGraphs(unidadesBtn){
