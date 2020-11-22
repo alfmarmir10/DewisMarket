@@ -258,12 +258,23 @@
                 </div>
                 <br>
                 <div class="row">
-                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                     <div class="card">
                       <div class="body">
                         <div style="width:100%;">
                           <div>
-                            <div id="chart2"></div>
+                            <div id="chartCat1"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                    <div class="card">
+                      <div class="body">
+                        <div style="width:100%;">
+                          <div>
+                            <div id="chartCat2"></div>
                           </div>
                         </div>
                       </div>
@@ -341,6 +352,8 @@
             <script>
                 //console.log($('#btnUnidadesCharts').text());
                 loadIndexGraphs($('#btnUnidadesCharts').text());
+                loadGraphsCat1($('#btnUnidadesCharts').text());
+                loadGraphsCat2($('#btnUnidadesCharts').text());
             </script>
 	</body>
 </html>
