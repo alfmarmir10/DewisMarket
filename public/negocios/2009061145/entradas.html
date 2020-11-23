@@ -120,20 +120,7 @@
           }
       });
 
-      $(Document).on("blur", "#tdCantidad_agregar", function(){
-          var cantidad = $("#tdCantidad_agregar").text();
-          var costo;
-          if ($("#tdCosto_agregar").text() == ""){
-              costo = 0;
-          } else {
-              costo = $("#tdCosto_agregar").text();
-          }
-          var total;
-          total = (cantidad * costo).toFixed(2);
-          $("#tdTotal_agregar").html(total);
-          });
-
-          $(Document).on("keydown", "#tdCantidad_agregar", function(e){
+    $(Document).on("keydown", "#tdCantidad_agregar", function(e){
           if(e.keyCode == 13){
               $("#tdCosto_agregar").focus();
           } else {
@@ -153,24 +140,33 @@
           }
       });
 
+
+      $(Document).on("keyup", "#tdCantidad_agregar", function(e){
+          calcularTot();
+      });
+
+      $(Document).on("keyup", "#tdCosto_agregar", function(e){
+        calcularTot();
+      });
+
       $(Document).on("keydown", "#txtFolio", function(e){
           if(e.keyCode == 13){
               $("#tdCodigoBarras_agregar").focus();
           }
       });
 
-      $(Document).on("blur", "#tdCosto_agregar", function(){
-          var cantidad = $("#tdCantidad_agregar").text();
-          var costo;
-          if ($("#tdCosto_agregar").text() == ""){
-              costo = 0;
-          } else {
-              costo = $("#tdCosto_agregar").text();
-          }
-          var total;
-          total = (cantidad * costo).toFixed(2);
-          $("#tdTotal_agregar").html(total);
-      });
+      function calcularTot(){
+        var cantidad = $("#tdCantidad_agregar").text();
+        var costo;
+        if ($("#tdCosto_agregar").text() == ""){
+            costo = 0;
+        } else {
+            costo = $("#tdCosto_agregar").text();
+        }
+        var total;
+        total = (cantidad * costo).toFixed(2);
+        $("#tdTotal_agregar").html(total);
+      }
 
       $(Document).on("blur", "#txtFolio", function(){
           var txt;
@@ -460,7 +456,7 @@
                                             <td id='tdDescripcion_agregar'><input id="Catalogo" placeholder="Selecciona..."></input><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
                                             <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
                                             <td id='tdCosto_agregar' contenteditable="true" style="text-align: center"></td>
-                                            <td id='tdTotal_agregar'></td>
+                                            <td id='tdTotal_agregar' style="text-align: center;"></td>
                                             <td style="text-align: center;"><button id='btnAgregarATabla' class='btn btn-success btn-sm' focusable="true">Agregar</td>
                                           </tr>
                                     </table>

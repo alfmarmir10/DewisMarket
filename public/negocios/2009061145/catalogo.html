@@ -86,10 +86,14 @@
             });
 
         $(Document).on("keydown", "#precioActualizarPrecio", function(e){
-                var x = event.charCode || event.keyCode;
+          if(e.keyCode == 13){
+              document.getElementById('btnAceptarActualizaPrecio').click();
+          } else {
+              var x = event.charCode || event.keyCode;
 
-                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
-          });
+              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+          }
+        });
 
           $(Document).on("keyup", "#precioActualizarPrecio", function(e){
             var Costo = parseFloat($("#costoActualizarPrecio").val());
@@ -153,6 +157,10 @@
             } catch(error){
                 console.log("Service is not running");
             };
+        });
+
+        $(document).on("shown.bs.modal", "#modalActualizarPrecio", function(e) {
+            document.getElementById('precioActualizarPrecio').focus();
         });
 
         $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
@@ -467,7 +475,7 @@
                                 <input type="text" class="form-control" id="margenActualizarPrecio" aria-describedby="margenHelp" disabled="true">
                               </div>
                             <br>
-                            <button type="button" class="btn btn-warning" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
+                            <button type="button" class="btn btn-warning" id="btnAceptarActualizaPrecio" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
                           </form>
                     </div>
                 </div>
