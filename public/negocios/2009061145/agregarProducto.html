@@ -68,6 +68,12 @@
             }
         });
 
+        $(Document).on("keydown", "#cmbCategoria2", function(e){
+		      if(e.keyCode == 13){
+              $("#btnAgregar").click();
+          }
+        });
+
         $(Document).on("focus", "#loadScanner", function(e){
             $("#txtDescripcion").focus();
         });

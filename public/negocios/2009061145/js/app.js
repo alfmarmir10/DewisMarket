@@ -16,6 +16,7 @@ var idVenta;
 var listenerTablaNE;
 var listenerTablaVentas;
 var listenerIndexGraphs;
+var listenerCatalogoList;
 var documentos = Array();
 var unidades;
 var idCatalogoGraphs;
@@ -3475,6 +3476,37 @@ function validarPrecioCodigoBarras(){
 
 }
 
+function llenarComboBoxListener(Coleccion, IdSelect, Class){
+    var idNegocio = getCookie("idNegocio");
+    var documentosComboBox;
+
+    listenerCatalogoList = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+
+    listenerCatalogoList.onSnapshot(function(doc) {
+        documentosComboBox = [];
+        console.log(doc.id, " => ", doc.data());
+        documentosComboBox = doc.get("Descripcion");
+        var container = document.getElementById(Coleccion);
+        var dlist = document.createElement('datalist');
+        container.setAttribute('list', IdSelect+"_list");
+        dlist.id = IdSelect+"_list";
+        dlist.innerHTML = '';
+        container.className = Class;
+
+        for (const val of documentosComboBox){
+            var option = document.createElement("option");
+            option.value = val;
+            option.text = val.charAt(0).toUpperCase() + val.slice(1);
+            dlist.appendChild(option);
+        };
+
+
+        document.getElementById(Coleccion).appendChild(dlist);
+        container.id = IdSelect;
+        ordenarCmb(IdSelect+"_list");
+    });
+}
+
 function llenarComboBox(Coleccion, IdSelect, Class){
     var idNegocio = getCookie("idNegocio");
     var documentos;
@@ -3508,32 +3540,6 @@ function llenarComboBox(Coleccion, IdSelect, Class){
     .catch(function(error) {
         console.log("Error getting documents: ", error);
     });
-
-    // db.collection("Negocios").doc(idNegocio).collection(Coleccion).doc(Coleccion)
-    // .get(getOptions)
-    // .then(function(doc) {
-    //     console.log(doc.id, " => ", doc.data());
-    //     documentos = doc.get("Descripcion");
-    //     var sel = document.createElement('select');
-    //     sel.name = IdSelect;
-    //     sel.id = IdSelect;
-    //     sel.className = Class;
-
-    //     for (const val of documentos){
-    //         var option = document.createElement("option");
-    //         option.value = val;
-    //         option.text = val.charAt(0).toUpperCase() + val.slice(1);
-    //         sel.appendChild(option);
-    //     };
-
-
-    //     document.getElementById(Coleccion).appendChild(sel);
-    //     ordernarCmb(IdSelect);
-    //     document.getElementById(Coleccion).id = Coleccion+"2";
-    // })
-    // .catch(function(error) {
-    //     console.log("Error getting documents: ", error);
-    // });
 }
 
 function ordenarCmb(id) {
