@@ -1837,16 +1837,20 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                     .then(function(docRef) {
                         console.log("Artículo Agregado a Nota Entrada.", docRef.id);
                         
-                        var DES = document.getElementById('tdDescripcion_agregar');
-                        DES.innerHTML = '';
-                        var node = document.createElement("input");
-                        var att = document.createAttribute("id");
-                        att.value = "Catalogo";
-                        node.setAttributeNode(att);
-                        var att2 = document.createAttribute("placeholder");
-                        att2.value = "Selecciona...";
-                        node.setAttributeNode(att2);
-                        document.getElementById('tdDescripcion_agregar').appendChild(node);
+                        var x = document.getElementById("cmbDescripcion");
+                        x.value = "";
+                        
+
+                        // var DES = document.getElementById('tdDescripcion_agregar');
+                        // DES.innerHTML = '';
+                        // var node = document.createElement("input");
+                        // var att = document.createAttribute("id");
+                        // att.value = "Catalogo";
+                        // node.setAttributeNode(att);
+                        // var att2 = document.createAttribute("placeholder");
+                        // att2.value = "Selecciona...";
+                        // node.setAttributeNode(att2);
+                        // document.getElementById('tdDescripcion_agregar').appendChild(node);
 
                         // $("#cmbDescripcion").text("");
                         $("#tdCodigoBarras_agregar").text("");
@@ -1856,12 +1860,12 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                         document.getElementById('btnAgregarATabla').disabled = false;
                         
 
-                        llenarComboBox("Catalogo", "cmbDescripcion", "form-control");
+                        // llenarComboBox("Catalogo", "cmbDescripcion", "form-control");
     
                         db.collection("Negocios").doc(idNegocio).collection("Entradas").doc(idNE).collection("Articulos").where('CodigoBarras', '==', CB)
                         .get()
                         .then(function(querySnapshot) {
-                            // document.getElementById('tbodyNE').innerHTML = '';
+                            document.getElementById('tbodyNE').innerHTML = '';
                             querySnapshot.forEach(function(doc) {
                                 var docIdCatalogo = doc.data().Id;
                                 var docId = doc.id;
@@ -2347,8 +2351,37 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
     });
 }
 
+function getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB){
+    console.log(CB);
+    var idNegocio = getCookie("idNegocio");
+    var DES = document.getElementById('cmbDescripcion');
+    var ID = document.getElementById('tdIdArticulo_agregar');
+    ID.innerHTML = '';
+    //var codigo = tabla.getElementById('tdCodigoBarras_agregar')[0];
+    var bandera = false;
+
+    db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB).get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach(function(doc){
+            // DES.innerHTML='';
+            DES.value = doc.get("Descripcion");
+            ID.innerHTML = doc.id;
+            console.log("ID: "+ doc.id);
+            $("#tdCantidad_agregar").focus();
+            bandera = true;
+        })
+        // if (bandera == false){
+        //     alert("Ese código de barras no existe");
+        // }
+    })
+    .catch(function(error){
+        alert("Error: "+error);
+    });
+}
+
 function getInfoProducto_agregar_NE_codigo_barras(codigo){
     var idNegocio = getCookie("idNegocio");
+    console.log(codigo);
     var CB = document.getElementById('tdCodigoBarras_agregar');
     CB.innerHTML = '';
     CB.innerHTML = codigo;
@@ -2375,8 +2408,6 @@ function getInfoProducto_agregar_NE_codigo_barras(codigo){
     .catch(function(error){
         alert("Error: "+error);
     });
-
-
 }
 
 function getInfoProducto_agregar_NE_descripcion(descripcion){
@@ -3476,22 +3507,27 @@ function validarPrecioCodigoBarras(){
 
 }
 
-function llenarComboBoxListener(Coleccion, IdSelect, Class){
+function llenarComboBoxDescripcionNEListener(){
     var idNegocio = getCookie("idNegocio");
     var documentosComboBox;
 
     listenerCatalogoList = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
 
     listenerCatalogoList.onSnapshot(function(doc) {
+        // var td = document.getElementById('tdDescripcion_agregar');
+        // td.innerHTML = '';
+        // console.log(doc.id, " => ", doc.data());
+        try {
+            var cList = document.querySelector("#cmbDescripcion_list");
+            cList.remove(0);    
+        } catch (error) {
+            console.log("Error: "+error);
+        }
         documentosComboBox = [];
-        console.log(doc.id, " => ", doc.data());
         documentosComboBox = doc.get("Descripcion");
-        var container = document.getElementById(Coleccion);
+        var container = document.getElementById("cmbDescripcion");
         var dlist = document.createElement('datalist');
-        container.setAttribute('list', IdSelect+"_list");
-        dlist.id = IdSelect+"_list";
-        dlist.innerHTML = '';
-        container.className = Class;
+        dlist.id = "cmbDescripcion_list";
 
         for (const val of documentosComboBox){
             var option = document.createElement("option");
@@ -3500,10 +3536,9 @@ function llenarComboBoxListener(Coleccion, IdSelect, Class){
             dlist.appendChild(option);
         };
 
-
-        document.getElementById(Coleccion).appendChild(dlist);
-        container.id = IdSelect;
-        ordenarCmb(IdSelect+"_list");
+        document.getElementById('cmbDescripcion').appendChild(dlist);
+        ordenarCmb("cmbDescripcion_list");
+        document.getElementById('cmbDescripcion').focus();
     });
 }
 

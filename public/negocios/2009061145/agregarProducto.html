@@ -50,6 +50,7 @@
     </style>
     
     <script>
+      var x = 0;
       // SCRIPTS LOCALES
 
       $(Document).ready(function(){
@@ -69,8 +70,13 @@
         });
 
         $(Document).on("keydown", "#cmbCategoria2", function(e){
+          
 		      if(e.keyCode == 13){
+            x = x+1;
+            if (x>1){
               $("#btnAgregar").click();
+              x = 0;
+            }
           }
         });
 
