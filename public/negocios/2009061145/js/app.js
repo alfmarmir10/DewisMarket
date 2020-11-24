@@ -3128,8 +3128,33 @@ function CargarCatalogo(){
                 if (doc.data().MargenActual != undefined){
                     MargenActual = doc.data().MargenActual;
                 }
-                var msg =
-                '<tr><th scope="row" style="text-align: center">'+i+'</th><td style="text-align: center" id="codigoBarras">'+doc.data().CodigoBarras+'</td><td style="text-align: center">'+doc.data().Descripcion+'</td><td style="text-align: center">'+doc.data().Unidades+'</td><td style="text-align: center">'+doc.data().Presentacion+'</td><td style="text-align: center">'+doc.data().Categoria1+'</td><td style="text-align: center">'+doc.data().Categoria2+'</td><td style="text-align: center" id="precioProducto">$'+doc.data().Precio+'</td><td style="text-align: center">'+existencia+'</td><td style="text-align: center">$'+UltimoCosto+'</td><td style="text-align: center">'+UltimoProveedor+'</td><td style="text-align: center">'+MargenActual+' %</td></tr>';
+                var Categoria1 = "-";
+                if (doc.data().Categoria1 != undefined){
+                    Categoria1 = doc.data().Categoria1;
+                }
+                var Categoria2 = "-";
+                if (doc.data().Categoria2 != undefined){
+                    Categoria2 = doc.data().Categoria2;
+                }
+                var Precio = "-";
+                if (doc.data().Precio != undefined){
+                    Precio = doc.data().Precio;
+                }
+                var msg = "<tr>"
+                +"<th scope='row' style='text-align: center'>"+i+"</th>"
+                +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
+                +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
+                +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
+                +"<td style='text-align: center'>"+doc.data().Presentacion+"</td>"
+                +"<td style='text-align: center'>"+Categoria1+"</td>"
+                +"<td style='text-align: center'>"+Categoria2+"</td>"
+                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
+                +"<td style='text-align: center'>"+existencia+"</td>"
+                +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
+                +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
+                +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
+                +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
             }

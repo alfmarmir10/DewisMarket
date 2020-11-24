@@ -70,14 +70,35 @@
         });
 
         $(Document).on("keydown", "#cmbCategoria2", function(e){
-          
 		      if(e.keyCode == 13){
-            x = x+1;
-            if (x>1){
+            if (document.getElementById('labelCat1').innerText != "" && document.getElementById('labelCat2').innerText != ""){
               $("#btnAgregar").click();
-              x = 0;
+              document.getElementById('labelCat1').innerHTML = "";
+              document.getElementById('labelCat2').innerHTML = "";
             }
           }
+        });
+
+        $(document).on("change", "#cmbCategoria2", function(e){
+            var options = $("#cmbCategoria2_list")[0].options;
+            var val = $(this).val();
+            for (var i=0;i<options.length;i++){
+              if (options[i].value === val) {
+                document.getElementById('labelCat2').innerHTML = val;
+                break;
+              }
+            }
+        });
+
+        $(document).on("change", "#cmbCategoria1", function(e){
+            var options = $("#cmbCategoria1_list")[0].options;
+            var val = $(this).val();
+            for (var i=0;i<options.length;i++){
+              if (options[i].value === val) {
+                document.getElementById('labelCat1').innerHTML = val;
+                break;
+              }
+            }
         });
 
         $(Document).on("focus", "#loadScanner", function(e){
@@ -273,6 +294,8 @@
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <br>
                     <h1 class="h2 font-weight-bold">Agregar Producto</h1>
+                    <label id="labelCat1" hidden></label>
+                    <label id="labelCat2" hidden></label>
                   </div>
                 </div>
                 <br>
@@ -318,8 +341,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="cmbCategoria1" class="reclaim-black">Categoría 1</label>
-                                    <input list="Categoria1" id="cmbCategoria1" class="form-control" placeholder="Selecciona...">
-                                    <datalist id="Categoria1">
+                                    <input list="cmbCategoria1_list" id="cmbCategoria1" class="form-control" placeholder="Selecciona...">
+                                    <datalist id="cmbCategoria1_list">
                                         <option>Comestible</option>
                                         <option>No Comestible</option>
                                     </datalist>
