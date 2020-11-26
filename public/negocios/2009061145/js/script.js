@@ -30,6 +30,7 @@ function loadScanner(){
 		var x = document.getElementById("txtCodigoBarras");
 		x.value = data.codeResult.code;
 		document.getElementById('txtDescripcion').focus();
+		DisponibilidadCB();
 		$('#modalScanner').modal('hide');
 		console.log(data);
 		Quagga.stop();

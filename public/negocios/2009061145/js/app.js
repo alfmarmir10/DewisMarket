@@ -3641,6 +3641,33 @@ function AgregarCategoria2(){
     document.getElementById('btnAgregarCat2').disabled = false;
 }
 
+function DisponibilidadCB(){
+    var idNegocio = document.getElementById('idNegocio').innerHTML;
+    var Cod = document.getElementById('txtCodigoBarras').value;
+    var bandera = 0;
+    var DES;
+
+    if (Cod != ""){
+        db.collection("Negocios").doc(idNegocio).collection("Catalogo").where("CodigoBarras", "==", Cod.toString())
+        .get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                bandera = 1;
+                DES = doc.data().Descripcion;
+            })
+            if (bandera == 1){
+                console.log("NO DISPONIBLE");
+                document.getElementById("alertDisponibilidadCBDisponible").setAttribute("hidden", "");
+                document.getElementById("alertDisponibilidadCBNoDisponible").removeAttribute("hidden");
+                document.getElementById('msgAlertDisponibilidadCBNoDisponible').innerHTML = "¡El código ya existe! - "+DES;
+            } else {
+                console.log("DISPONIBLE");
+                document.getElementById("alertDisponibilidadCBNoDisponible").setAttribute("hidden", "");
+                document.getElementById("alertDisponibilidadCBDisponible").removeAttribute("hidden");
+            }
+        });
+    }
+}
+
 function AgregarProducto(){
     document.getElementById('btnAgregar').disabled = true;
     var idNegocio = document.getElementById('idNegocio').innerHTML;
@@ -3664,62 +3691,44 @@ function AgregarProducto(){
     }
     var bandera = 0;
 
-    db.collection("Negocios").doc(idNegocio).collection("Catalogo").where("CodigoBarras", "==", Cod)
-    .get()
-    .then(function(querySnapshot) {
-        querySnapshot.forEach(function(doc) {
-            // doc.data() is never undefined for query doc snapshots
-            console.log(doc.id, " => ", doc.data());
-            bandera = 1;
-        });
-
-        if (bandera == 0){
-            db.collection("Negocios").doc(idNegocio).collection("Catalogo").add({
-                CodigoBarras: Cod,
-                Descripcion: Des,
-                Unidades: Uni,
-                Presentacion: Pres,
-                Categoria1: Cat1,
-                Categoria2: Cat2                
-            })
-            .then(function(docRef) {
-                db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo").update({
-                    Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
-                }).then(function() {
-                    console.log("Document written with ID: ", docRef.id);
-                    alert("¡Agregado correctamente!");
-                    document.getElementById('txtCodigoBarras').focus();
-                    var x = document.getElementById("txtCodigoBarras");
-                    x.value = "";
-                    var y = document.getElementById("txtDescripcion");
-                    y.value = "";
-                    var w = document.getElementById("txtUnidades");
-                    w.value = "";
-                    var z = document.getElementById("cmbPresentacion");
-                    z.value = "";
-                    var a = document.getElementById("cmbCategoria1");
-                    a.value = "";
-                    var b = document.getElementById("cmbCategoria2");
-                    b.value = "";
-                }).catch(function() {
-                    alert("Ocurrió algún error, reintenta por favor.")
-                    document.getElementById('txtDescripcion').focus();
-                });
-            })
-            .catch(function(error) {
-                console.error("Error adding document: ", error);
-                alert("Ocurrió algún error, reintenta por favor.")
-                document.getElementById('txtCodigoBarras').focus();
-            });
-        } else {
-            alert("¡Ese código de barras ya existe!");
+    db.collection("Negocios").doc(idNegocio).collection("Catalogo").add({
+        CodigoBarras: Cod,
+        Descripcion: Des,
+        Unidades: Uni,
+        Presentacion: Pres,
+        Categoria1: Cat1,
+        Categoria2: Cat2                
+    })
+    .then(function(docRef) {
+        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo").update({
+            Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
+        }).then(function() {
+            console.log("Document written with ID: ", docRef.id);
+            alert("¡Agregado correctamente!");
+            var x = document.getElementById("txtCodigoBarras");
+            x.value = "";
+            var y = document.getElementById("txtDescripcion");
+            y.value = "";
+            var w = document.getElementById("txtUnidades");
+            w.value = "";
+            var z = document.getElementById("cmbPresentacion");
+            z.value = "";
+            var a = document.getElementById("cmbCategoria1");
+            a.value = "";
+            var b = document.getElementById("cmbCategoria2");
+            b.value = "";
+            document.getElementById('btnAgregar').disabled = false;
+            document.getElementById("alertDisponibilidadCBNoDisponible").setAttribute("hidden", "");
+            document.getElementById("alertDisponibilidadCBDisponible").setAttribute("hidden", "");
             document.getElementById('txtCodigoBarras').focus();
-        }
-        document.getElementById('btnAgregar').disabled = false;
+        }).catch(function() {
+            alert("Ocurrió algún error, reintenta por favor.")
+            document.getElementById('txtDescripcion').focus();
+        });
     })
     .catch(function(error) {
-        console.log("Error getting documents: ", error);
-        alert("Ocurrió algún error, reintenta por favor.");
+        console.error("Error adding document: ", error);
+        alert("Ocurrió algún error, reintenta por favor.")
         document.getElementById('txtCodigoBarras').focus();
         document.getElementById('btnAgregar').disabled = false;
     });

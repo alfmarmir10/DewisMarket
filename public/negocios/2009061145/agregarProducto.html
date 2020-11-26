@@ -137,6 +137,10 @@
             }
         });
 
+        $(Document).on("blur", "#txtCodigoBarras", function(e){
+          DisponibilidadCB();
+        });
+
         // $(Document).on("keydown", "#txtPrecio", function(e){
 		    // if(e.keyCode == 13){
         //       $("#btnAgregar").click();
@@ -294,6 +298,12 @@
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <br>
                     <h1 class="h2 font-weight-bold">Agregar Producto</h1>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" hidden id="alertDisponibilidadCBNoDisponible">
+                      <p id="msgAlertDisponibilidadCBNoDisponible" style="padding: 0px; margin: 0px;"></p>
+                    </div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" hidden id="alertDisponibilidadCBDisponible">
+                      ¡El código está disponible!
+                    </div>
                     <label id="labelCat1" hidden></label>
                     <label id="labelCat2" hidden></label>
                   </div>
@@ -416,6 +426,8 @@
         </div>
 
         <!-- TOAST Y MODAL LOCALES -->
+
+        
         
         <div class="modal fade" id="modalAgregarCategoria2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog">
