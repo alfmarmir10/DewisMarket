@@ -16,7 +16,9 @@ var idVenta;
 var listenerTablaNE;
 var listenerTablaVentas;
 var listenerIndexGraphs;
-var listenerCatalogoList;
+var listenerCatalogoListNE;
+var listenerCatalogoListVender;
+var listenerCatalogoListCatalogo;
 var documentos = Array();
 var unidades;
 var idCatalogoGraphs;
@@ -1465,7 +1467,7 @@ function escuchaNE(){
         keys.sort();
         console.log("Ordenado:"+keys);
         var bandera;
-        for(x = keys.length; x > (keys.length - 10); x--){
+        for(x = keys.length; x > 0; x--){
             bandera = false;
             try{
                 if (docs[0][keys[x-1]]['Fecha'] != undefined){
@@ -2193,6 +2195,7 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                                         db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo)
                                         .get()
                                         .then(function(doc){
+                                            document.getElementById('cmbDescripcion').focus();
                                             margen = ((doc.data().Precio / costo) - 1) * 100;
                                             var costoPrevio = doc.data().UltimoCosto;
                                             var provPrevio = doc.data().UltimoProveedor;
@@ -3536,9 +3539,79 @@ function llenarComboBoxDescripcionNEListener(){
     var idNegocio = getCookie("idNegocio");
     var documentosComboBox;
 
-    listenerCatalogoList = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+    listenerCatalogoListNE = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
 
-    listenerCatalogoList.onSnapshot(function(doc) {
+    listenerCatalogoListNE.onSnapshot(function(doc) {
+        // var td = document.getElementById('tdDescripcion_agregar');
+        // td.innerHTML = '';
+        // console.log(doc.id, " => ", doc.data());
+        try {
+            var cList = document.querySelector("#cmbDescripcion_list");
+            cList.remove(0);    
+        } catch (error) {
+            console.log("Error: "+error);
+        }
+        documentosComboBox = [];
+        documentosComboBox = doc.get("Descripcion");
+        var container = document.getElementById("cmbDescripcion");
+        var dlist = document.createElement('datalist');
+        dlist.id = "cmbDescripcion_list";
+
+        for (const val of documentosComboBox){
+            var option = document.createElement("option");
+            option.value = val;
+            option.text = val.charAt(0).toUpperCase() + val.slice(1);
+            dlist.appendChild(option);
+        };
+
+        document.getElementById('cmbDescripcion').appendChild(dlist);
+        ordenarCmb("cmbDescripcion_list");
+        document.getElementById('cmbDescripcion').focus();
+    });
+}
+
+function llenarComboBoxDescripcionVenderListener(){
+    var idNegocio = getCookie("idNegocio");
+    var documentosComboBox;
+
+    listenerCatalogoListVender = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+
+    listenerCatalogoListVender.onSnapshot(function(doc) {
+        // var td = document.getElementById('tdDescripcion_agregar');
+        // td.innerHTML = '';
+        // console.log(doc.id, " => ", doc.data());
+        try {
+            var cList = document.querySelector("#cmbDescripcion_list");
+            cList.remove(0);    
+        } catch (error) {
+            console.log("Error: "+error);
+        }
+        documentosComboBox = [];
+        documentosComboBox = doc.get("Descripcion");
+        var container = document.getElementById("cmbDescripcion");
+        var dlist = document.createElement('datalist');
+        dlist.id = "cmbDescripcion_list";
+
+        for (const val of documentosComboBox){
+            var option = document.createElement("option");
+            option.value = val;
+            option.text = val.charAt(0).toUpperCase() + val.slice(1);
+            dlist.appendChild(option);
+        };
+
+        document.getElementById('cmbDescripcion').appendChild(dlist);
+        ordenarCmb("cmbDescripcion_list");
+        document.getElementById('cmbDescripcion').focus();
+    });
+}
+
+function llenarComboBoxDescripcionCatalogoListener(){
+    var idNegocio = getCookie("idNegocio");
+    var documentosComboBox;
+
+    listenerCatalogoListCatalogo = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+
+    listenerCatalogoListCatalogo.onSnapshot(function(doc) {
         // var td = document.getElementById('tdDescripcion_agregar');
         // td.innerHTML = '';
         // console.log(doc.id, " => ", doc.data());

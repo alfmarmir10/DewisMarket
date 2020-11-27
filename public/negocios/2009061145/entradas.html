@@ -139,6 +139,7 @@
       $(Document).on("keydown", "#tdCosto_agregar", function(e){
           if(e.keyCode == 13){
               $("#btnAgregarATabla").click();
+              return;
           } else {
               var x = event.charCode || event.keyCode;
 
@@ -470,7 +471,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="card">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
                             LISTA DE ARTÍCULOS

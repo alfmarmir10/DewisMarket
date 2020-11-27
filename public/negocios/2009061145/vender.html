@@ -138,17 +138,16 @@
             $("#tdPrecio_agregar").focus();
         } else {
             var x = event.charCode || event.keyCode;
-
             if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
         }
     });
 
       $(Document).on("keydown", "#tdPrecio_agregar", function(e){
           if(e.keyCode == 13){
-              $("#tdTotal_agregar").focus();
+            $("#btnAgregarATabla").click();
+            return;
           } else {
               var x = event.charCode || event.keyCode;
-
               if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
           }
       });
@@ -480,10 +479,10 @@
                                             <th hidden>Ganancia $</th>
                                         </tr>
                                     </thead>
-                                    <tr>
+                                    <tr style="max-height: 50px;">
                                         <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>
                                         <td id='tdIdArticulo_agregar' hidden></td>
-                                        <td id='tdDescripcion_agregar'><input id="Catalogo" placeholder="Selecciona..."></input><script> llenarComboBox("Catalogo", "cmbDescripcion", "form-control"); </script></td>
+                                        <td id='tdDescripcion_agregar'><input id="cmbDescripcion" placeholder="Selecciona..." class="form-control" list="cmbDescripcion_list"></input><script> llenarComboBoxDescripcionVenderListener(); </script></td>
                                         <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
                                         <td id='tdPrecio_agregar' contenteditable="true" style="text-align: center"></td>
                                         <td id='tdTotal_agregar' style="text-align: center"></td>

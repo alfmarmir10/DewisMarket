@@ -52,7 +52,8 @@ function Registrar(){
 }
 
 function IniciarSesion(){
-    //alert('Entró');
+    alert('Entró');
+    sessionStorage.clear();
     var correo = document.getElementById('txtCorreo').value;
     var contrasena = document.getElementById('txtContrasena').value;
 
