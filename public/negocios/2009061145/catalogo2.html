@@ -1,0 +1,514 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v4.1.1">
+    <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon"/>
+    <script src="https://kit.fontawesome.com/1a068ddec2.js" crossorigin="anonymous"></script>
+
+    <!-- Scripts BOOTSTRAP -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <!-- Scripts FIREBASE -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-firestore.js"></script>
+
+    <title>Dewis Market - Catálogo</title>
+
+    <script src="./js/apexcharts.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- LOCAL CSS -->
+    <link type="text/css" rel="stylesheet" href="./css/dashboard.css" />
+
+    <!-- SCANNER -->
+    <link type="text/css" rel="stylesheet" href="css/scanner.css"/>
+    <script src="https://unpkg.com/quagga@0.12.1/dist/quagga.min.js"></script>
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+    
+    <script>
+        // SCRIPTS LOCALES
+
+        $(Document).ready(function(){
+            $("#txtCodigoBarras").focus();
+            checkCookie();
+            getNombreNegocio();
+            $("#toastMsjCambioPrecio").toast('show');
+        });
+
+        $(document).on("hide.bs.toast", "#toastMsjCambioPrecio", function(e) {
+          document.getElementById('toastMsjCambioPrecio').style.zIndex = -999;
+        });
+
+        $(document).on("show.bs.modal", "#modalInfoAdicionalProducto", function(e) {
+          
+        });
+
+        $(Document).on("change", "#cmbDescripcion", function(e){
+          var x = document.getElementById("cmbDescripcion");
+          var valor = x.value;
+          CargarCatalogoFiltroDescripcion(valor);
+        });
+
+        $(Document).on("change", "#cmbCategoria1", function(e){
+          var x = document.getElementById("cmbCategoria1");
+          var valor = x.value;
+          CargarCatalogoFiltroCategoria1(valor);
+        });
+
+        $(Document).on("change", "#cmbCategoria2", function(e){
+          var x = document.getElementById("cmbCategoria2");
+          var valor = x.value;
+          CargarCatalogoFiltroCategoria2(valor);
+            });
+
+        $(Document).on("keydown", "#precioActualizarPrecio", function(e){
+          if(e.keyCode == 13){
+              document.getElementById('btnAceptarActualizaPrecio').click();
+          } else {
+              var x = event.charCode || event.keyCode;
+
+              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+          }
+        });
+
+          $(Document).on("keyup", "#precioActualizarPrecio", function(e){
+            var Costo = parseFloat($("#costoActualizarPrecio").val());
+            var Precio = parseFloat($("#precioActualizarPrecio").val());
+            console.log(Costo);
+            console.log(Precio);
+            var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
+            $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
+          });
+        
+        function index(x){
+            // var idNegocio = getCookie("idNegocio");
+            var row = x.parentNode.rowIndex;
+            if (confirm("¿Deseas modificar el precio?")) {
+              var Costo = parseFloat($("#"+row+"_costoProducto").text());
+              if (isNaN(Costo)){
+                alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
+                return;
+              }
+              var idNegocio = getCookie("idNegocio");
+              var CB = $("#"+row+"_codigoBarrasProducto").text();
+              var Des = $("#"+row+"_descripcionProducto").text();
+              var PrecioOriginal = parseFloat($("#"+row+"_precioProducto").text());
+              var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
+              $("#modalActualizarPrecio").modal('toggle');
+              $("#modalActualizarPrecioLabel").text(Des);
+              $("#costoActualizarPrecio").val(Costo);
+              $("#precioActualizarPrecio").val(PrecioOriginal);
+              $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
+              $("#codigoBarrasActualizarPrecio").val(CB);
+              $("#rowActualizarPrecio").val(row);
+            } else {
+              
+            }
+        }
+
+        function getIdCatalogoProducto(x){
+          var row = x.parentNode.rowIndex;
+          var IdCatalogo = $("#"+row+"_idCatalogo").text();
+          loadGraphsProducto('Dinero', IdCatalogo);
+          document.getElementById('chartDescripcionArticulo').innerHTML = $("#"+row+"_descripcionProducto").text()
+        }
+        
+        // SCRIPTS GENERALES
+        
+        $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
+            try{
+                StopScannerValidarPrecio();
+                console.log("Detenido correctamente");
+                var nodes = document.getElementsByTagName("Canvas");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+
+                var nodes = document.getElementsByTagName("video");
+
+                for (var i = 0, len = nodes.length; i != len; ++i) {
+                    nodes[0].parentNode.removeChild(nodes[0]);
+                }
+            } catch(error){
+                console.log("Service is not running");
+            };
+        });
+
+        $(document).on("shown.bs.modal", "#modalActualizarPrecio", function(e) {
+            document.getElementById('precioActualizarPrecio').focus();
+        });
+
+        $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
+            llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'form-control');
+        });
+
+        $(document).on("show.bs.toast", "#toastPrecioValidado", function(e) {
+          document.getElementById('toastPrecioValidado').style.zIndex = 999;
+            $("#modalValidarPrecio").modal('toggle');
+        });
+
+        $(document).on("hide.bs.toast", "#toastPrecioValidado", function(e) {
+            $("#modalValidarPrecio").modal('toggle');
+            document.getElementById('toastPrecioValidado').style.zIndex = -999;
+        });
+
+        $(Document).on("change", "#cmbCatalogoValidarPrecio", function(e) {
+            var x = document.getElementById("cmbCatalogoValidarPrecio");
+            var valor = x.value;
+            validarPrecioDescripcion(valor);
+        });
+    </script>
+    
+    <script type="text/javascript">
+        
+    </script>
+	</head>
+	<body>
+		<nav class="navbar sticky-top bg-warning flex-md-nowrap p-0 shadow">
+            <a class="navbar-brand bg-warning text-dark col-md-3 col-lg-2 mr-0 px-3 border-0" href="index.html" id="nombreNegocio" style="font-weight: bold;"></a>
+            <span class="d-none"><p id="idNegocio" class="text-dark" style="text-transform: uppercase;"></p></span>
+            <button style="border:1px solid black"  class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class=""><i class="fas fa-bars"></i></span>
+            </button>
+            <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
+            <ul class="navbar-nav px-3">
+                <li class="nav-item text-nowrap">
+                <a class="nav-link" href="#" onclick="CerrarSesion(); return false;">Salir</a>
+                </li>
+            </ul>
+        </nav>
+      
+        <div class="container-fluid">
+            <div class="row">
+              <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="sidebar-sticky pt-3">
+                  <ul class="nav flex-column">
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        INICIO
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link" href="index.html">
+                        <span><i class="fas fa-chart-line"></i></span>
+                        Tablero de Control 
+                      </a>
+                    </li>
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        INVENTARIO
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link active" href="catalogo.html">
+                        <span><i class="fas fa-pallet"></i></span>
+                        Catálogo <span class="sr-only">(current)</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="agregarProducto.html">
+                        <span><i class="fas fa-plus-square"></i></span>
+                        Agregar Producto
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="entradas.html">
+                        <span><i class="fas fa-arrow-circle-left"></i></i></span>
+                        Entradas
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="proveedores.html">
+                        <span><i class="fas fa-truck"></i></span>
+                        Proveedores
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="salidas.html">
+                        <span><i class="fas fa-arrow-circle-right"></i></span>
+                        Salidas
+                      </a>
+                    </li>
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        PUNTO DE VENTA
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link" href="vender.html">
+                        <span><i class="fas fa-money-bill-alt"></i></span>
+                        Vender
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="clientes.html">
+                            <span><i class="fas fa-user-friends"></i></span>
+                            Clientes
+                        </a>
+                    </li>
+                    <div class="card bg-info text-center text-white">
+                      <div class="head font-weight-bold">
+                        ESCÁNER
+                      </div>
+                    </div>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#" data-toggle="modal" data-target="#modalValidarPrecio">
+                        <span><i class="fas fa-dollar-sign"></i></span>
+                        Verificar Precio
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </nav>
+      
+              <div class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                <div class="row">
+                  <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <br>
+                    <h1 class="h2 font-weight-bold">Catálogo</h1>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-inline">
+                                    <div class="row text-center">
+                                        <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
+                                        <div class="col-sm">
+                                          <input id="cmbDescripcion" placeholder="Selecciona..." class="form-control" list="cmbDescripcion_list"></input>
+                                          <script> llenarComboBoxDescripcionCatalogoListener(); </script>
+                                          <label class="reclaim-black" id="labelDescripcionDListCatalogo">Descripcion</label>
+                                        </div>
+            
+                                        <div class="col-sm">
+                                            <input list="Categoria1" id="cmbCategoria1" class="form-control" placeholder="Selecciona...">
+                                            <datalist id="Categoria1">
+                                                <option value="Comestible">Comestible</option>
+                                                <option value="No Comestible">No Comestible</option>
+                                            </datalist>
+                                            <!-- <select id="cmbCategoria1" class="form-control">
+                                                <option value="Comestible">Comestible</option>
+                                                <option value="No Comestible">No Comestible</option>
+                                            </select> -->
+                                            <label class="reclaim-black" id="labelCategoria1DListCatalogo">Categoría 1</label>
+                                        </div>
+                                        <div class="col-sm">
+                                            <input id="Cat2" placeholder="Selecciona.."></input>
+                                            <script> llenarComboBox("Cat2", "cmbCategoria2", "form-control"); </script>
+                                            <label class="reclaim-black" id="labelCategoria2DListCatalogo">Categoría 2</label>
+                                        </div>
+            
+                                        <div class="col-sm">
+                                            <div class="btn-group" id="btnCatalogo">
+                                                <button type="button" class="btn btn-warning" onclick="PDFCatalogoCalcularNombreArchivo(); return false;">Descargar</button>
+                                                <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span class="sr-only">Opciones descargar catálogo</span>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#" onclick="PDFCatalogoCalcularNombreArchivo(); return false;">PDF elementos filtrados</a>
+                                                    <a class="dropdown-item" href="#" onclick="CargarCatalogoCB(); return false;" class="dropdown-item">PDF catálogo completo</a>
+                                                </div>
+                                            </div>
+                                            <label>...</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br><br>
+                                <div class="table-responsive-xl">
+                                    <table class="table table-striped " id="tabla_catalogo">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col" style="text-align: center">CÓDIGO BARRAS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>                                          
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- TOAST Y MODAL GENERALES -->
+        <div class="modal fade" id="modalValidarPrecio" tabindex="-1" aria-labelledby="modalValidarPrecioLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                        <!-- Nav tabs -->
+                        <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalValidarPrecioLabel">Validar Precio</h5></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="txtCodigoBarrasValidarPrecio" class="col-form-label reclaim-black" id="labelCodigoBarrasValidarPrecio">Código de Barras</label><span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" onclick="loadScannerValidarPrecio() ;" id="loadScanner" style="margin-left: 5px; margin-bottom: 10px;">  Leer</a></span>
+                            <input id="txtCodigoBarrasValidarPrecio" type="text" class="form-control">
+                            <button type="button" class="btn btn-warning btn-lg btn-block form-control" onclick="validarPrecioCodigoBarras();" id="btnValidarPrecio" style="margin-top: 5px">Consultar</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="cmbCatalogoValidarPrecio" class="reclaim-black" id="labelDescripcionValidarPrecio">Descripción</label>
+                            <div>
+                            <input id="Catalogo"></input>
+                            </div>
+                        </div>
+                        <div id="contenedorValidarPrecio">
+                            <script src="js/scriptValidarPrecio.js"></script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- TOAST Y MODAL LOCALES -->
+        <div class="modal fade" id="modalInfoAdicionalProducto" tabindex="-1" aria-labelledby="modalInfoAdicionalProducto" aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                  <div class="modal-header bg-dark text-white">
+                      <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                      <!-- Nav tabs -->
+                      <div class="container text-center font-weight-bold"><h5 class="modal-title text-white" id="modalInfoAdicionalProducto">INFORMACIÓN ADICIONAL</h5></div>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="btn-group">
+                          <button type="button" class="btn share_export_btn bg-primary text-white" id="btnUnidadesCharts">Dinero</button>
+                          <button type="button" class="btn share_export_btn bg-primary text-white dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                            <span class="sr-only">Toggle Dropdown</span>
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
+                            <a class="dropdown-item" onclick="loadGraphsProductoSinRecargar('Dinero');">Dinero</a>
+                            <a class="dropdown-item" onclick="loadGraphsProductoSinRecargar('Piezas');">Piezas</a>
+                            <a class="dropdown-item" onclick="loadGraphsProductoSinRecargar('Ganancia');">Ganancia</a>
+                          </div>
+                        </div>
+                        <div class="card" style="margin-top: 10px;">
+                          <div class="body">
+                            <div style="width:100%;">
+                              <div>
+                                <div id="chartProducto"></div>
+                              </div>
+                            </div>
+                            <h2 class="text-center font-weight-bold text-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+        <div class="modal fade" id="modalActualizarPrecio" tabindex="-1" aria-labelledby="modalActualizarPrecioLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                        <!-- Nav tabs -->
+                        <div class="container text-center font-weight-bold"><h5 class="modal-title" id="modalActualizarPrecioLabel"></h5></div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                              <label for="costoActualizarPrecio" class="font-weight-bold">Costo:</label>
+                              <small id="idNegocioHelp" class="form-text text-muted">Costo Actual</small>
+                              <input type="text" class="form-control" id="costoActualizarPrecio" aria-describedby="costoHelp" disabled="true">
+                              <input type="text" class="form-control" id="codigoBarrasActualizarPrecio" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
+                              <input type="text" class="form-control" id="rowActualizarPrecio" aria-describedby="rowHelp" hidden="true" disabled="true">
+                            </div>
+                            <div class="form-group">
+                              <label for="precioActualizarPrecio" class="font-weight-bold">Precio:</label>
+                              <small id="idNegocioHelp" class="form-text text-muted">Captura el nuevo precio de venta</small>
+                              <input type="text" class="form-control" id="precioActualizarPrecio" aria-describedby="precioHelp">
+                            </div>
+                            <div class="form-group">
+                                <label for="margenActualizarPrecio" class="font-weight-bold">Margen:</label>
+                                <small id="idNegocioHelp" class="form-text text-muted">El margen será de...</small>
+                                <input type="text" class="form-control" id="margenActualizarPrecio" aria-describedby="margenHelp" disabled="true">
+                              </div>
+                            <br>
+                            <button type="button" class="btn btn-warning" id="btnAceptarActualizaPrecio" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
+                          </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastMsjCambioPrecio" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="6000">
+          <div class="toast-header bg-success">
+          <img src="../img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px;">
+          <strong class="mr-auto text-dark">DEWIS MARKET - Cambio de Precios</strong>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          </div>
+          <div class="toast-body bg-white text-dark">
+              <small class="bg-warning">¡IMPORTANTE!</small>
+              <p class="lead text-dark">Presiona el precio del artículo que desees modificar.</p>
+          </div>
+        </div>
+
+        <!-- TOAST Y MODAL GENERALES -->
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastPrecioValidado" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: -999" data-delay="5000">
+            <div class="toast-header bg-success">
+                <img src="../img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px;">
+                <strong class="mr-auto text-dark">DEWIS MARKET - $ Precio</strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body bg-white text-dark">
+                <small class="text-muted">Descripción</small>
+                <p class="lead text-dark" id="descripcionPrecioValidado">Descripción</p>
+                <small class="text-muted">Precio</small>
+                <span><h3 class="text-dark font-weight-bold " id="precioValidado">5.0</h3><br><br></span>
+            </div>
+        </div>
+        <script type="text/javascript" src="js/jspdf.min.js"></script>
+        <script type="text/javascript" src="js/html2pdf.bundle.min.js"></script>
+        <script type="text/javascript" src="js/jspdf.plugin.autotable.min.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
+        <script>
+            var perf = firebase.performance();
+        </script>
+        <script>
+            //loadDashboardCharts();
+        </script>
+	</body>
+</html>

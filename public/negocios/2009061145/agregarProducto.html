@@ -139,6 +139,8 @@
 
         $(Document).on("blur", "#txtCodigoBarras", function(e){
           DisponibilidadCB();
+          document.getElementById('labelCat1').innerHTML = '';
+          document.getElementById('labelCat2').innerHTML = '';
         });
 
         // $(Document).on("keydown", "#txtPrecio", function(e){
