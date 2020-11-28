@@ -2358,6 +2358,8 @@ function getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB){
     console.log(CB);
     var idNegocio = getCookie("idNegocio");
     var DES = document.getElementById('cmbDescripcion');
+    var COS = document.getElementById('tdCosto_agregar');
+    var costo;
     var ID = document.getElementById('tdIdArticulo_agregar');
     ID.innerHTML = '';
     //var codigo = tabla.getElementById('tdCodigoBarras_agregar')[0];
@@ -2367,6 +2369,13 @@ function getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB){
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
             // DES.innerHTML='';
+            try{
+                costo = doc.data().UltimoCosto;
+            } catch (error) {
+                console.log(error);
+                costo = "-";
+            }
+            COS.innerHTML = costo;
             DES.value = doc.get("Descripcion");
             ID.innerHTML = doc.id;
             console.log("ID: "+ doc.id);
@@ -2389,6 +2398,8 @@ function getInfoProducto_agregar_NE_codigo_barras(codigo){
     CB.innerHTML = '';
     CB.innerHTML = codigo;
     var DES = document.getElementById('cmbDescripcion');
+    var COS = document.getElementById('tdCosto_agregar');
+    var costo;
     var ID = document.getElementById('tdIdArticulo_agregar');
     ID.innerHTML = '';
     //var codigo = tabla.getElementById('tdCodigoBarras_agregar')[0];
@@ -2398,6 +2409,13 @@ function getInfoProducto_agregar_NE_codigo_barras(codigo){
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
             // DES.innerHTML='';
+            try{
+                costo = doc.data().UltimoCosto;
+            } catch (error) {
+                console.log(error);
+                costo = "-";
+            }
+            COS.innerHTML = costo;
             DES.value = doc.get("Descripcion");
             ID.innerHTML = doc.id;
             console.log("ID: "+ doc.id);
@@ -2417,6 +2435,8 @@ function getInfoProducto_agregar_NE_descripcion(descripcion){
     var idNegocio = getCookie("idNegocio");
     var CB = document.getElementById('tdCodigoBarras_agregar');
     var ID = document.getElementById('tdIdArticulo_agregar');
+    var COS = document.getElementById('tdCosto_agregar');
+    var costo;
     CB.innerHTML = '';
     ID.innerHTML = '';
     //var codigo = tabla.getElementById('tdCodigoBarras_agregar')[0];
@@ -2424,6 +2444,13 @@ function getInfoProducto_agregar_NE_descripcion(descripcion){
     db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('Descripcion', '==', descripcion).get()
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
+            try{
+                costo = doc.data().UltimoCosto;
+            } catch (error) {
+                console.log(error);
+                costo = "-";
+            }
+            COS.innerHTML = costo;
             CB.innerHTML = doc.get("CodigoBarras");
             ID.innerHTML = doc.id;
             console.log("ID: "+ doc.id);
