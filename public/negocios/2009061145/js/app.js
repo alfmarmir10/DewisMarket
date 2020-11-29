@@ -3123,7 +3123,81 @@ function getMobileOperatingSystem() {
   }
 
   return "desconocido";
-  }
+}
+
+function CargarCatalogoPrueba1DocRead(){
+    var idNegocio = getCookie("idNegocio");
+    var tabla = document.getElementById('tabla_catalogo').getElementsByTagName('tbody')[0];
+    tabla.innerHTML = '';
+    var i = 0;
+    db.collection("Negocios").doc(idNegocio).collection("Catalogo").orderBy("Descripcion")
+    .get().then((querySnapshot) => {
+        querySnapshot.forEach(function(doc) {
+            i = i + 1;
+            // console.log(doc.id, " => ", doc.data().Descripcion);
+            if (doc.id != 'Catalogo'){
+                var existencia = "-";
+                if (doc.data().Existencia != undefined){
+                    existencia = doc.data().Existencia;
+                }
+                var UltimoCosto = "-";
+                if (doc.data().UltimoCosto != undefined){
+                    UltimoCosto = doc.data().UltimoCosto;
+                }
+                var UltimoProveedor = "-";
+                if (doc.data().UltimoProveedor != undefined){
+                    UltimoProveedor = doc.data().UltimoProveedor;
+                }
+                var MargenActual = "-";
+                if (doc.data().MargenActual != undefined){
+                    MargenActual = doc.data().MargenActual;
+                }
+                var Categoria1 = "-";
+                if (doc.data().Categoria1 != undefined){
+                    Categoria1 = doc.data().Categoria1;
+                }
+                var Categoria2 = "-";
+                if (doc.data().Categoria2 != undefined){
+                    Categoria2 = doc.data().Categoria2;
+                }
+                var Precio = "-";
+                if (doc.data().Precio != undefined){
+                    Precio = doc.data().Precio;
+                }
+                var msg = "<tr>"
+                +"<th scope='row' style='text-align: center'>"+i+"</th>"
+                +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
+                +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
+                +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
+                +"<td style='text-align: center'>"+doc.data().Presentacion+"</td>"
+                +"<td style='text-align: center'>"+Categoria1+"</td>"
+                +"<td style='text-align: center'>"+Categoria2+"</td>"
+                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
+                +"<td style='text-align: center'>"+existencia+"</td>"
+                +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
+                +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
+                +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
+                +"</tr>";
+                var newRow  = tabla.insertRow(tabla.rows.length);
+                newRow.innerHTML = msg;
+            }
+        });
+        var d = new Date();
+        var minutos, horas, dia, mes;
+        if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
+        if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
+        if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
+        if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
+
+        var nombreArchivo = 'Catálogo '+dia+'/'+mes+'/'+d.getFullYear()+'  '+horas+':'+minutos;
+        PDF_Prueba(nombreArchivo);
+        document.getElementById("cmbDescripcion").selectedIndex = 0;
+        document.getElementById("cmbCategoria1").selectedIndex = 0;
+        document.getElementById("cmbCategoria2").selectedIndex = 0;
+        // document.getElementById("cmbFabricante").selectedIndex = 0;
+    });
+}
 
 function CargarCatalogo(){
     var idNegocio = getCookie("idNegocio");

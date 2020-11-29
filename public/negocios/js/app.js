@@ -125,7 +125,9 @@ function Registrar(){
 }
 
 function IniciarSesion(){
-    //alert('Entró');
+    alert('Entró');
+    // localStorage.clear();
+    console.log(sessionStorage.length);
     var idNegocio = document.getElementById('idNegocioInicioSesion').value;
     var correo = document.getElementById('correoInicioSesion').value;
     var contrasena = document.getElementById('contrasenaInicioSesion').value;
@@ -138,7 +140,9 @@ function IniciarSesion(){
         db.collection("Negocios").doc(idNegocio)
         .get()
         .then(function(doc) {
+            console.log("Get Doc Negocio");
             if (doc.exists) {
+                console.log("Doc Negocio Existe");
                 setCookie("nombreNegocio", doc.data().Nombre, 1);
                 banderaNegocio = true;
 
@@ -166,7 +170,7 @@ function IniciarSesion(){
                        alert("Ocurrió algún error, reintenta por favor. -->" + error);
                 });
             } else {
-                if(!banderaNegocio){
+                if(banderaNegocio == false){
                     alert("¡El Id de Negocio no existe! \n\nValida por favor.");
                     $("#idNegocioInicioSesion").focus();
                 }
@@ -176,8 +180,12 @@ function IniciarSesion(){
             console.log("Error getting documents: ", error);
             alert("Ocurrió algún error, reintenta por favor. -->" + error);
         });
-    }).catch(function(error) {
+    })
+    .catch(function(error) {
         // Handle Errors here.
+        console.log(error);
+        console.log(errorCode);
+        console.log(errorMessage);
         var errorCode = error.code;
         var errorMessage = error.message;
         if (errorCode === 'auth/wrong-password') {
@@ -193,8 +201,7 @@ function IniciarSesion(){
             alert(errorCode);
             alert(errorMessage);
         }
-        console.log(errorCode);
-        console.log(errorMessage);
+        
     });
 }
 
