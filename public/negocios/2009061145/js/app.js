@@ -1442,30 +1442,14 @@ function escuchaNE(){
     var msg2;
     listenerTablaNE=db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(fecha7.getFullYear().toString()).doc(validarFecha(fecha7)[1].toString())
     .onSnapshot(function(doc) {
-        // console.log(doc.data());
         var docs = Array();
         docs.push(doc.data());
-        // console.log("Array Documentos "+docs[0][1]['Fecha']);
         msg2 = "";
         $("#tbodyRelacionNE").html(msg2);
         var keys = Object.keys(docs[0]);
-        console.log(keys);
-        
-        // var keys_ordenadas = Array();
-        // var o1 = "";
-        // var o2 = "";
-        // var oComodin = "";
-        // for (x = 0; x > keys.length; x++){
-        //     console.log(keys[x]);
-        //     console.log(keys[x+1]);
-        //     o1 = keys[x];
-        //     o2 = keys[x+1];
-        //     if (o1 > o2){
-        //         o1;
-        //     }
-        // }
+        // console.log(keys);
         keys.sort();
-        console.log("Ordenado:"+keys);
+        // console.log("Ordenado:"+keys);
         var bandera;
         for(x = keys.length; x > 0; x--){
             bandera = false;
@@ -3130,12 +3114,13 @@ function CargarCatalogoPrueba1DocRead(){
     var tabla = document.getElementById('tabla_catalogo').getElementsByTagName('tbody')[0];
     tabla.innerHTML = '';
     var i = 0;
+    var length = 0;
     db.collection("Negocios").doc(idNegocio).collection("Catalogo").orderBy("Descripcion")
     .get().then((querySnapshot) => {
+        length = querySnapshot.docs.length;
         querySnapshot.forEach(function(doc) {
-            i = i + 1;
-            // console.log(doc.id, " => ", doc.data().Descripcion);
-            if (doc.id != 'Catalogo'){
+            var docID = doc.id;
+            if (docID != 'Catalogo'){
                 var existencia = "-";
                 if (doc.data().Existencia != undefined){
                     existencia = doc.data().Existencia;
@@ -3164,39 +3149,242 @@ function CargarCatalogoPrueba1DocRead(){
                 if (doc.data().Precio != undefined){
                     Precio = doc.data().Precio;
                 }
+                var CB = doc.data().CodigoBarras;
+                var DES = doc.data().Descripcion;
+                var UNI = doc.data().Unidades;
+                var PRES = doc.data().Presentacion;
+                
+
+                var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                catalogoListRef.get().then(function(doc) {
+                    if (doc.exists) {
+                        catalogoListRef.update({
+                            [[docID]+".CodigoBarras"]: CB,
+                            [[docID]+".Descripcion"]: DES,
+                            [[docID]+".Categoria1"]: Categoria1,
+                            [[docID]+".Categoria2"]: Categoria2,
+                            [[docID]+".Unidades"]: UNI,
+                            [[docID]+".Presentacion"]: PRES,
+                            [[docID]+".Precio"]: Precio,
+                            [[docID]+".Existencia"]: existencia,
+                            [[docID]+".UltimoCosto"]: UltimoCosto,
+                            [[docID]+".UltimoProveedor"]: UltimoProveedor,
+                            [[docID]+".MargenActual"]: MargenActual
+                        });
+                    } else {
+                        catalogoListRef.set({
+                            [docID]:{
+                                CodigoBarras: CB,
+                                Descripcion: DES,
+                                Categoria1: Categoria1,
+                                Categoria2: Categoria2,
+                                Unidades: UNI,
+                                Presentacion: PRES,
+                                Precio: Precio,
+                                Existencia: existencia,
+                                UltimoCosto: UltimoCosto,
+                                UltimoProveedor: UltimoProveedor,
+                                MargenActual: MargenActual
+                            }
+                        });
+                    }
+
+                    i = i + 1;
+                        
+                    var msg = "<tr>"
+                    +"<th scope='row' style='text-align: center'>"+i+"</th>"
+                    +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+CB+"</td>"
+                    +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+DES+"</a></td>"
+                    +"<td style='text-align: center'>"+UNI+"</td>"
+                    +"<td style='text-align: center'>"+PRES+"</td>"
+                    +"<td style='text-align: center'>"+Categoria1+"</td>"
+                    +"<td style='text-align: center'>"+Categoria2+"</td>"
+                    +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
+                    +"<td style='text-align: center'>"+existencia+"</td>"
+                    +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
+                    +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
+                    +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                    +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
+                    +"</tr>";
+                    var newRow  = tabla.insertRow(tabla.rows.length);
+                    newRow.innerHTML = msg;
+
+                    if (i == length){
+                        var d = new Date();
+                        var minutos, horas, dia, mes;
+                        if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
+                        if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
+                        if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
+                        if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
+                
+                        var nombreArchivo = 'Catálogo '+dia+'/'+mes+'/'+d.getFullYear()+'  '+horas+':'+minutos;
+                        PDF_Prueba(nombreArchivo);
+                        document.getElementById("cmbDescripcion").selectedIndex = 0;
+                        document.getElementById("cmbCategoria1").selectedIndex = 0;
+                        document.getElementById("cmbCategoria2").selectedIndex = 0;
+                    } 
+                });
+            }   
+        });
+        
+    });
+}
+
+function CargarCatalogoFROM1doc(){
+    var idNegocio = getCookie("idNegocio");
+    var tabla = document.getElementById('tabla_catalogo').getElementsByTagName('tbody')[0];
+    tabla.innerHTML = '';
+    var i = 0;
+
+    db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo")
+    .get().then(function(doc) {
+        var docs = Array();
+        docs.push(doc.data());
+        
+        var keys = Object.keys(docs[0]);
+        // console.log(keys);
+        //keys.sort();
+        // console.log("Ordenado:"+keys);
+        var bandera;
+        for(x = keys.length; x > 0; x--){
+            bandera = false;
+            try{
+                if (docs[0][keys[x-1]]['CodigoBarras'] != undefined){
+                bandera = true;
+                }
+            }
+            catch{
+                bandera = false;
+            }
+
+            if (bandera === true){
+                var existencia = "-";
+                if (docs[0][keys[x-1]]["Existencia"] != undefined){
+                    existencia = docs[0][keys[x-1]]["Existencia"];
+                }
+                var UltimoCosto = "-";
+                if (docs[0][keys[x-1]]["UltimoCosto"] != undefined){
+                    UltimoCosto = docs[0][keys[x-1]]["UltimoCosto"];
+                }
+                var UltimoProveedor = "-";
+                if (docs[0][keys[x-1]]["UltimoProveedor"] != undefined){
+                    UltimoProveedor = docs[0][keys[x-1]]["UltimoProveedor"];
+                }
+                var MargenActual = "-";
+                if (docs[0][keys[x-1]]["MargenActual"] != undefined){
+                    MargenActual = docs[0][keys[x-1]]["MargenActual"];
+                }
+                var Categoria1 = "-";
+                if (docs[0][keys[x-1]]["Categoria1"] != undefined){
+                    Categoria1 = docs[0][keys[x-1]]["Categoria1"];
+                }
+                var Categoria2 = "-";
+                if (docs[0][keys[x-1]]["Categoria2"] != undefined){
+                    Categoria2 = docs[0][keys[x-1]]["Categoria2"];
+                }
+                var Precio = "-";
+                if (docs[0][keys[x-1]]["Precio"] != undefined){
+                    Precio = docs[0][keys[x-1]]["Precio"];
+                }
+
+                var CB = docs[0][keys[x-1]]["CodigoBarras"];
+                var DES = docs[0][keys[x-1]]["Descripcion"];
+                var UNI = docs[0][keys[x-1]]["Unidades"];
+                var PRES = docs[0][keys[x-1]]["Presentacion"];
+
                 var msg = "<tr>"
-                +"<th scope='row' style='text-align: center'>"+i+"</th>"
-                +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
-                +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
-                +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
-                +"<td style='text-align: center'>"+doc.data().Presentacion+"</td>"
+                +"<th scope='row' style='text-align: center'>"+x+"</th>"
+                +"<td style='text-align: center' id='"+x+"_codigoBarrasProducto'>"+CB+"</td>"
+                +"<td style='text-align: center' id='"+x+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+DES+"</a></td>"
+                +"<td style='text-align: center'>"+UNI+"</td>"
+                +"<td style='text-align: center'>"+PRES+"</td>"
                 +"<td style='text-align: center'>"+Categoria1+"</td>"
                 +"<td style='text-align: center'>"+Categoria2+"</td>"
-                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
+                +"<td style='text-align: center' id='"+x+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
                 +"<td style='text-align: center'>"+existencia+"</td>"
-                +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
+                +"<td style='text-align: center' id='"+x+"_costoProducto'>"+UltimoCosto+"</td>"
                 +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
-                +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
-                +"<td hidden id='"+i+"_idCatalogo'>"+doc.id+"</td>"
+                +"<td style='text-align: center' id='"+x+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+x+"_idCatalogo'>"+keys[x-1]+"</td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
             }
-        });
-        var d = new Date();
-        var minutos, horas, dia, mes;
-        if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
-        if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
-        if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
-        if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
+            // if (x == 1){
+            //     sortTable(document.getElementById('tabla_catalogo'));
+            // }
+        }
+        // var d = new Date();
+        // var minutos, horas, dia, mes;
+        // if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
+        // if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
+        // if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
+        // if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
 
-        var nombreArchivo = 'Catálogo '+dia+'/'+mes+'/'+d.getFullYear()+'  '+horas+':'+minutos;
-        PDF_Prueba(nombreArchivo);
-        document.getElementById("cmbDescripcion").selectedIndex = 0;
-        document.getElementById("cmbCategoria1").selectedIndex = 0;
-        document.getElementById("cmbCategoria2").selectedIndex = 0;
-        // document.getElementById("cmbFabricante").selectedIndex = 0;
-    });
+        // var nombreArchivo = 'Catálogo '+dia+'/'+mes+'/'+d.getFullYear()+'  '+horas+':'+minutos;
+        // PDF_Prueba(nombreArchivo);
+        // document.getElementById("cmbDescripcion").selectedIndex = 0;
+        // document.getElementById("cmbCategoria1").selectedIndex = 0;
+        // document.getElementById("cmbCategoria2").selectedIndex = 0;
+    })
+
+
+    
+}
+
+function sortTable(n, tableName) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById(tableName);
+    switching = true;
+    //Set the sorting direction to ascending:
+    dir = "asc"; 
+    /*Make a loop that will continue until
+    no switching has been done:*/
+    while (switching) {
+      //start by saying: no switching is done:
+      switching = false;
+      rows = table.rows;
+      /*Loop through all table rows (except the
+      first, which contains table headers):*/
+      for (i = 1; i < (rows.length - 1); i++) {
+        //start by saying there should be no switching:
+        shouldSwitch = false;
+        /*Get the two elements you want to compare,
+        one from current row and one from the next:*/
+        x = rows[i].getElementsByTagName("TD")[n];
+        y = rows[i + 1].getElementsByTagName("TD")[n];
+        /*check if the two rows should switch place,
+        based on the direction, asc or desc:*/
+        if (dir == "asc") {
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch= true;
+            break;
+          }
+        } else if (dir == "desc") {
+          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch = true;
+            break;
+          }
+        }
+      }
+      if (shouldSwitch) {
+        /*If a switch has been marked, make the switch
+        and mark that a switch has been done:*/
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+        //Each time a switch is done, increase this count by 1:
+        switchcount ++;      
+      } else {
+        /*If no switching has been done AND the direction is "asc",
+        set the direction to "desc" and run the while loop again.*/
+        if (switchcount == 0 && dir == "asc") {
+          dir = "desc";
+          switching = true;
+        }
+      }
+    }
 }
 
 function CargarCatalogo(){
@@ -3993,7 +4181,7 @@ function checkCookie() {
     var user = getCookie("username");
     console.log(user);
     if (user != "") {
-        $('#msgBienvenidoDeNuevo').html('¡Bienvenido, ' + user + '!');
+        $('#msgBienvenidoDeNuevo').html('¡Bienvenido(a), ' + user + '!');
         var nombreNegocio = getCookie("NombreNegocio");
         if (nombreNegocio){
             $('#nombreNegocio').html(nombreNegocio);
