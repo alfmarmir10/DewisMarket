@@ -1197,8 +1197,8 @@ function actualizarPrecio(CB, row, precio, margen){
                     MargenActual: parseFloat(margen)
                 })
                 .then(function() {
-                    $("#"+row+"_precioProducto").text(parseFloat(precio).toFixed(1));
-                    $("#"+row+"_margenProducto").text(parseFloat(margen).toFixed(1)+" %");
+                    document.getElementById("tabla_catalogo").rows[row].cells[6].innerText = parseFloat(precio).toFixed(1);
+                    document.getElementById("tabla_catalogo").rows[row].cells[10].innerText = parseFloat(margen).toFixed(1)+" %";
                     alert("Precio Actualizado Correctamente");
                     $("#modalActualizarPrecio").modal('toggle');
                 })
@@ -3273,6 +3273,7 @@ function CargarCatalogoFROM1doc(){
                 var MargenActual = "-";
                 if (docs[0][keys[x-1]]["MargenActual"] != undefined){
                     MargenActual = docs[0][keys[x-1]]["MargenActual"];
+                    if (isNaN(MargenActual)) MargenActual = "-";
                 }
                 var Categoria1 = "-";
                 if (docs[0][keys[x-1]]["Categoria1"] != undefined){
@@ -3293,7 +3294,6 @@ function CargarCatalogoFROM1doc(){
                 var PRES = docs[0][keys[x-1]]["Presentacion"];
 
                 var msg = "<tr>"
-                +"<th scope='row' style='text-align: center'>"+x+"</th>"
                 +"<td style='text-align: center' id='"+x+"_codigoBarrasProducto'>"+CB+"</td>"
                 +"<td style='text-align: center' id='"+x+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+DES+"</a></td>"
                 +"<td style='text-align: center'>"+UNI+"</td>"
@@ -3310,10 +3310,11 @@ function CargarCatalogoFROM1doc(){
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
             }
-            // if (x == 1){
-            //     sortTable(document.getElementById('tabla_catalogo'));
-            // }
+            if (x == 1){
+                $('#thDescripcion_tabla_catalogo').click();
+            }
         }
+        
         // var d = new Date();
         // var minutos, horas, dia, mes;
         // if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
@@ -3330,61 +3331,6 @@ function CargarCatalogoFROM1doc(){
 
 
     
-}
-
-function sortTable(n, tableName) {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById(tableName);
-    switching = true;
-    //Set the sorting direction to ascending:
-    dir = "asc"; 
-    /*Make a loop that will continue until
-    no switching has been done:*/
-    while (switching) {
-      //start by saying: no switching is done:
-      switching = false;
-      rows = table.rows;
-      /*Loop through all table rows (except the
-      first, which contains table headers):*/
-      for (i = 1; i < (rows.length - 1); i++) {
-        //start by saying there should be no switching:
-        shouldSwitch = false;
-        /*Get the two elements you want to compare,
-        one from current row and one from the next:*/
-        x = rows[i].getElementsByTagName("TD")[n];
-        y = rows[i + 1].getElementsByTagName("TD")[n];
-        /*check if the two rows should switch place,
-        based on the direction, asc or desc:*/
-        if (dir == "asc") {
-          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-            //if so, mark as a switch and break the loop:
-            shouldSwitch= true;
-            break;
-          }
-        } else if (dir == "desc") {
-          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-            //if so, mark as a switch and break the loop:
-            shouldSwitch = true;
-            break;
-          }
-        }
-      }
-      if (shouldSwitch) {
-        /*If a switch has been marked, make the switch
-        and mark that a switch has been done:*/
-        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-        switching = true;
-        //Each time a switch is done, increase this count by 1:
-        switchcount ++;      
-      } else {
-        /*If no switching has been done AND the direction is "asc",
-        set the direction to "desc" and run the while loop again.*/
-        if (switchcount == 0 && dir == "asc") {
-          dir = "desc";
-          switching = true;
-        }
-      }
-    }
 }
 
 function CargarCatalogo(){
@@ -3633,7 +3579,6 @@ function CargarCatalogoFiltroDescripcion(criterio){
                     Precio = doc.data().Precio;
                 }
                 var msg = "<tr>"
-                +"<th scope='row' style='text-align: center'>"+i+"</th>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
                 +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
                 +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
@@ -3700,7 +3645,6 @@ function CargarCatalogoFiltroCategoria1(criterio){
                     Precio = doc.data().Precio;
                 }
                 var msg = "<tr>"
-                +"<th scope='row' style='text-align: center'>"+i+"</th>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
                 +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
                 +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
@@ -3766,7 +3710,6 @@ function CargarCatalogoFiltroCategoria2(criterio){
                     Precio = doc.data().Precio;
                 }
                 var msg = "<tr>"
-                +"<th scope='row' style='text-align: center'>"+i+"</th>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+doc.data().CodigoBarras+"</td>"
                 +"<td style='text-align: center' id='"+i+"_descripcionProducto'  onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+doc.data().Descripcion+"</a></td>"
                 +"<td style='text-align: center'>"+doc.data().Unidades+"</td>"
@@ -4118,35 +4061,85 @@ function AgregarProducto(){
         Categoria2: Cat2                
     })
     .then(function(docRef) {
-        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo").update({
-            Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
-        }).then(function() {
-            console.log("Document written with ID: ", docRef.id);
-            alert("¡Agregado correctamente!");
-            var x = document.getElementById("txtCodigoBarras");
-            x.value = "";
-            var y = document.getElementById("txtDescripcion");
-            y.value = "";
-            var w = document.getElementById("txtUnidades");
-            w.value = "";
-            var z = document.getElementById("cmbPresentacion");
-            z.value = "";
-            var a = document.getElementById("cmbCategoria1");
-            a.value = "";
-            var b = document.getElementById("cmbCategoria2");
-            b.value = "";
-            document.getElementById('btnAgregar').disabled = false;
-            document.getElementById("alertDisponibilidadCBNoDisponible").setAttribute("hidden", "");
-            document.getElementById("alertDisponibilidadCBDisponible").setAttribute("hidden", "");
-            document.getElementById('txtCodigoBarras').focus();
-        }).catch(function() {
-            alert("Ocurrió algún error, reintenta por favor.")
-            document.getElementById('txtDescripcion').focus();
+        var docID = docRef.id;
+        var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+        catalogoListRef.get().then(function(doc) {
+            if (doc.exists) {
+                catalogoListRef.update({
+                    [[docID]+".CodigoBarras"]: Cod,
+                    [[docID]+".Descripcion"]: Des,
+                    [[docID]+".Categoria1"]: Cat1,
+                    [[docID]+".Categoria2"]: Cat2,
+                    [[docID]+".Unidades"]: Uni,
+                    [[docID]+".Presentacion"]: Pres,
+                    Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
+                })
+                .then(function(){
+                    console.log("Document written with ID: ", docRef.id);
+                    alert("¡Agregado correctamente!");
+                    var x = document.getElementById("txtCodigoBarras");
+                    x.value = "";
+                    var y = document.getElementById("txtDescripcion");
+                    y.value = "";
+                    var w = document.getElementById("txtUnidades");
+                    w.value = "";
+                    var z = document.getElementById("cmbPresentacion");
+                    z.value = "";
+                    var a = document.getElementById("cmbCategoria1");
+                    a.value = "";
+                    var b = document.getElementById("cmbCategoria2");
+                    b.value = "";
+                    document.getElementById('btnAgregar').disabled = false;
+                    document.getElementById("alertDisponibilidadCBNoDisponible").setAttribute("hidden", "");
+                    document.getElementById("alertDisponibilidadCBDisponible").setAttribute("hidden", "");
+                    document.getElementById('txtCodigoBarras').focus();
+                })
+                .catch(function(error){
+                    alert("Ocurrió algún error, reintenta por favor." + error);
+                    document.getElementById('txtDescripcion').focus();
+                });
+            } else {
+                catalogoListRef.set({
+                    [docID]:{
+                        CodigoBarras: Cod,
+                        Descripcion: Des,
+                        Categoria1: Cat1,
+                        Categoria2: Cat2,
+                        Unidades: Uni,
+                        Presentacion: Pres
+                    },
+                    Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
+                })
+                .then(function(){
+                    console.log("Document written with ID: ", docRef.id);
+                    alert("¡Agregado correctamente!");
+                    var x = document.getElementById("txtCodigoBarras");
+                    x.value = "";
+                    var y = document.getElementById("txtDescripcion");
+                    y.value = "";
+                    var w = document.getElementById("txtUnidades");
+                    w.value = "";
+                    var z = document.getElementById("cmbPresentacion");
+                    z.value = "";
+                    var a = document.getElementById("cmbCategoria1");
+                    a.value = "";
+                    var b = document.getElementById("cmbCategoria2");
+                    b.value = "";
+                    document.getElementById('btnAgregar').disabled = false;
+                    document.getElementById("alertDisponibilidadCBNoDisponible").setAttribute("hidden", "");
+                    document.getElementById("alertDisponibilidadCBDisponible").setAttribute("hidden", "");
+                    document.getElementById('txtCodigoBarras').focus();
+                })
+                .catch(function(error){
+                    alert("Ocurrió algún error, reintenta por favor." + error);
+                    document.getElementById('txtDescripcion').focus();
+                });
+            }
         });
     })
     .catch(function(error) {
         console.error("Error adding document: ", error);
-        alert("Ocurrió algún error, reintenta por favor.")
+        alert("Ocurrió algún error, reintenta por favor.");
         document.getElementById('txtCodigoBarras').focus();
         document.getElementById('btnAgregar').disabled = false;
     });

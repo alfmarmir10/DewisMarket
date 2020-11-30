@@ -57,7 +57,50 @@
             checkCookie();
             getNombreNegocio();
             $("#toastMsjCambioPrecio").toast('show');
+            makeAllSortable();
+            
         });
+
+        function sortTable(table, col, reverse) {
+            var tb = table.tBodies[0], // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+                tr = Array.prototype.slice.call(tb.rows, 0), // put rows into array
+                i;
+            reverse = -((+reverse) || -1);
+            // tr = tr.sort(function (a, b) { // sort rows
+            //     return reverse // `-1 *` if want opposite order
+            //         * (a.cells[col].textContent.trim() // using `.textContent.trim()` for test
+            //             .localeCompare(b.cells[col].textContent.trim())
+            //           );
+            // });
+            
+            tr = tr.sort(function (a, b) { // sort rows
+              if (col == 1){
+                return (a.cells[col].textContent.trim().localeCompare(b.cells[col].textContent.trim()));
+              } else {
+                return reverse * (a.cells[col].textContent.trim().localeCompare(b.cells[col].textContent.trim()));
+              } 
+              
+            });
+            
+            for(i = 0; i < tr.length; ++i) tb.appendChild(tr[i]); // append each row in order
+        }
+
+        function makeSortable(table) {
+            var th = table.tHead, i;
+            th && (th = th.rows[0]) && (th = th.cells);
+            if (th) i = th.length;
+            else return; // if no `<thead>` then do nothing
+            while (--i >= 0) (function (i) {
+                var dir = 1;
+                th[i].addEventListener('click', function () {sortTable(table, i, (dir = 1 - dir))});
+            }(i));
+        }
+
+        function makeAllSortable(parent) {
+            parent = parent || document.body;
+            var t = parent.getElementsByTagName('table'), i = t.length;
+            while (--i >= 0) makeSortable(t[i]);
+        }
 
         $(document).on("hide.bs.toast", "#toastMsjCambioPrecio", function(e) {
           document.getElementById('toastMsjCambioPrecio').style.zIndex = -999;
@@ -98,8 +141,6 @@
           $(Document).on("keyup", "#precioActualizarPrecio", function(e){
             var Costo = parseFloat($("#costoActualizarPrecio").val());
             var Precio = parseFloat($("#precioActualizarPrecio").val());
-            console.log(Costo);
-            console.log(Precio);
             var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
             $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
           });
@@ -108,16 +149,19 @@
             // var idNegocio = getCookie("idNegocio");
             var row = x.parentNode.rowIndex;
             if (confirm("¿Deseas modificar el precio?")) {
-              var Costo = parseFloat($("#"+row+"_costoProducto").text());
+              // var Costo = parseFloat($("#"+row+"_costoProducto").text());
+              var Costo = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[8].innerText);
+              var Des = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
               if (isNaN(Costo)){
                 alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
                 return;
               }
               var idNegocio = getCookie("idNegocio");
-              var CB = $("#"+row+"_codigoBarrasProducto").text();
-              var Des = $("#"+row+"_descripcionProducto").text();
-              var PrecioOriginal = parseFloat($("#"+row+"_precioProducto").text());
+              var CB = document.getElementById("tabla_catalogo").rows[row].cells[0].innerText;
+              var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[6].innerText);
+              if (isNaN(PrecioOriginal)) PrecioOriginal = "";
               var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
+              if (isNaN(Margen)) Margen = "-";
               $("#modalActualizarPrecio").modal('toggle');
               $("#modalActualizarPrecioLabel").text(Des);
               $("#costoActualizarPrecio").val(Costo);
@@ -132,9 +176,9 @@
 
         function getIdCatalogoProducto(x){
           var row = x.parentNode.rowIndex;
-          var IdCatalogo = $("#"+row+"_idCatalogo").text();
+          var IdCatalogo = document.getElementById("tabla_catalogo").rows[row].cells[11].innerText;
           loadGraphsProducto('Dinero', IdCatalogo);
-          document.getElementById('chartDescripcionArticulo').innerHTML = $("#"+row+"_descripcionProducto").text()
+          document.getElementById('chartDescripcionArticulo').innerHTML = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
         }
         
         // SCRIPTS GENERALES
@@ -345,9 +389,8 @@
                                     <table class="table table-striped " id="tabla_catalogo">
                                         <thead class="thead-dark">
                                             <tr>
-                                                <th scope="col" style="text-align: center">ID</th>
                                                 <th scope="col" style="text-align: center">CÓDIGO BARRAS</th>
-                                                <th scope="col" style="text-align: center" onclick="sortTable(2, 'tabla_catalogo')">DESCRIPCIÓN</th>
+                                                <th scope="col" style="text-align: center" id="thDescripcion_tabla_catalogo">DESCRIPCIÓN</th>
                                                 <th scope="col" style="text-align: center">UNIDADES</th>
                                                 <th scope="col" style="text-align: center">PRESENTACIÓN</th>
                                                 <th scope="col" style="text-align: center">CATEGORÍA 1</th>
