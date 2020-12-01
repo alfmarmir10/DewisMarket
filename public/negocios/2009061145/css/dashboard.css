@@ -27,6 +27,12 @@ body {
  * Sidebar
  */
 
+ #tabla_catalogo thead tr th{
+   position: sticky;
+   top: 0;
+   z-index: 10000;
+ }
+
 .sidebar {
   position: fixed;
   top: 0;

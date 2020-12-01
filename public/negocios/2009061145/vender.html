@@ -59,9 +59,38 @@
           getIdCliente(document.getElementById('Clientes').value);
       });
 
+
+
       window.addEventListener('unload', function(event) {
         stopListenerTablaVentas();
       });
+
+      function getCheckedFormaVender(){
+        var select = document.querySelector('input[name="formaVender"]:checked').value;
+        if (select == 'total'){
+          // document.getElementById('tdCantidad_agregar').disabled = true;
+          // document.getElementById('tdTotal_agregar').disabled = false;
+          document.getElementById("tdCantidad_agregar").setAttribute("contentEditable", "false");
+          document.getElementById("tdTotal_agregar").setAttribute("contentEditable", "true");
+          $("#tdTotal_agregar").text('');
+          $("#tdTotal_agregar").focus();
+        } else {
+          document.getElementById("tdTotal_agregar").setAttribute("contentEditable", "false");
+          document.getElementById("tdCantidad_agregar").setAttribute("contentEditable", "true");
+          $("#tdCantidad_agregar").text('');
+          $("#tdCantidad_agregar").focus();
+        }
+      }
+
+      $(Document).on("keyup","#tdTotal_agregar", function(){
+        var select = document.querySelector('input[name="formaVender"]:checked').value;
+        if (select == 'total'){
+          var Prec = parseFloat($("#tdPrecio_agregar").text());
+          var Tot = parseFloat($("#tdTotal_agregar").text());
+          var cantidad = Tot / Prec;
+          $("#tdCantidad_agregar").html(cantidad.toFixed(3));
+        }
+      })
 
       $(Document).on("click","#btnAgregarATabla", function(){
           myTimer();
@@ -468,16 +497,22 @@
                             <div class="table-responsive-xl">
                                 <table id='entrada-compras-agregar' class='table table-bordered'>
                                     <thead class="thead-dark">
-                                        <tr>
-                                            <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerVender" onclick="loadScannerVender();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
-                                            <th hidden>Id Artículo</th>
-                                            <th scope="col" style="text-align: center">Descripción</th>
-                                            <th scope="col" style="text-align: center">Cantidad</th>
-                                            <th scope="col" style="text-align: center">Precio $</th>
-                                            <th scope="col" style="text-align: center">Total $</th>
-                                            <th hidden>Costo $</th>
-                                            <th hidden>Ganancia $</th>
-                                        </tr>
+                                      <tr>
+                                        <input type="radio" id="cantidadRadioBtn" name="formaVender" value="cantidad" checked style="margin-left: 65%;" onchange="getCheckedFormaVender();">
+                                        <label for="cantidad" style="margin: 6px;" class="font-weight-bold">Cantidad</label>
+                                        <input type="radio" id="totalRadioBtn" name="formaVender" value="total" style="margin-left: 10px;" onchange="getCheckedFormaVender();">
+                                        <label for="total" style="margin: 6px;" class="font-weight-bold">Total</label>
+                                      </tr>
+                                      <tr>
+                                          <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerVender" onclick="loadScannerVender();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
+                                          <th hidden>Id Artículo</th>
+                                          <th scope="col" style="text-align: center">Descripción</th>
+                                          <th scope="col" style="text-align: center">Cantidad</th>
+                                          <th scope="col" style="text-align: center">Precio $</th>
+                                          <th scope="col" style="text-align: center">Total $</th>
+                                          <th hidden>Costo $</th>
+                                          <th hidden>Ganancia $</th>
+                                      </tr>
                                     </thead>
                                     <tr style="max-height: 50px;">
                                         <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>

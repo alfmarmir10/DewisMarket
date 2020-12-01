@@ -53,11 +53,11 @@ function totalizarFolioVenta(Fol){
   })
   var documentos = Array();
     document.getElementById('cantidadTotal').innerHTML = parseFloat(cantidadTotal).toFixed(2);
-    document.getElementById('cantidadArticulos').innerHTML = cantidadArticulos;
+    document.getElementById('cantidadArticulos').innerHTML = parseFloat(cantidadArticulos).toFixed(2);
     var docRef = db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta);
     docRef.update({
         Total: parseFloat(cantidadTotal).toFixed(2),
-        Articulos: parseFloat(cantidadArticulos)
+        Articulos: parseFloat(cantidadArticulos).toFixed(2)
     })
     .then(function(){
         db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta)
@@ -621,6 +621,10 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                         })
                                         .then(function(){
                                             console.log("Estatus actualizado.");
+                                            $("#cantidadRadioBtn").prop("checked", true);
+                                            document.getElementById("tdTotal_agregar").setAttribute("contentEditable", "false");
+                                            document.getElementById("tdCantidad_agregar").setAttribute("contentEditable", "true");
+                                            document.getElementById('cmbDescripcion').focus();
                                             db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
                                             .get()
                                             .then(function(querySnapshot){
@@ -851,6 +855,10 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                                 })
                                                 .then(function(){
                                                     console.log("Estatus actualizado.");
+                                                    $("#cantidadRadioBtn").prop("checked", true);
+                                                    document.getElementById("tdTotal_agregar").setAttribute("contentEditable", "false");
+                                                    document.getElementById("tdCantidad_agregar").setAttribute("contentEditable", "true");
+                                                    document.getElementById('cmbDescripcion').focus();
                                                     db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(idVenta).collection("Articulos").orderBy("Creado")
                                                     .get()
                                                     .then(function(querySnapshot){
@@ -1367,7 +1375,7 @@ function totalizarNE(Fol){
     })
     var documentos = Array();
     document.getElementById('cantidadTotal').innerHTML = parseFloat(cantidadTotal).toFixed(2);
-    document.getElementById('cantidadArticulos').innerHTML = cantidadArticulos.toFixed(2);
+    document.getElementById('cantidadArticulos').innerHTML = parseFloat(cantidadArticulos).toFixed(2);
     var docRef = db.collection("Negocios").doc(idNegocio).collection("Entradas").doc(idNE);
     docRef.update({
         Total: parseFloat(cantidadTotal).toFixed(2),
@@ -3315,18 +3323,21 @@ function CargarCatalogoFROM1doc(){
             }
         }
         
-        // var d = new Date();
-        // var minutos, horas, dia, mes;
-        // if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
-        // if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
-        // if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
-        // if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
+        var d = new Date();
+        var minutos, horas, dia, mes;
+        if (d.getMinutes()<10){minutos = '0'+d.getMinutes();}else{minutos = d.getMinutes()};
+        if (d.getHours()<10){horas = '0'+d.getHours();}else{horas = d.getHours()};
+        if (d.getDate()<10){dia = '0'+d.getDate();}else{dia = d.getDate()};
+        if (d.getMonth()<10){mes = '0'+(d.getMonth()+1);}else{mes = (d.getMonth()+1)};
 
-        // var nombreArchivo = 'Catálogo '+dia+'/'+mes+'/'+d.getFullYear()+'  '+horas+':'+minutos;
-        // PDF_Prueba(nombreArchivo);
-        // document.getElementById("cmbDescripcion").selectedIndex = 0;
-        // document.getElementById("cmbCategoria1").selectedIndex = 0;
-        // document.getElementById("cmbCategoria2").selectedIndex = 0;
+        var nombreArchivo = 'Catálogo '+dia+'/'+mes+'/'+d.getFullYear()+'  '+horas+':'+minutos;
+        PDF_Prueba(nombreArchivo);
+        var x = document.getElementById("cmbCategoria1");
+        x.value = "";
+        x = document.getElementById("cmbCategoria2");
+        x.value = "";
+        x = document.getElementById("cmbDescripcion");
+        x.value = "";
     })
 
 
