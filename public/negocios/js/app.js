@@ -125,7 +125,7 @@ function Registrar(){
 }
 
 function IniciarSesion(){
-    alert('Entró');
+    // alert('Entró');
     // localStorage.clear();
     console.log(sessionStorage.length);
     var idNegocio = document.getElementById('idNegocioInicioSesion').value;
