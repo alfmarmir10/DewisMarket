@@ -1195,7 +1195,11 @@ function validateToken(){
     });
 }
 
-function actualizarPrecio(CB, row, precio, margen){
+function actualizarPrecio(CB, row, precio, margen, precioOriginal){
+    if (precio == 0 || precio == ""){
+        alert("El precio mínimo es de 0.01. No puede ser 0 (cero).");
+        return;
+    }
     if (confirm("El margen será del "+ parseFloat(margen).toFixed(1) + "%. \n\n ¿Es correcto?")) {
         var idNegocio = getCookie("idNegocio");
         db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB).get()
@@ -1218,6 +1222,61 @@ function actualizarPrecio(CB, row, precio, margen){
         })
     } else {
         $("#precioProducto").text(precioOriginal);
+    }
+}
+
+function actualizarArticuloCatalogo(CB, row, Des, Uni, Pres, Cat1, Cat2, IdCat, DesOriginal, rowOriginal){
+    if ( CB == "" || Des == "" || Uni == "" || Pres == "" || Cat1 == "" || Cat2 == "" ){
+        alert("Todos los campos son requeridos, verifica por favor.");
+        return;
+    }
+    
+    if (confirm("¿Los datos son correctos?")) {
+        var idNegocio = getCookie("idNegocio");
+        db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(IdCat)
+        .update({
+            Descripcion: Des,
+            Unidades: Uni,
+            Presentacion: Pres,
+            Categoria1: Cat1,
+            Categoria2: Cat2
+        })
+        .then(function() {
+            console.log(rowOriginal);
+            console.log(''+rowOriginal+'_descripcionProducto');
+            $("#"+rowOriginal+"_descripcionProducto").text(Des);
+            document.getElementById("tabla_catalogo").rows[row].cells[2].innerText = Uni;
+            document.getElementById("tabla_catalogo").rows[row].cells[3].innerText = Pres;
+            document.getElementById("tabla_catalogo").rows[row].cells[4].innerText = Cat1;
+            document.getElementById("tabla_catalogo").rows[row].cells[5].innerText = Cat2;
+            var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+            catalogoListRef.update({
+                [[IdCat]+".Descripcion"]: Des,
+                [[IdCat]+".Categoria1"]: Cat1,
+                [[IdCat]+".Categoria2"]: Cat2,
+                [[IdCat]+".Unidades"]: Uni,
+                [[IdCat]+".Presentacion"]: Pres,
+                Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
+            })
+            .then(function(){
+                if (Des != DesOriginal){
+                    catalogoListRef.update({
+                        Descripcion: firebase.firestore.FieldValue.arrayRemove(DesOriginal)  
+                    })
+                }
+                $("#"+rowOriginal+"_descripcionProducto").focus();
+                alert("Artículo Actualizado Correctamente");
+                $("#modalEditarArticuloCatalogo").modal('toggle');
+            })
+            .catch(function(error){
+                console.error(error);
+            })
+        })
+        .catch(function(error){
+            console.log("Error actualizando artículo: \n" + error);
+        })
+    } else {
+        
     }
 }
 
@@ -2786,6 +2845,17 @@ function loadIndexGraphs(unidadesBtn){
         documentos.push(doc.data());
         renderIndexGraphs(documentos, unidades);
     });
+    var fecha1 = new Date(fecha7 - 518400000);
+    var mes1 = validarFecha(fecha1)[1];
+    var mes7 = validarFecha(fecha7)[1];
+
+    if (mes1 < mes7){
+        listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha1.getFullYear().toString()).doc(mes1.toString())
+        .onSnapshot(function(doc) {
+        documentos.push(doc.data());
+        renderIndexGraphs(documentos, unidades);
+    });
+    }
 }
 
 function loadIndexGraphsSinRecargar(unidadesBtn){
@@ -2826,46 +2896,74 @@ function renderIndexGraphs(documentos, unidades){
     // console.log(fecha7String);
 
     try {
-        v1 = parseFloat(getNum(documentos[0][fecha1String][unidades])).toFixed(2);   
+        v1 = parseFloat(getNum(documentos[0][fecha1String][unidades])).toFixed(2);
     } catch (error) {
-        // console.log(error);
+        try {
+            v1 = parseFloat(getNum(documentos[1][fecha1String][unidades])).toFixed(2);
+        } catch (error) {
+            
+        }
     }
 
     try {
         v2 = parseFloat(getNum(documentos[0][fecha2String][unidades])).toFixed(2);   
     } catch (error) {
-        // console.log(error);
+        try {
+            v2 = parseFloat(getNum(documentos[1][fecha2String][unidades])).toFixed(2);       
+        } catch (error) {
+            
+        }
     }
 
     try {
         v3 = parseFloat(getNum(documentos[0][fecha3String][unidades])).toFixed(2);   
     } catch (error) {
-        // console.log(error);
+        try {
+            v3 = parseFloat(getNum(documentos[1][fecha3String][unidades])).toFixed(2);   
+        } catch (error) {
+            
+        }
     }
 
     try {
         v4 = parseFloat(getNum(documentos[0][fecha4String][unidades])).toFixed(2);   
     } catch (error) {
-        // console.log(error);
+        try {
+            v4 = parseFloat(getNum(documentos[1][fecha4String][unidades])).toFixed(2);   
+        } catch (error) {
+            
+        }
     }
 
 
     try {
         v5 = parseFloat(getNum(documentos[0][fecha5String][unidades])).toFixed(2);   
     } catch (error) {
-        // console.log(error);
+        try {
+            v5 = parseFloat(getNum(documentos[1][fecha5String][unidades])).toFixed(2);   
+        } catch (error) {
+            
+        }
     }
 
     try {
         v6 = parseFloat(getNum(documentos[0][fecha6String][unidades])).toFixed(2);   
     } catch (error) {
-        // console.log(error);
+        try {
+            v6 = parseFloat(getNum(documentos[1][fecha6String][unidades])).toFixed(2);      
+        } catch (error) {
+            
+        }
     }
 
     try {
         v7 = parseFloat(getNum(documentos[0][fecha7String][unidades])).toFixed(2);   
     } catch (error) {
-        // console.log(error);
+        try {
+            v7 = parseFloat(getNum(documentos[1][fecha7String][unidades])).toFixed(2);   
+        } catch (error) {
+            
+        }
     }
 
     options = {
@@ -3258,7 +3356,9 @@ function CargarCatalogoFROM1doc(){
         //keys.sort();
         // console.log("Ordenado:"+keys);
         var bandera;
+        var i = 0;
         for(x = keys.length; x > 0; x--){
+            i = i + 1;
             bandera = false;
             try{
                 if (docs[0][keys[x-1]]['CodigoBarras'] != undefined){
@@ -3272,7 +3372,10 @@ function CargarCatalogoFROM1doc(){
             if (bandera === true){
                 var existencia = "-";
                 if (docs[0][keys[x-1]]["Existencia"] != undefined){
-                    existencia = docs[0][keys[x-1]]["Existencia"];
+                    existencia = parseFloat(docs[0][keys[x-1]]["Existencia"]).toFixed(2);
+                    if (isNaN(existencia)){
+                        existencia = "-";
+                    }
                 }
                 var UltimoCosto = "-";
                 if (docs[0][keys[x-1]]["UltimoCosto"] != undefined){
@@ -3306,18 +3409,19 @@ function CargarCatalogoFROM1doc(){
                 var PRES = docs[0][keys[x-1]]["Presentacion"];
 
                 var msg = "<tr>"
-                +"<td style='text-align: center' id='"+x+"_codigoBarrasProducto'>"+CB+"</td>"
-                +"<td style='text-align: center' id='"+x+"_descripcionProducto' onclick='getIdCatalogoProducto(this)'><a href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+DES+"</a></td>"
+                +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+CB+"</td>"
+                +"<td style='text-align: center' onclick='getIdCatalogoProducto(this)'><a id='"+i+"_descripcionProducto' href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+DES+"</a></td>"
                 +"<td style='text-align: center'>"+UNI+"</td>"
                 +"<td style='text-align: center'>"+PRES+"</td>"
                 +"<td style='text-align: center'>"+Categoria1+"</td>"
                 +"<td style='text-align: center'>"+Categoria2+"</td>"
-                +"<td style='text-align: center' id='"+x+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
+                +"<td style='text-align: center' id='"+i+"_precioProducto' contenteditable='true' onclick='index(this)'>"+Precio+"</td>"
                 +"<td style='text-align: center'>"+existencia+"</td>"
-                +"<td style='text-align: center' id='"+x+"_costoProducto'>"+UltimoCosto+"</td>"
+                +"<td style='text-align: center' id='"+i+"_costoProducto'>"+UltimoCosto+"</td>"
                 +"<td style='text-align: center'>"+UltimoProveedor+"</td>"
-                +"<td style='text-align: center' id='"+x+"_margenProducto'>"+MargenActual+" %</td>"
-                +"<td hidden id='"+x+"_idCatalogo'>"+keys[x-1]+"</td>"
+                +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
+                +"<td hidden id='"+i+"_idCatalogo'>"+keys[x-1]+"</td>"
+                +"<td hidden>"+i+"</td>"
                 +"<td style='text-align: center' id='"+keys[x-1]+"' onclick='openModalEditarArticuloCatalogo(this)'><button class='btn btn-info btn-sm' name='"+keys[x-1]+"'>Editar</button></td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
@@ -3885,16 +3989,16 @@ function llenarComboBoxCat2CatalogoListener(){
         // td.innerHTML = '';
         // console.log(doc.id, " => ", doc.data());
         try {
-            var cList = document.querySelector("#cmbCategoria2_list");
+            var cList = document.querySelector("#cmbcat2_list");
             cList.remove(0);    
         } catch (error) {
             console.log("Error: "+error);
         }
         documentosComboBox = [];
         documentosComboBox = doc.get("Descripcion");
-        var container = document.getElementById("cmbCategoria2");
+        var container = document.getElementById("cmbCat2");
         var dlist = document.createElement('datalist');
-        dlist.id = "cmbCategoria2_list";
+        dlist.id = "cmbCat2_list";
 
         for (const val of documentosComboBox){
             var option = document.createElement("option");
@@ -3903,8 +4007,8 @@ function llenarComboBoxCat2CatalogoListener(){
             dlist.appendChild(option);
         };
 
-        document.getElementById('cmbCategoria2').appendChild(dlist);
-        ordenarCmb("cmbCategoria2_list");
+        document.getElementById('cmbCat2').appendChild(dlist);
+        ordenarCmb("cmbCat2_list");
         // document.getElementById('cmbCategoria2').focus();
     });
 }

@@ -61,6 +61,16 @@
             
         });
 
+        $(Document).on("keydown", "#txtUnidades", function(e){
+		    if(e.keyCode == 13){
+              $("#cmbCat1").focus();
+            } else {
+                var x = event.charCode || event.keyCode;
+
+                if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8) e.preventDefault();
+            }
+        });
+
         function sortTable(table, col, reverse) {
             var tb = table.tBodies[0], // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
                 tr = Array.prototype.slice.call(tb.rows, 0), // put rows into array
@@ -177,23 +187,27 @@
         function openModalEditarArticuloCatalogo(x){
             var idNegocio = getCookie("idNegocio");
             var row = x.parentNode.rowIndex;
-            console.log(row);
             var CB = document.getElementById("tabla_catalogo").rows[row].cells[0].innerText;
             var Des = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
             var Uni = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
             var Pres = document.getElementById("tabla_catalogo").rows[row].cells[3].innerText;
             var Cat1 = document.getElementById("tabla_catalogo").rows[row].cells[4].innerText;
             var Cat2 = document.getElementById("tabla_catalogo").rows[row].cells[5].innerText;
+            var IdCatalogo = document.getElementById("tabla_catalogo").rows[row].cells[11].innerText;
+            var rowOriginal = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
 
             $("#modalEditarArticuloCatalogo").modal('toggle');
-            $("#modalEditarArticuloCatalogoLabel").text(Des);
+            $("#modalEditarArticuloCatalogoLabel").text("Editar Producto");
             $("#txtCB").val(CB);
             $("#DescripcionEditarArticulo").val(Des);
+            $("#DescripcionOriginalEditarArticulo").val(Des);
             $("#txtUnidades").val(Uni);
             $("#cmbPresentacion").val(Pres);
-            $("#cmbCategoria1").val(Cat1);
-            $("#cmbCategoria2").val(Cat2);
-            $("#rowActualizarPrecio").val(row);
+            $("#cmbCat1").val(Cat1);
+            $("#cmbCat2").val(Cat2);
+            $("#rowEditarArticulo").val(row);
+            $("#rowOriginalEditarArticulo").val(rowOriginal);
+            $("#IdCatalogoEditarArticulo").val(IdCatalogo);
         }
 
         function getIdCatalogoProducto(x){
@@ -540,7 +554,7 @@
                                 <input type="text" class="form-control" id="margenActualizarPrecio" aria-describedby="margenHelp" disabled="true">
                               </div>
                             <br>
-                            <button type="button" class="btn btn-warning" id="btnAceptarActualizaPrecio" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
+                            <button type="button" class="btn btn-warning" id="btnAceptarActualizaPrecio" onclick="actualizarPrecio($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val(), $('#precioActualizarPrecio').val())">Continuar</button>                                        
                           </form>
                     </div>
                 </div>
@@ -562,8 +576,10 @@
                           <div class="form-group">
                             <label for="txtCB" class="font-weight-bold">Código de Barras:</label>
                             <input type="text" class="form-control" id="txtCB" aria-describedby="costoHelp" disabled="true">
-                            <input type="text" class="form-control" id="txtIdCatalogo" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
-                            <input type="text" class="form-control" id="rowActualizarPrecio" aria-describedby="rowHelp" hidden="true" disabled="true">
+                            <input type="text" class="form-control" id="IdCatalogoEditarArticulo" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
+                            <input type="text" class="form-control" id="DescripcionOriginalEditarArticulo" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
+                            <input type="text" class="form-control" id="rowEditarArticulo" aria-describedby="rowHelp" hidden="true" disabled="true">
+                            <input type="text" class="form-control" id="rowOriginalEditarArticulo" aria-describedby="rowHelp" hidden="true" disabled="true">
                           </div>
                           <div class="form-group">
                             <label for="DescripcionEditarArticulo" class="font-weight-bold">Descripción:</label>
@@ -591,20 +607,20 @@
                             <input id="txtUnidades" pattern="[0-9.]*" type="text" placeholder="Ejemplo: 10, 20. 5." class="form-control" height="38px">
                           </div>
                           <div class="form-group">
-                            <label for="cmbCategoria1" class="reclaim-black">Categoría 1</label>
-                            <input list="cmbCategoria1_list" id="cmbCategoria1" class="form-control" placeholder="Selecciona...">
-                            <datalist id="cmbCategoria1_list">
+                            <label for="cmbCat1" class="reclaim-black">Categoría 1</label>
+                            <input list="cmbCat1_list" id="cmbCat1" class="form-control" placeholder="Selecciona...">
+                            <datalist id="cmbCat1_list">
                                 <option>Comestible</option>
                                 <option>No Comestible</option>
                             </datalist>
                           </div>
                           <div class="form-group">
-                              <label for="cmbCategoria2" class="reclaim-black">Categoría 2</label>
-                              <input id="cmbCategoria2" placeholder="Selecciona..." class="form-control" list="cmbCategoria2_list"></input>
-                              <script>llenarComboBoxDescripcionCatalogoListener();</script>
+                              <label for="cmbCat2" class="reclaim-black">Categoría 2</label>
+                              <input id="cmbCat2" placeholder="Selecciona..." class="form-control" list="cmbCat2_list"></input>
+                              <script>llenarComboBoxCat2CatalogoListener();</script>
                           </div>
                           <br>
-                          <button type="button" class="btn btn-warning" id="btnAceptarActualizaArticuloCatalogo" onclick="actualizarArticuloCatalogo($('#codigoBarrasActualizarPrecio').val(),$('#rowActualizarPrecio').val(),$('#precioActualizarPrecio').val(),$('#margenActualizarPrecio').val())">Continuar</button>                                        
+                          <button type="button" class="btn btn-warning" id="btnAceptarActualizaArticuloCatalogo" onclick="actualizarArticuloCatalogo($('#txtCB').val(),$('#rowEditarArticulo').val(),$('#DescripcionEditarArticulo').val(),$('#txtUnidades').val(),$('#cmbPresentacion').val(),$('#cmbCat1').val(),$('#cmbCat2').val(), $('#IdCatalogoEditarArticulo').val(), $('#DescripcionOriginalEditarArticulo').val(), $('#rowOriginalEditarArticulo').val())">Continuar</button>                                        
                         </form>
                   </div>
                 </div>
