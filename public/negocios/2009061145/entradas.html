@@ -113,8 +113,16 @@
           var Tot = parseFloat($("#tdTotal_agregar").text());
           var Prov = document.getElementById("cmbProveedores").value;
           var Fol = document.getElementById("txtFolio").value;
+          if (Id == ""){
+              alert("Vuelve a capturar el código de barras.");
+              CB = document.getElementById('tdCodigoBarras_agregar');
+              CB.innerHTML = '';
+              var DES = document.getElementById('cmbDescripcion');
+              DES.value = "";
+              return;
+          }
 
-          if (CB == "" || Fol == "" || Can == "" || Cos == "" || Fol == ""){
+          if (CB == "" || Fol == "" || Can == "" || Cos == "" || Fol == "" || Id == ""){
               alert("Todos los campos son requeridos");
           } else {
               agregarElementosNE(CB, Id, Des, Can, (Cos).toFixed(2), (Tot).toFixed(2), Prov, Fol);
@@ -122,9 +130,22 @@
       });
 
       function sendCB(sender){
-        var CB = sender.innerText;
-        getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB);
+        var CB = $("#tdCodigoBarras_agregar");
+        var txt = $("#tdCodigoBarras_agregar").text();
+        if (txt != ""){
+            CB.innerText(txt.trim());
+        }
+        var Cod = sender.innerText;
+        getInfoProducto_agregar_NE_codigo_barrasCapturaManual(Cod);
       }
+
+      $(Document).on("focus", "#tdCodigoBarras_agregar", function(e){
+        var CB = $("#tdCodigoBarras_agregar");
+        var txt = $("#tdCodigoBarras_agregar").text();
+        if (txt != ""){
+            CB.innerText(txt.trim());
+        }
+      });
 
     $(Document).on("keydown", "#tdCantidad_agregar", function(e){
           if(e.keyCode == 13){
@@ -233,9 +254,6 @@
               } else {
               $("#segundos").text(segundos);
               }
-
-              // var idNE = anio+''+mes+''+dia+''+hora+''+minutos+''+segundos+''+Fol;
-              // $("#folio_Documento").text(idNE);
 
           } else {
               document.getElementById("txtFolio").value = "";

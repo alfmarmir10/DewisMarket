@@ -117,8 +117,9 @@ function calcularTicketPromedioKPI() {
     var mes = $("#mes").text();
     var fecha2 = $("#fecha2").text();
     var KPI = Array();
-    var updateRef2 = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(anio).doc(mes)
-    .get()
+    var updateRef2 = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(anio).doc(mes);
+
+    updateRef2.get()
     .then(function(doc){
         KPI.push(doc.data());
         tickets = KPI[0][fecha2]['Tickets'];
@@ -158,10 +159,14 @@ function eliminarElementosFolioVenta(btn) {
         .then(function(doc){
             var updateRef = db.collection("Negocios").doc(idNegocio).collection('Catalogo').doc(docIdCatalogo);
             updateRef.update({
-                Existencia: firebase.firestore.FieldValue.increment((cantidad))
+                Existencia: firebase.firestore.FieldValue.increment(cantidad)
             })
             .then(function(){
                 console.log("Existencia actualizada.");
+                var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                catalogoListRef.update({
+                    [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad)
+                });
                 db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas")
                 .update({
                     [[fecha2+".Piezas"]]: firebase.firestore.FieldValue.increment((cantidad * -1)),
@@ -192,7 +197,7 @@ function eliminarElementosFolioVenta(btn) {
                     console.log("Histórico de Costos establecido correctamente.");
                     db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("FoliosVenta").doc("FoliosVenta")
                     .update({
-                        [[idVenta]+".Estatus"]: "No Aplicado"
+                        [[idVenta+".Estatus"]]: "No Aplicado"
                     })
                     .then(function() {
                         db.collection("Negocios").doc(idNegocio).collection("Ventas").doc(btn.id).collection("Articulos").doc(btn.name).delete().then(function() {
@@ -556,7 +561,10 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                         })
                         .then(function(){
                             console.log("Existencia actualizada.");
-                            
+                            var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                            catalogoListRef.update({
+                                [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad * -1)
+                            });
                             var historicoVentasProdRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas");
 
                             historicoVentasProdRef.get().then(function(doc) {
@@ -789,7 +797,10 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                 })
                                 .then(function(){
                                     console.log("Existencia actualizada.");
-                                    
+                                    var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                                    catalogoListRef.update({
+                                        [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad * -1)
+                                    });
                                     var historicoVentasProdRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoVentas").doc(anio).collection("Ventas").doc("Ventas");
 
                                     historicoVentasProdRef.get().then(function(doc) {
@@ -1205,19 +1216,30 @@ function actualizarPrecio(CB, row, precio, margen, precioOriginal){
         db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB).get()
         .then((querySnapshot) => {
             querySnapshot.forEach(function(doc){
+                var IdCat = doc.id;
                 db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(doc.id).update({
                     Precio: parseFloat(precio),
                     MargenActual: parseFloat(margen)
                 })
                 .then(function() {
-                    document.getElementById("tabla_catalogo").rows[row].cells[6].innerText = parseFloat(precio).toFixed(1);
-                    document.getElementById("tabla_catalogo").rows[row].cells[10].innerText = parseFloat(margen).toFixed(1)+" %";
-                    alert("Precio Actualizado Correctamente");
-                    $("#modalActualizarPrecio").modal('toggle');
+                    var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                    catalogoListRef.update({
+                        [[IdCat+".Precio"]]: parseFloat(precio),
+                        [[IdCat+".MargenActual"]]: parseFloat(margen) 
+                    })
+                    .then(function(){
+                        document.getElementById("tabla_catalogo").rows[row].cells[6].innerText = parseFloat(precio).toFixed(1);
+                        document.getElementById("tabla_catalogo").rows[row].cells[10].innerText = parseFloat(margen).toFixed(1)+" %";
+                        alert("Precio Actualizado Correctamente");
+                        $("#modalActualizarPrecio").modal('toggle');
+                    })
+                    .catch(function(error){
+                        console.error(error);
+                    });
                 })
                 .catch(function(error){
                     console.log("Error actualizando precio: \n" + error);
-                })
+                });
             })
         })
     } else {
@@ -1251,11 +1273,11 @@ function actualizarArticuloCatalogo(CB, row, Des, Uni, Pres, Cat1, Cat2, IdCat, 
             document.getElementById("tabla_catalogo").rows[row].cells[5].innerText = Cat2;
             var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
             catalogoListRef.update({
-                [[IdCat]+".Descripcion"]: Des,
-                [[IdCat]+".Categoria1"]: Cat1,
-                [[IdCat]+".Categoria2"]: Cat2,
-                [[IdCat]+".Unidades"]: Uni,
-                [[IdCat]+".Presentacion"]: Pres,
+                [[IdCat+".Descripcion"]]: Des,
+                [[IdCat+".Categoria1"]]: Cat1,
+                [[IdCat+".Categoria2"]]: Cat2,
+                [[IdCat+".Unidades"]]: Uni,
+                [[IdCat+".Presentacion"]]: Pres,
                 Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
             })
             .then(function(){
@@ -1413,7 +1435,6 @@ function editarElementosNE(btn) {
 function totalizarNE(Fol){
     var anio = $("#anio").text();
     var mes = $("#mes").text();
-    var fecha7 = new Date();
     var idNegocio = getCookie("idNegocio");
     var fecha = $("#anio").text()+$("#mes").text()+$("#dia").text();
     var hora = $("#hora").text()+$("#minutos").text()+$("#segundos").text();
@@ -1446,6 +1467,9 @@ function totalizarNE(Fol){
         .get()
         .then(function(doc) {
             documentos.push(doc.data());
+            console.log(documentos);
+            console.log(anio);
+            console.log(mes);
             console.log("Total: "+parseFloat(documentos[0]["Total"]).toFixed(2));
 
             var entradasListRef = db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(anio).doc(mes);
@@ -1519,7 +1543,7 @@ function escuchaNE(){
         keys.sort();
         // console.log("Ordenado:"+keys);
         var bandera;
-        for(x = keys.length; x > 0; x--){
+        for(x = keys.length; x >= 0; x--){
             bandera = false;
             try{
                 if (docs[0][keys[x-1]]['Fecha'] != undefined){
@@ -1580,9 +1604,15 @@ function eliminarElementosNE(btn) {
                 })
                 .then(function(){
                     console.log("Existencia actualizada.");
+                    var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                    catalogoListRef.update({
+                        [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad * -1),
+                        [[docIdCatalogo+".UltimoCosto"]]: costoPrevio,
+                        [[docIdCatalogo+".UltimoProveedor"]]: provPrevio
+                    });
                     db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc($("#anio").text())
                     .update({
-                        [[idNE]+".Estatus"]:"Cancelado"
+                        [[idNE+".Estatus"]]:"Cancelado"
                     })
 
 
@@ -1649,9 +1679,13 @@ function eliminarElementosNE(btn) {
                 })
                 .then(function(){
                     console.log("Existencia actualizada.");
+                    var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                    catalogoListRef.update({
+                        [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad * -1)
+                    });
                     db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc($("#anio").text())
                     .update({
-                        [[idNE]+".Estatus"]:"Cancelado"
+                        [[idNE+".Estatus"]]:"Cancelado"
                     })
 
 
@@ -1946,6 +1980,15 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                                     })
                                     .then(function(){
                                         console.log("Existencia actualizada.");
+                                        var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                                        catalogoListRef.update({
+                                            [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad),
+                                            [[docIdCatalogo+".UltimoCosto"]]: costo,
+                                            [[docIdCatalogo+".UltimoProveedor"]]: Prov,
+                                            [[docIdCatalogo+".MargenActual"]]: parseFloat(margen.toFixed(1)),
+                                            [[docIdCatalogo+".CostoPrevio"]]: costoPrevio,
+                                            [[docIdCatalogo+".ProvPrevio"]]: provPrevio
+                                        });
                                         db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc(anio)
                                         .get()
                                         .then(function(doc){
@@ -1961,9 +2004,9 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                                             if (bandera == true) {
                                                 db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc(anio)
                                                 .update({
-                                                    [[idNE]+".UltModif"]: firebase.firestore.Timestamp.now(),
-                                                    [[idNE]+".UltCosto"]: costo,
-                                                    [[idNE]+".Estatus"]: "Aplicado"
+                                                    [[idNE+".UltModif"]]: firebase.firestore.Timestamp.now(),
+                                                    [[idNE+".UltCosto"]]: costo,
+                                                    [[idNE+".Estatus"]]: "Aplicado"
                                                 })
                                                 .then(function(){
                                                     console.log("Historico Costos ACTUALIZADO correctamente");
@@ -2038,17 +2081,17 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                                                         if (doc.exists) {
                                                             db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc(anio)
                                                             .update({
-                                                                [[idNE]+".Fecha"]: fecha2,
-                                                                [[idNE]+".Hora"]: hora2,
-                                                                [[idNE]+".Folio"]: Fol,
-                                                                [[idNE]+".Proveedor"]: Prov,
-                                                                [[idNE]+".Usuario"]: Usuario,
-                                                                [[idNE]+".Creado"]: firebase.firestore.Timestamp.now(),
-                                                                [[idNE]+".UltModif"]: firebase.firestore.Timestamp.now(),
-                                                                [[idNE]+".DocOrigen"]: idNE,
-                                                                [[idNE]+".Costo"]: costo,
-                                                                [[idNE]+".UltCosto"]: costo,
-                                                                [[idNE]+".Estatus"]:"Aplicado"
+                                                                [[idNE+".Fecha"]]: fecha2,
+                                                                [[idNE+".Hora"]]: hora2,
+                                                                [[idNE+".Folio"]]: Fol,
+                                                                [[idNE+".Proveedor"]]: Prov,
+                                                                [[idNE+".Usuario"]]: Usuario,
+                                                                [[idNE+".Creado"]]: firebase.firestore.Timestamp.now(),
+                                                                [[idNE+".UltModif"]]: firebase.firestore.Timestamp.now(),
+                                                                [[idNE+".DocOrigen"]]: idNE,
+                                                                [[idNE+".Costo"]]: costo,
+                                                                [[idNE+".UltCosto"]]: costo,
+                                                                [[idNE+".Estatus"]]:"Aplicado"
                                                             })
                                                             .then(function() {
                                                                 console.log("Hisórico de Costos establecido correctamente.");
@@ -2263,6 +2306,15 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                                             })
                                             .then(function(){
                                                 console.log("Existencia actualizada.");
+                                                var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                                                catalogoListRef.update({
+                                                    [[docIdCatalogo+".Existencia"]]: firebase.firestore.FieldValue.increment(cantidad),
+                                                    [[docIdCatalogo+".UltimoCosto"]]: costo,
+                                                    [[docIdCatalogo+".UltimoProveedor"]]: Prov,
+                                                    [[docIdCatalogo+".MargenActual"]]: parseFloat(margen.toFixed(1)),
+                                                    [[docIdCatalogo+".CostoPrevio"]]: costoPrevio,
+                                                    [[docIdCatalogo+".ProvPrevio"]]: provPrevio
+                                                });
 
                                                 var historicoCostosRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc(anio);
 
@@ -2270,17 +2322,17 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
                                                     if (doc.exists) {
                                                         db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docIdCatalogo).collection("HistoricoCostos").doc(anio)
                                                         .update({
-                                                            [[idNE]+".Fecha"]: fecha2,
-                                                            [[idNE]+".Hora"]: hora2,
-                                                            [[idNE]+".Folio"]: Fol,
-                                                            [[idNE]+".Proveedor"]: Prov,
-                                                            [[idNE]+".Usuario"]: Usuario,
-                                                            [[idNE]+".Creado"]: firebase.firestore.Timestamp.now(),
-                                                            [[idNE]+".UltModif"]: firebase.firestore.Timestamp.now(),
-                                                            [[idNE]+".DocOrigen"]: idNE,
-                                                            [[idNE]+".Costo"]: costo,
-                                                            [[idNE]+".UltCosto"]: costo,
-                                                            [[idNE]+".Estatus"]:"Aplicado"
+                                                            [[idNE+".Fecha"]]: fecha2,
+                                                            [[idNE+".Hora"]]: hora2,
+                                                            [[idNE+".Folio"]]: Fol,
+                                                            [[idNE+".Proveedor"]]: Prov,
+                                                            [[idNE+".Usuario"]]: Usuario,
+                                                            [[idNE+".Creado"]]: firebase.firestore.Timestamp.now(),
+                                                            [[idNE+".UltModif"]]: firebase.firestore.Timestamp.now(),
+                                                            [[idNE+".DocOrigen"]]: idNE,
+                                                            [[idNE+".Costo"]]: costo,
+                                                            [[idNE+".UltCosto"]]: costo,
+                                                            [[idNE+".Estatus"]]:"Aplicado"
                                                         })
                                                         .then(function() {
                                                             console.log("Hisórico de Costos establecido correctamente.");
@@ -2407,7 +2459,7 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
 }
 
 function getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB){
-    console.log(CB);
+    console.log(CB.trim());
     var idNegocio = getCookie("idNegocio");
     var DES = document.getElementById('cmbDescripcion');
     var COS = document.getElementById('tdCosto_agregar');
@@ -2417,7 +2469,7 @@ function getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB){
     //var codigo = tabla.getElementById('tdCodigoBarras_agregar')[0];
     var bandera = false;
 
-    db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB).get()
+    db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB.trim()).get()
     .then((querySnapshot) => {
         querySnapshot.forEach(function(doc){
             // DES.innerHTML='';
@@ -2441,12 +2493,33 @@ function getInfoProducto_agregar_NE_codigo_barrasCapturaManual(CB){
     });
 }
 
+function getInfoProducto_agregar_NE_codigo_barrasSinModificarCosto(CB){
+    console.log(CB.trim());
+    var idNegocio = getCookie("idNegocio");
+    var DES = document.getElementById('cmbDescripcion');
+    var ID = document.getElementById('tdIdArticulo_agregar');
+    ID.innerHTML = '';
+
+    db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB.trim()).get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach(function(doc){
+            DES.value = doc.get("Descripcion");
+            ID.innerHTML = doc.id;
+            console.log("ID: "+ doc.id);
+            $("#tdCantidad_agregar").focus();
+        })
+    })
+    .catch(function(error){
+        alert("Error: "+error);
+    });
+}
+
 function getInfoProducto_agregar_NE_codigo_barras(codigo){
     var idNegocio = getCookie("idNegocio");
     console.log(codigo);
     var CB = document.getElementById('tdCodigoBarras_agregar');
     CB.innerHTML = '';
-    CB.innerHTML = codigo;
+    CB.innerHTML = codigo.trim();
     var DES = document.getElementById('cmbDescripcion');
     var COS = document.getElementById('tdCosto_agregar');
     var costo = "";
@@ -2844,18 +2917,18 @@ function loadIndexGraphs(unidadesBtn){
         documentos = [];
         documentos.push(doc.data());
         renderIndexGraphs(documentos, unidades);
-    });
-    var fecha1 = new Date(fecha7 - 518400000);
-    var mes1 = validarFecha(fecha1)[1];
-    var mes7 = validarFecha(fecha7)[1];
+        var fecha1 = new Date(fecha7 - 518400000);
+        var mes1 = validarFecha(fecha1)[1];
+        var mes7 = validarFecha(fecha7)[1];
 
-    if (mes1 < mes7){
-        listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha1.getFullYear().toString()).doc(mes1.toString())
-        .onSnapshot(function(doc) {
-        documentos.push(doc.data());
-        renderIndexGraphs(documentos, unidades);
+        if (mes1 < mes7){
+            db.collection("Negocios").doc(idNegocio).collection("KPI").doc("VentaTotal").collection(fecha1.getFullYear().toString()).doc(mes1.toString())
+            .get().then(function(doc) {
+                documentos.push(doc.data());
+                renderIndexGraphs(documentos, unidades);
+            });
+        }
     });
-    }
 }
 
 function loadIndexGraphsSinRecargar(unidadesBtn){
@@ -3269,17 +3342,17 @@ function getMobileOperatingSystem() {
 //                 catalogoListRef.get().then(function(doc) {
 //                     if (doc.exists) {
 //                         catalogoListRef.update({
-//                             [[docID]+".CodigoBarras"]: CB,
-//                             [[docID]+".Descripcion"]: DES,
-//                             [[docID]+".Categoria1"]: Categoria1,
-//                             [[docID]+".Categoria2"]: Categoria2,
-//                             [[docID]+".Unidades"]: UNI,
-//                             [[docID]+".Presentacion"]: PRES,
-//                             [[docID]+".Precio"]: Precio,
-//                             [[docID]+".Existencia"]: existencia,
-//                             [[docID]+".UltimoCosto"]: UltimoCosto,
-//                             [[docID]+".UltimoProveedor"]: UltimoProveedor,
-//                             [[docID]+".MargenActual"]: MargenActual
+//                             [[docID+".CodigoBarras"]: CB,
+//                             [[docID+".Descripcion"]: DES,
+//                             [[docID+".Categoria1"]: Categoria1,
+//                             [[docID+".Categoria2"]: Categoria2,
+//                             [[docID+".Unidades"]: UNI,
+//                             [[docID+".Presentacion"]: PRES,
+//                             [[docID+".Precio"]: Precio,
+//                             [[docID+".Existencia"]: existencia,
+//                             [[docID+".UltimoCosto"]: UltimoCosto,
+//                             [[docID+".UltimoProveedor"]: UltimoProveedor,
+//                             [[docID+".MargenActual"]: MargenActual
 //                         });
 //                     } else {
 //                         catalogoListRef.set({
@@ -4221,12 +4294,12 @@ function AgregarProducto(){
         catalogoListRef.get().then(function(doc) {
             if (doc.exists) {
                 catalogoListRef.update({
-                    [[docID]+".CodigoBarras"]: Cod,
-                    [[docID]+".Descripcion"]: Des,
-                    [[docID]+".Categoria1"]: Cat1,
-                    [[docID]+".Categoria2"]: Cat2,
-                    [[docID]+".Unidades"]: Uni,
-                    [[docID]+".Presentacion"]: Pres,
+                    [[docID+".CodigoBarras"]]: Cod,
+                    [[docID+".Descripcion"]]: Des,
+                    [[docID+".Categoria1"]]: Cat1,
+                    [[docID+".Categoria2"]]: Cat2,
+                    [[docID+".Unidades"]]: Uni,
+                    [[docID+".Presentacion"]]: Pres,
                     Descripcion: firebase.firestore.FieldValue.arrayUnion(Des)
                 })
                 .then(function(){
@@ -4348,7 +4421,7 @@ function CerrarSesion(){
         document.cookie = "idNegocio=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "nombreNegocio=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         alert('Sesión cerrada exitosamente');
-      }).catch(function() {
-        alert('Imposible cerrar sesión. Contacta al administrador.');
+      }).catch(function(error) {
+        alert('Imposible cerrar sesión. Contacta al administrador.'+error);
       });
 }

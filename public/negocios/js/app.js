@@ -124,6 +124,31 @@ function Registrar(){
         });
 }
 
+function IniciarSesion2(){
+    var user = firebase.auth().currentUser;
+    var email = document.getElementById('correoInicioSesion').value;
+    var password = document.getElementById('contrasenaInicioSesion').value;
+
+    if (user) {
+        alert(User.name);
+    } else {
+        alert("Ningún usuario ha accedido.");
+        firebase.auth().signInWithEmailAndPassword(email, password)
+        .then(function(){
+            var idNegocio = document.getElementById('idNegocioInicioSesion').value;
+            var banderaNegocio = false;
+            var banderaUsuario = false;
+        })
+        .catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            alert(errorCode+" "+errorMessage);
+            // ...
+          });
+    }
+}
+
 function IniciarSesion(){
     // alert('Entró');
     // localStorage.clear();

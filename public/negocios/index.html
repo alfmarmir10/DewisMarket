@@ -125,13 +125,11 @@
 
       $(Document).on("keydown", "#contrasenaInicioSesion", function(e){
 		    if(e.keyCode == 13){
-          console.log("Key Enter");
-          sessionStorage.clear();
             IniciarSesion();
           } else {
               var x = event.charCode || event.keyCode;
 
-              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8) e.preventDefault();
+              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
           }
       });
 
