@@ -64,6 +64,17 @@
         stopListenerTablaVentas();
       });
 
+      function sendCB(sender){
+        var CB = sender;
+        var txt = $("#tdCodigoBarras_agregar").text();
+        console.log(txt);
+        if (txt != ""){
+            $("#tdCodigoBarras_agregar").text(txt.toString().trim());
+        }
+        var Cod = sender.innerText;
+        getInfoProducto_agregar_Ventas_codigo_barras(Cod);
+      }
+
       function getCheckedFormaVender(){
         var select = document.querySelector('input[name="formaVender"]:checked').value;
         if (select == 'total'){
@@ -514,7 +525,7 @@
                                       </tr>
                                     </thead>
                                     <tr style="max-height: 50px;">
-                                        <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center"></td>
+                                        <td id='tdCodigoBarras_agregar' contenteditable="true" style="text-align: center" onblur="sendCB(this);"></td>
                                         <td id='tdIdArticulo_agregar' hidden></td>
                                         <td id='tdDescripcion_agregar'><input id="cmbDescripcion" placeholder="Selecciona..." class="form-control" list="cmbDescripcion_list"></input><script> llenarComboBoxDescripcionVenderListener(); </script></td>
                                         <td id='tdCantidad_agregar' contenteditable="true" style="text-align: center" maxlength="5"></td>
