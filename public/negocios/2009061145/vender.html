@@ -56,7 +56,6 @@
         $("#txtCodigoBarras").focus();
         checkCookie();
         getNombreNegocio();
-        myTimer();
       });
 
 
@@ -332,7 +331,7 @@
             var y = document.getElementById("txtHora");
             y.value = hora;
         }
-        myTimer();
+        // myTimer();
     </script>
 	</head>
 	<body>
@@ -690,6 +689,7 @@
         <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
         <script>
             var perf = firebase.performance();
+            myTimer();
         </script>
 	</body>
 </html>

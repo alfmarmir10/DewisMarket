@@ -1039,7 +1039,7 @@ function escuchaVentas(){
         keys.sort();
         console.log("Ordenado:"+keys);
         var bandera;
-        for(x = keys.length; x > (keys.length - 10); x--){
+        for(x = keys.length; x >= 0; x--){
             bandera = false;
             try{
                 if (docs[0][keys[x-1]]['Fecha'] != undefined){
