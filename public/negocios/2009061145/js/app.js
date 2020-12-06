@@ -288,7 +288,7 @@ function getIdCliente(nombre){
     })
 }
 
-function calcularTotal(){
+ function calcularTotal(){
     var cantidad = $("#tdCantidad_agregar").text();
     var precio;
     if ($("#tdPrecio_agregar").text() == ""){

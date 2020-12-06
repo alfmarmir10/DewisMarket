@@ -95,10 +95,22 @@
       $(Document).on("keyup","#tdTotal_agregar", function(){
         var select = document.querySelector('input[name="formaVender"]:checked').value;
         if (select == 'total'){
-          var Prec = parseFloat($("#tdPrecio_agregar").text());
+          var precio;
+          if ($("#tdPrecio_agregar").text() == ""){
+              precio = 0;
+          } else {
+              precio = $("#tdPrecio_agregar").text();
+          }
           var Tot = parseFloat($("#tdTotal_agregar").text());
-          var cantidad = Tot / Prec;
+          var cantidad = Tot / precio;
           $("#tdCantidad_agregar").html(cantidad.toFixed(3));
+          document.getElementById('btnAgregarATabla').disabled = false;
+          if (parseFloat(precio) > 0){
+              var costo = $("#tdCosto_agregar").text();
+              var ganancia;
+              ganancia = ((precio - costo) * cantidad).toFixed(2);
+              $("#tdGanancia_agregar").html(ganancia);
+          }
         }
       })
 
