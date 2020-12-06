@@ -4399,28 +4399,30 @@ function getCookie(cname) {
 }
 
 function checkCookie() {
+    console.log("Entró a Checkcookie");
     var user = getCookie("username");
     console.log(user);
     if (user != "") {
+        console.log(user);
         $('#msgBienvenidoDeNuevo').html('¡Bienvenido(a), ' + user + '!');
         var nombreNegocio = getCookie("NombreNegocio");
         if (nombreNegocio){
             $('#nombreNegocio').html(nombreNegocio);
         }
     } else {
-        alert("¡Por favor inicia sesión!");
-        window.location.href="../index.html";
+        alert("Por seguridad, vuelve a iniciar sesión");
+        CerrarSesion();
+        // window.location.href="../index.html";
     }
-
 }
 
 function CerrarSesion(){
+    window.location.href="../index.html";
     firebase.auth().signOut().then(function() {
-        window.location.href="./index.html";
         document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "idNegocio=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = "nombreNegocio=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        alert('Sesión cerrada exitosamente');
+        // alert('Sesión cerrada exitosamente');
       }).catch(function(error) {
         alert('Imposible cerrar sesión. Contacta al administrador.'+error);
       });

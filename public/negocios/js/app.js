@@ -160,6 +160,14 @@ function IniciarSesion(){
     var banderaUsuario = false;
     var usuario = Array();
 
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            console.log(user);
+        } else {
+          console.log("Ningún usuario ha iniciado sesión");
+        }
+      });
+
     firebase.auth().signInWithEmailAndPassword(correo, contrasena)
     .then(function(User) {
         db.collection("Negocios").doc(idNegocio)
