@@ -130,10 +130,10 @@
       });
 
       function sendCB(sender){
-        var CB = $("#tdCodigoBarras_agregar");
+        var CB = sender;
         var txt = $("#tdCodigoBarras_agregar").text();
         if (txt != ""){
-            CB.innerText(txt.trim());
+            $("#tdCodigoBarras_agregar").text(txt.toString().trim());
         }
         var Cod = sender.innerText;
         getInfoProducto_agregar_NE_codigo_barrasCapturaManual(Cod);
