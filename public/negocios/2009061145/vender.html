@@ -454,24 +454,28 @@
                   </ul>
                 </div>
               </nav>
-      
+              <table >
+                <tr>
+
+                </tr>
+              </table>
               <div class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
                 <div class="row">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <br>
-                    <h1 class="h2 font-weight-bold">Vender</h1>
+                    <h1 class="h2 font-weight-bold"><a href="#" onclick="imprimirTicket();">Vender</a></h1>
                   </div>
                 </div>
                 <br>
-                <div class="row">
+                <div class="row" id="ticketVenta" class="bg-white">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                     <!-- <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloNE" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVO FOLIO DE VENTA</button> -->
-                    <button class="btn btn-block btn-success btn-lg font-weight-bold" id="tituloFolioVenta" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVO FOLIO DE VENTA</button>
+                    <button class="btn btn-block btn-success btn-lg font-weight-bold" data-html2canvas-ignore="true" id="tituloFolioVenta" style="margin-top: 5px; font-size: x-large;" onclick="location.reload();">CREAR NUEVO FOLIO DE VENTA</button>
                     <br>
                     <div class="card">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
                             DATOS DEL FOLIO DE VENTA
-                          </div>
+                        </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
@@ -511,7 +515,7 @@
                         </div>
                     </div>
 
-                    <div class="card">
+                    <div class="card" data-html2canvas-ignore="true">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
                             AGREGA UN PRODUCTO
                         </div>
@@ -519,11 +523,11 @@
                             <div class="table-responsive-xl">
                                 <table id='entrada-compras-agregar' class='table table-bordered'>
                                     <thead class="thead-dark">
-                                      <tr>
-                                        <input type="radio" id="cantidadRadioBtn" name="formaVender" value="cantidad" checked style="margin-left: 65%;" onchange="getCheckedFormaVender();">
-                                        <label for="cantidad" style="margin: 6px;" class="font-weight-bold">Cantidad</label>
+                                      <tr style="width: 100%;">
+                                        <input type="radio" id="cantidadRadioBtn" name="formaVender" value="cantidad" checked onchange="getCheckedFormaVender();">
+                                        <label for="cantidad" style="margin: 6px;" class="font-weight-bold reclaim-black">Cantidad</label>
                                         <input type="radio" id="totalRadioBtn" name="formaVender" value="total" style="margin-left: 10px;" onchange="getCheckedFormaVender();">
-                                        <label for="total" style="margin: 6px;" class="font-weight-bold">Total</label>
+                                        <label for="total" style="margin: 6px;" class="font-weight-bold reclaim-black">Total</label>
                                       </tr>
                                       <tr>
                                           <th scope="col" style="text-align: center">Codigo Barras<span><a class="btn btn-warning btn-sm rounded fa fa-barcode user-select-none" href="#" data-toggle="modal" data-target="#modalScannerVender" onclick="loadScannerVender();" id="loadScanner" style="margin-left: 5px; margin-bottom: 0px;"></a></span></th>
@@ -604,12 +608,12 @@
                         </div>
                     </div>
                     <br>
-                    <div class="card">
+                    <div class="card" data-html2canvas-ignore="true">
                         <div class="card-body" style="text-align: center; margin-top: 0px; background-color: gray;">
                             <h2 class="text-white font-weight-bold" style="margin-top: 5px;">RELACIÓN DE FOLIOS DE VENTA</h2>
                         </div>
                     </div>
-                    <div class="card">
+                    <div class="card" data-html2canvas-ignore="true">
                         <div class="card-header bg-warning text-dark" style="font-weight: bold;">
                             MES EN CURSO
                           </div>
@@ -708,7 +712,9 @@
             </div>
             </div>
         </div>
-        
+        <script type="text/javascript" src="js/jspdf.min.js"></script>
+        <script type="text/javascript" src="./js/html2pdf.bundle.min.js"></script>
+        <script type="text/javascript" src="../js/html2canvas.min.js"></script>
         <script src="https://www.gstatic.com/firebasejs/7.22.1/firebase-performance.js"></script>
         <script>
             var perf = firebase.performance();

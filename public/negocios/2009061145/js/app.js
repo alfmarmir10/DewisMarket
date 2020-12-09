@@ -32,6 +32,56 @@ var chartProducto;
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function imprimirTicket(){
+    // var doc = new jsPDF('portrait');
+    var Fol = document.getElementById("txtFolio").value;
+    var negocio = getCookie("nombreNegocio");
+    console.log(negocio);
+    var fecha2 = $("#dia").text()+"-"+$("#mes").text()+"-"+$("#anio").text().substr(2,2);
+    var hora2 = $("#hora").text()+":"+$("#minutos").text()+":"+$("#segundos").text();
+    var legendDocument = Fol + " " + fecha2 + " " + hora2;
+
+    // html2canvas($("#ticketVenta")[0], {
+    //     onrendered: function(canvas) {         
+    //         var imgData = canvas.toDataURL(
+    //             './img/x.png');              
+    //         var doc = new jsPDF('p', 'mm');
+    //         doc.addImage(imgData, 'PNG', 10, 10);
+    //         doc.save('sample-file.pdf');
+    //     }
+    // });
+
+    var img = new Image();
+    img.src = "./img/x.png";
+    // img = canvas.toDataURL("./img/x.png", 0.3);
+    var element = document.getElementById('ticketVenta');
+    var opt = {
+    margin:       [0.6, 0.1, 0.5, 0.1],
+    filename:     Fol+'.pdf',
+    image:        { type: 'jpeg', quality: 0.58 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().from(element).set(opt).toPdf().get('pdf').then(function(pdf) {
+        var totalPages = pdf.internal.getNumberOfPages();
+        console.log(totalPages)
+    
+        for (i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(20);
+            pdf.setTextColor(40);
+            pdf.setFont('Helvetica', 'bold');
+            pdf.text(negocio, 3.5, .65);
+            pdf.addImage(img, 'JPEG', .1, .10, 1.55, .54, NaN, 'FAST');
+        }
+    
+    
+        })
+        .save(Fol+'.pdf');
+
+}
+
 function totalizarFolioVenta(Fol){
     var fecha7 = new Date();
     var idNegocio = getCookie("idNegocio");
@@ -654,7 +704,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                                         +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
                                                         +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
                                                         +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                                        +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                                        +"<td data-html2canvas-ignore='true' ºstyle='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
                                                         +"</tr>";
                                                     } else {
                                                         msg2 = msg2 + "<tr>"
@@ -665,7 +715,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                                         +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Costo+"</td>"
                                                         +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
                                                         +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                                                        +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
+                                                        +"<td data-html2canvas-ignore='true' style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
                                                         +"</tr>";
                                                     }
                                                 });
@@ -891,7 +941,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                                                 +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
                                                                 +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
                                                                 +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                                                                +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                                                                +"<td data-html2canvas-ignore='true' style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
                                                                 +"</tr>";
                                                             } else {
                                                                 msg2 = msg2 + "<tr>"
@@ -902,7 +952,7 @@ function agregarElementosVentas(CB, Id, Des, Can, Prec, Tot, Cli, Fol, Cos, Gan,
                                                                 +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Costo+"</td>"
                                                                 +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
                                                                 +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                                                                +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
+                                                                +"<td data-html2canvas-ignore='true' style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
                                                                 +"</tr>";
                                                             }
                                                         });
@@ -996,7 +1046,7 @@ function editarElementosVentas(btn) {
                     +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
                     +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Precio+"</td>"
                     +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                    +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
+                    +"<td data-html2canvas-ignore='true' style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
                     +"</tr>";
                 } else {
                     msg2 = msg2 + "<tr>"
@@ -1006,8 +1056,8 @@ function editarElementosVentas(btn) {
                     +"<td style='text-align: center' id='Cantidad'>"+doc.data().Cantidad+"</td>"
                     +"<td style='text-align: center' id='"+doc.id+"_Precio'>"+doc.data().Costo+"</td>"
                     +"<td style='text-align: center' id='Total'>"+doc.data().Total+"</td>"
-                    +"<td style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Eliminar</button></td>"
-                    +"<td style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' onclick=eliminarElementosFolioVenta(this);>Aplicar</button></td>"
+                    +"<td data-html2canvas-ignore='true' style='text-align: center'><button class='btn btn-danger btn-sm' id='"+doc.data().DocOrigen+"' name='"+doc.id+"' >Eliminar</button></td>"
+                    +"<td data-html2canvas-ignore='true' style='text-align: center'><button class='btn btn-success btn-sm' id='"+doc.daa().DocOrigen+"' name='"+doc.id+"' >Aplicar</button></td>"
                     +"</tr>";
                 }
             });
@@ -1565,7 +1615,7 @@ function escuchaNE(){
                 +"<td style='text-align: center' id='"+doc.id+"_DocOrigen' hidden>"+docs[0][keys[x-1]]['DocOrigen']+"</td>"
                 +"<td style='text-align: center' id='"+doc.id+"_Articulos'>"+docs[0][keys[x-1]]['Articulos']+"</td>"
                 +"<td style='text-align: center' id='"+doc.id+"_Total'>"+docs[0][keys[x-1]]['Total']+"</td>"
-                +"<td style='text-align: center'><button class='btn btn-warning btn-sm' id='"+docs[0][keys[x-1]]['DocOrigen']+"' name='"+doc.id+"' onclick=editarElementosNE(this);>Editar</button></td>"
+                +"<td style='text-align: center'><button class='btn btn-warning btn-sm' id='"+docs[0][keys[x-1]]['DocOrigen']+"' name='"+doc.id+"' onclick=editarElementosNE(this); data-html2canvas-ignore='true'>Editar</button></td>"
                 +"</tr>";
                 $("#tbodyRelacionNE").html(msg2);
             }
@@ -3691,7 +3741,7 @@ function PDF_Prueba(nombreArchivo){
             // Header
             doc.setFontSize(8)
             doc.setTextColor(40)
-            doc.setFontStyle('Helvetica')
+            doc.setFont('Helvetica')
 
             doc.addImage(img, 'PNG', 8, 10, 45, 14)
             doc.text(nombreArchivo, data.settings.margin.left + 250, data.settings.margin.top - 5)
@@ -4405,7 +4455,7 @@ function checkCookie() {
     if (user != "") {
         console.log(user);
         $('#msgBienvenidoDeNuevo').html('¡Bienvenido(a), ' + user + '!');
-        var nombreNegocio = getCookie("NombreNegocio");
+        var nombreNegocio = getCookie("nombreNegocio");
         if (nombreNegocio){
             $('#nombreNegocio').html(nombreNegocio);
         }
