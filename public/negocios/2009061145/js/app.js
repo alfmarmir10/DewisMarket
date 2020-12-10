@@ -32,8 +32,52 @@ var chartProducto;
 /////////////////////////////////////////////   FUNCIONES UTILIZADAS  ///////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function checkBrowser(){
+    // Get the user-agent string 
+    let userAgentString =  
+    navigator.userAgent; 
+
+    var navegador = "";
+
+    // Detect Chrome 
+    let chromeAgent =  userAgentString.indexOf("Chrome") > -1;
+
+    // Detect Internet Explorer 
+    let IExplorerAgent =  
+        userAgentString.indexOf("MSIE") > -1 ||  
+        userAgentString.indexOf("rv:") > -1; 
+
+    // Detect Firefox 
+    let firefoxAgent =  
+        userAgentString.indexOf("Firefox") > -1; 
+
+    // Detect Safari 
+    let safariAgent =  
+        userAgentString.indexOf("Safari") > -1; 
+        
+    // Discard Safari since it also matches Chrome 
+    if ((chromeAgent) && (safariAgent))  
+        safariAgent = false; 
+
+    // Detect Opera 
+    let operaAgent = 
+        userAgentString.indexOf("OP") > -1; 
+        
+    // Discard Chrome since it also matches Opera      
+    if ((chromeAgent) && (operaAgent))  
+        chromeAgent = false;
+
+    console.log(navigator.userAgent);
+
+    
+
+}
+
 function imprimirTicket(){
     // var doc = new jsPDF('portrait');
+    checkBrowser();
+    return;
+
     var Fol = document.getElementById("txtFolio").value;
     var negocio = getCookie("nombreNegocio");
     console.log(negocio);
@@ -41,15 +85,7 @@ function imprimirTicket(){
     var hora2 = $("#hora").text()+":"+$("#minutos").text()+":"+$("#segundos").text();
     var legendDocument = Fol + " " + fecha2 + " " + hora2;
 
-    // html2canvas($("#ticketVenta")[0], {
-    //     onrendered: function(canvas) {         
-    //         var imgData = canvas.toDataURL(
-    //             './img/x.png');              
-    //         var doc = new jsPDF('p', 'mm');
-    //         doc.addImage(imgData, 'PNG', 10, 10);
-    //         doc.save('sample-file.pdf');
-    //     }
-    // });
+    
 
     var img = new Image();
     img.src = "./img/x.png";
@@ -58,7 +94,7 @@ function imprimirTicket(){
     var opt = {
     margin:       [0.6, 0.1, 0.5, 0.1],
     filename:     Fol+'.pdf',
-    image:        { type: 'jpeg', quality: 0.58 },
+    image:        { type: 'PNG', quality: 0.58 },
     html2canvas:  { scale: 2 },
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
@@ -73,7 +109,7 @@ function imprimirTicket(){
             pdf.setTextColor(40);
             pdf.setFont('Helvetica', 'bold');
             pdf.text(negocio, 3.5, .65);
-            pdf.addImage(img, 'JPEG', .1, .10, 1.55, .54, NaN, 'FAST');
+            pdf.addImage(img, 'PNG', .1, .10, 1.55, .54, NaN, 'FAST');
         }
     
     
@@ -1087,7 +1123,7 @@ function escuchaVentas(){
         $("#tbodyRelacionVentas").html(msg2);
         var keys = Object.keys(docs[0]);
         keys.sort();
-        console.log("Ordenado:"+keys);
+        // console.log("Ordenado:"+keys);
         var bandera;
         for(x = keys.length; x >= 0; x--){
             bandera = false;
@@ -1130,7 +1166,7 @@ function CargarClientesFiltroRazonSocial(criterio){
         querySnapshot.forEach(function(doc) {
             i = i + 1;
             var Tel = "-";
-            console.log(doc.data().Telefono);
+            // console.log(doc.data().Telefono);
             if (!isNaN(doc.data().Telefono)){
                 Tel = doc.data().Telefono;
             }
@@ -1178,7 +1214,7 @@ function AgregarCliente(){
     .get()
     .then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
-            console.log(doc.id, " => ", doc.data());
+            // console.log(doc.id, " => ", doc.data());
             bandera = 1;
         });
 
@@ -1205,7 +1241,7 @@ function AgregarCliente(){
                     db.collection("Negocios").doc(idNegocio).collection("Clientes").doc("Clientes").update({
                         Descripcion: firebase.firestore.FieldValue.arrayUnion(Raz)
                     }).then(function() {
-                        console.log("Document written with ID: ", docRef.id);
+                        // console.log("Document written with ID: ", docRef.id);
                         alert("¡Agregado correctamente!");
                         location.reload();
                     }).catch(function(error) {
@@ -1314,8 +1350,8 @@ function actualizarArticuloCatalogo(CB, row, Des, Uni, Pres, Cat1, Cat2, IdCat, 
             Categoria2: Cat2
         })
         .then(function() {
-            console.log(rowOriginal);
-            console.log(''+rowOriginal+'_descripcionProducto');
+            // console.log(rowOriginal);
+            // console.log(''+rowOriginal+'_descripcionProducto');
             $("#"+rowOriginal+"_descripcionProducto").text(Des);
             document.getElementById("tabla_catalogo").rows[row].cells[2].innerText = Uni;
             document.getElementById("tabla_catalogo").rows[row].cells[3].innerText = Pres;
@@ -1407,7 +1443,7 @@ function editarElementosNE(btn) {
         document.getElementById('txtFolio').value = doc.data().Folio;
         document.getElementById('anio').innerHTML = doc.data().Anio;
         document.getElementById('mes').innerHTML = doc.data().Mes;
-        console.log(document.getElementById('anio').innerHTML);
+        // console.log(document.getElementById('anio').innerHTML);
         document.getElementById('timestamp').innerHTML = doc.data().Creado;
         document.getElementById('fecha2').innerHTML = doc.data().Fecha;
         document.getElementById('hora2').innerHTML = doc.data().Hora;
@@ -1428,7 +1464,7 @@ function editarElementosNE(btn) {
         document.getElementById('cmbProveedores').value = doc.data().Proveedor;
         document.getElementById('docOrigen').innerHTML = doc.data().DocOrigen;
         var f = $("#docOrigen").html();
-        console.log(f);
+        // console.log(f);
 
 
         db.collection("Negocios").doc(idNegocio).collection("Entradas").doc(btn.id).collection("Articulos").orderBy("Creado")
@@ -1517,10 +1553,10 @@ function totalizarNE(Fol){
         .get()
         .then(function(doc) {
             documentos.push(doc.data());
-            console.log(documentos);
-            console.log(anio);
-            console.log(mes);
-            console.log("Total: "+parseFloat(documentos[0]["Total"]).toFixed(2));
+            // console.log(documentos);
+            // console.log(anio);
+            // console.log(mes);
+            // console.log("Total: "+parseFloat(documentos[0]["Total"]).toFixed(2));
 
             var entradasListRef = db.collection("Negocios").doc(idNegocio).collection("Entradas").doc("Entradas").collection(anio).doc(mes);
 
