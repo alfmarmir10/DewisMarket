@@ -56,35 +56,79 @@ function checkBrowser(){
         userAgentString.indexOf("Safari") > -1; 
         
     // Discard Safari since it also matches Chrome 
-    if ((chromeAgent) && (safariAgent))  
-        safariAgent = false; 
+    // if ((chromeAgent) && (safariAgent))  
+    //     safariAgent = false; 
 
     // Detect Opera 
     let operaAgent = 
-        userAgentString.indexOf("OP") > -1; 
+        userAgentString.indexOf("OPR") > -1; 
+
+    // Detect Edge
+    let edgeAgent = 
+        userAgentString.indexOf("Edg") > -1; 
         
-    // Discard Chrome since it also matches Opera      
-    if ((chromeAgent) && (operaAgent))  
-        chromeAgent = false;
+    // // Discard Chrome since it also matches Opera      
+    // if ((chromeAgent) && (operaAgent))  
+    //     chromeAgent = false;
 
-    console.log(navigator.userAgent);
-
+    if (IExplorerAgent == true){
+        navegador = "IExplorer";
+    } 
     
+    if(firefoxAgent == true) {
+        navegador = "Firefox";
+    } 
+    
+    if(safariAgent == true) {
+        navegador = "Safari";
+    }
+    
+    if(chromeAgent == true) {
+        navegador = "Chrome";
+    } 
+    
+    if((chromeAgent == true) && (safariAgent == true)) {
+        navegador = "Chrome";
+    } 
+    
+    if((chromeAgent == true) && (operaAgent == true) && (safariAgent == true)) {
+        navegador = "Opera";
+    }
 
+    if((chromeAgent == true) && (safariAgent == true) && (edgeAgent == true)) {
+        navegador = "Edge";
+    } 
+
+    // console.log(navegador);
+    // console.log(userAgentString);
+    // console.log("IExplorer: "+IExplorerAgent);
+    // console.log("Firefox: "+firefoxAgent);
+    // console.log("Safari: "+safariAgent);
+    // console.log("Opera: "+operaAgent);
+    // console.log("Chrome: "+chromeAgent);
+
+    return navegador;
 }
 
 function imprimirTicket(){
     // var doc = new jsPDF('portrait');
-    checkBrowser();
-    return;
+    let navegador = checkBrowser();
+
+    console.log(navegador);
 
     var Fol = document.getElementById("txtFolio").value;
     var negocio = getCookie("nombreNegocio");
-    console.log(negocio);
-    var fecha2 = $("#dia").text()+"-"+$("#mes").text()+"-"+$("#anio").text().substr(2,2);
-    var hora2 = $("#hora").text()+":"+$("#minutos").text()+":"+$("#segundos").text();
-    var legendDocument = Fol + " " + fecha2 + " " + hora2;
-
+    // var fecha2 = $("#dia").text()+"-"+$("#mes").text()+"-"+$("#anio").text().substr(2,2);
+    var fecha2 = $("#fecha2").text();
+    // var hora2 = $("#hora").text()+":"+$("#minutos").text()+":"+$("#segundos").text();
+    var hora2 = $("#hora2").text();
+    var datosFolioVenta = document.getElementById('cardDatosFolioVenta');
+    // var legendDocument = Fol + " " + fecha2 + " " + hora2;
+    
+    if (navegador == 'Opera' || navegador == 'Chrome' || navegador == 'IExplorer' || navegador == 'Edge'){
+        console.log("Entró navegador X");
+        datosFolioVenta.setAttribute('data-html2canvas-ignore', 'true');
+    }
     
 
     var img = new Image();
@@ -92,27 +136,50 @@ function imprimirTicket(){
     // img = canvas.toDataURL("./img/x.png", 0.3);
     var element = document.getElementById('ticketVenta');
     var opt = {
-    margin:       [0.6, 0.1, 0.5, 0.1],
+    margin:       [0.75, 0.1, 0.5, 0.1],
     filename:     Fol+'.pdf',
-    image:        { type: 'PNG', quality: 0.58 },
+    image:        { type: 'jpeg', quality: 0.58 },
     html2canvas:  { scale: 2 },
     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
     html2pdf().from(element).set(opt).toPdf().get('pdf').then(function(pdf) {
         var totalPages = pdf.internal.getNumberOfPages();
-        console.log(totalPages)
     
         for (i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.setFontSize(20);
-            pdf.setTextColor(40);
-            pdf.setFont('Helvetica', 'bold');
-            pdf.text(negocio, 3.5, .65);
-            pdf.addImage(img, 'PNG', .1, .10, 1.55, .54, NaN, 'FAST');
+            if (navegador == 'Opera' || navegador == 'Chrome' || navegador == 'IExplorer' || navegador == 'Edge'){
+                pdf.setPage(i);
+                pdf.setFontSize(20);
+                pdf.setTextColor(40);
+                pdf.setFont('Helvetica', 'bold');
+                pdf.text(negocio, 3.3, .3);
+
+                pdf.setFontSize(10);
+                pdf.setFont('Helvetica', 'normal');
+                pdf.text("Fecha: "+fecha2, 1.75, .63);
+
+                pdf.text("Hora: "+hora2, 3.6, .63);
+
+                pdf.text("Folio: "+Fol, 5.5, .63);
+
+                pdf.addImage(img, 'jpeg', .1, .10, 1.55, .54, null, 'FAST');
+
+                pdf.setFontSize(20);
+                pdf.setFont('Helvetica', 'bold');
+                pdf.text("¡Gracias por su compra!", 2.7, 10.65);
+            } else {
+                pdf.setPage(i);
+                pdf.setFontSize(20);
+                pdf.setTextColor(40);
+                pdf.setFont('Helvetica', 'bold');
+                pdf.text(negocio, 3.3, .65);
+                pdf.addImage(img, 'jpeg', .1, .10, 1.55, .54, null, 'FAST');
+                pdf.setFontSize(20);
+                pdf.setFont('Helvetica', 'bold');
+                pdf.text("¡Gracias por su compra!", 2.7, 10.65);
+            }
         }
-    
-    
+
         })
         .save(Fol+'.pdf');
 
