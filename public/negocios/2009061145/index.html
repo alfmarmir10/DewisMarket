@@ -259,26 +259,58 @@
                 <br>
                 <div class="row">
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
-                    <div class="card">
-                      <div class="body">
-                        <div style="width:100%;">
-                          <div>
-                            <div id="chartCat1"></div>
-                          </div>
+                    <div class="card" data-html2canvas-ignore="true">
+                      <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                          ÚLTIMAS VENTAS
                         </div>
+                      <div class="card-body">
+                          <div class="table-responsive-xl">
+                              <table class="table table-dark table-hover table-sm" id="tablaRelacionVentas" style="font-size: 12px;">
+                                  <thead class="thead-dark">
+                                      <tr>
+                                          <th scope="col" style="text-align: center; font-weight: bold;">#</th>
+                                          <th hidden scope="col" style="text-align: center; font-weight: bold">FECHA</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">HORA</th>
+                                          <th hidden scope="col" style="text-align: center; font-weight: bold">FOLIO</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">CLIENTE</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">USUARIO</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">ARTICULOS</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">TOTAL $</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="tbodyRelacionVentas">
+                                  </tbody>
+                              </table>
+                          </div>
                       </div>
-                    </div>
+                  </div>
                   </div>
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                     <div class="card">
-                      <div class="body">
-                        <div style="width:100%;">
-                          <div>
-                            <div id="chartCat2"></div>
-                          </div>
-                        </div>
+                      <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                          ÚLTIMAS COMPRAS
                       </div>
-                    </div>
+                      <div class="card-body">
+                          <div class="table-responsive-xl">
+                              <table class="table table-dark table-hover table-sm" id="tablaRelacionNE" style="font-size: 12px;">
+                                  <thead class="thead-dark">
+                                      <tr>
+                                          <th scope="col" style="text-align: center; font-weight: bold;">#</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold" hidden>FECHA</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">HORA</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold" hidden>FOLIO</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">PROVEEDOR</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">USUARIO</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">ARTICULOS</th>
+                                          <th scope="col" style="text-align: center; font-weight: bold">TOTAL $</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody id="tbodyRelacionNE">
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -352,8 +384,10 @@
             <script>
                 //console.log($('#btnUnidadesCharts').text());
                 loadIndexGraphs($('#btnUnidadesCharts').text());
-                loadGraphsCat1($('#btnUnidadesCharts').text());
-                loadGraphsCat2($('#btnUnidadesCharts').text());
+                escuchaVentasIndex();
+                escuchaNEIndex();
+                // loadGraphsCat1($('#btnUnidadesCharts').text());
+                // loadGraphsCat2($('#btnUnidadesCharts').text());
             </script>
 	</body>
 </html>
