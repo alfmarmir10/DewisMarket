@@ -42,7 +42,7 @@
         }
       });
 
-      $(Document).on("blur", "#idNegocioRegistro", function(e){
+      $(Document).on("keyup", "#idNegocioRegistro", function(e){
         var x = document.getElementById('idNegocioRegistro').value;
         var y = x.replace(/ +/g, "");
         document.getElementById('idNegocioRegistro').value = y;
@@ -56,7 +56,7 @@
 				}
       });
 
-      $(Document).on("blur", "#nombreRegistro", function(e){
+      $(Document).on("keyup", "#nombreRegistro", function(e){
 				ValidarFormularioRegistro();
       });
       
@@ -67,7 +67,7 @@
 				}
       });
 
-      $(Document).on("blur", "#apellidosRegistro", function(e){
+      $(Document).on("keyup", "#apellidosRegistro", function(e){
 				ValidarFormularioRegistro();
       });
       
@@ -78,7 +78,7 @@
 				}
       });
 
-      $(Document).on("blur", "#correoRegistro", function(e){
+      $(Document).on("keyup", "#correoRegistro", function(e){
 				ValidarFormularioRegistro();
       });
       
@@ -104,7 +104,7 @@
 				}
       });
 
-      $(Document).on("blur", "#contrasenaRegistro", function(e){
+      $(Document).on("keyup", "#contrasenaRegistro", function(e){
 				ValidarFormularioRegistro();
       });
       
@@ -114,13 +114,22 @@
         }
       });
       
-      $(Document).on("blur", "#validacionContrasenaRegistro", function(e){
-        var c1 = document.getElementById('contrasenaRegistro').value;
+      $(Document).on("keyup", "#validacionContrasenaRegistro", function(e){
+        var len = 0;
         var c2 = document.getElementById('validacionContrasenaRegistro').value;
-        if(c1 != "" && c2 != "" && c1 != c2){
-          alert("Las contraseñas no coinciden");
+        len = c2.length;
+        
+        if(len > 5) {
+          var c1 = document.getElementById('contrasenaRegistro').value;
+          len1 = c1.length;
+          if (len >= len1){
+            if(c1 != "" && c2 != "" && c1 != c2){
+              alert("Las contraseñas no coinciden");
+              return;
+            }
+          }
+          ValidarFormularioRegistro();
         }
-        ValidarFormularioRegistro();
       });
 
       $(Document).on("keydown", "#contrasenaInicioSesion", function(e){
@@ -205,8 +214,8 @@
       <!-- Page Content -->
       <div class="container">
         <div class="card border-0 shadow my-5">
-          <br><h1 class="text-center">DEWIS MARKET</h1>
-          <div class="card-body p-5">
+          <br><p id="h1Label" class="text-center">DEWIS MARKET</p>
+          <div class="card-body">
 
             <div id="carouselExampleIndicators" class="carousel slide shadow-lg" data-ride="carousel">
               <ol class="carousel-indicators">
@@ -236,8 +245,8 @@
                 <span class="sr-only">Next</span>
               </a>
             </div>
-            <br><br><div class="container w-100 text-center">
-              <h3 class="text-black bg-transparent text-uppercase">Juntos marcaremos la diferencia</h3>
+            <br><br><div class="container w-150 text-center">
+              <p id="h3Label" class="text-black bg-transparent text-uppercase">Juntos marcaremos la diferencia</p>
               <br>
               <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#exampleModal">Iniciar Sesión</button>
             </div>
@@ -314,8 +323,8 @@
                       <input type="password" class="form-control" id="contrasenaInicioSesion">
                     </div>
                     <br>
-                    <button type="button" class="btn btn-warning" onclick="IniciarSesion()">Continuar</button>
-                    <span class="float-sm-right"><small><a href="../index.html">Sección para clientes Dewis Market</a></small></span>
+                    <button type="button" class="btn btn-warning btn-block" onclick="IniciarSesion()">Continuar</button>
+                    <span class="text-center btn-block"><small><a href="../index.html">Sección para clientes Dewis Market</a></small></span>
                   </form>
                 </div>
 
@@ -351,8 +360,8 @@
                       <input type="password" class="form-control border border-dark" id="validacionContrasenaRegistro" aria-describedby="validacionContrasenaHelp" required="required" disabled>
                       <small id="validacionContrasenaHelp" class="form-text text-muted">Vuelve a escribir la contraseña</small>
                     </div>
-                    <br><button type="button" class="btn btn-dark txt-white" id="btnContinuarRegistro" onclick='Registrar();' disabled>Continuar</button>
-                    <span class="float-sm-right"><small><a href="../index.html">Sección para clientes Dewis Market</a></small></span>
+                    <br><button type="button" class="btn btn-dark txt-white btn-block" id="btnContinuarRegistro" onclick='Registrar();' disabled>Continuar</button>
+                    <span class="text-center btn-block"><small><a href="../index.html">Sección para clientes Dewis Market</a></small></span>
                   </form>
                 </div>
               </div>
@@ -370,8 +379,8 @@
             <div class="footer">
               <div class="container">
                   <div class="row">
-                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-white text-center font-weight-bold bg-dark">
-                          Dewis Market © 2020. Todos los derechos reservados.
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-white text-center font-weight-bold">
+                            <p id="copyright">Dewis Market © 2020. Todos los derechos reservados.</p>
                       </div>
                   </div>
               </div>

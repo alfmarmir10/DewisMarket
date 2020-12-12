@@ -87,9 +87,20 @@ table.dataTable thead .sorting_desc_disabled:before {
     font-size: 7px;
   }
 
+  #h1Label {
+    font-size: 20px;
+  }
+  
+  #h3Label{
+    font-size: 10px;
+  }
+
+  #copyright{
+    font-size: 8px;
+  }
  }
  
- @media (min-width: 500px) {
+ @media (min-width: 350px) {
 
   #logo{
     width: 160px;
@@ -97,6 +108,18 @@ table.dataTable thead .sorting_desc_disabled:before {
 
   #nombreNegocio{
     font-size: 8px;
+  }
+
+  #h1Label {
+    font-size: 23px;
+  }
+  
+  #h3Label{
+    font-size: 12px;
+  }
+
+  #copyright{
+    font-size: 10px;
   }
 
  }
@@ -111,12 +134,30 @@ table.dataTable thead .sorting_desc_disabled:before {
     font-size: 10px;
   }
 
+  
+
  }
 
  @media (min-width: 1000px) {
 
   #logo{
     width: 190px;
+  }
+
+  #h1Label {
+    font-size: 30px;
+  }
+  
+  #h3Label{
+    font-size: 20px;
+  }
+
+  #copyright{
+    font-size: 15px;
+  }
+
+  .w-100{
+    padding: 2rem;
   }
 
  }

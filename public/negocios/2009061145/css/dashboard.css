@@ -137,6 +137,14 @@ body {
 }
 
 @media (max-width: 767.98px) {
+  #h1Label {
+    font-size: 40;
+  }
+  
+  #h3Label{
+    font-size: 20;
+  }
+
   .sidebar {
     top: 2rem;
   }

@@ -125,7 +125,8 @@ function imprimirTicket(){
     var datosFolioVenta = document.getElementById('cardDatosFolioVenta');
     // var legendDocument = Fol + " " + fecha2 + " " + hora2;
     
-    if (navegador == 'Opera' || navegador == 'Chrome' || navegador == 'IExplorer' || navegador == 'Edge'){
+    // if (navegador == 'Opera' || navegador == 'Chrome' || navegador == 'IExplorer' || navegador == 'Edge'){
+    if (navegador != ''){
         console.log("Entró navegador X");
         datosFolioVenta.setAttribute('data-html2canvas-ignore', 'true');
     }
@@ -147,7 +148,8 @@ function imprimirTicket(){
         var totalPages = pdf.internal.getNumberOfPages();
     
         for (i = 1; i <= totalPages; i++) {
-            if (navegador == 'Opera' || navegador == 'Chrome' || navegador == 'IExplorer' || navegador == 'Edge'){
+            // if (navegador == 'Opera' || navegador == 'Chrome' || navegador == 'IExplorer' || navegador == 'Edge'){
+            if (navegador != ''){
                 pdf.setPage(i);
                 pdf.setFontSize(20);
                 pdf.setTextColor(40);
