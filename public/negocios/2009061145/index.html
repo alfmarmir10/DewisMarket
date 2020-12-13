@@ -225,28 +225,42 @@
                       <button type="button" class="btn btn-sm dropdown-toggle share_export_btn">
                         <span><i clas="fas fa-calendar"></i></span>
                         This week
-                      </button> -->
-                      <div class="btn-group">
-                        <button type="button" class="btn share_export_btn" id="btnUnidadesCharts">Dinero</button>
-                        <button type="button" class="btn share_export_btn dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
-                          <span class="sr-only">Toggle Dropdown</span>
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
-                          <a class="dropdown-item" onclick="loadIndexGraphsSinRecargar('Dinero');">Dinero</a>
-                          <a class="dropdown-item" onclick="loadIndexGraphsSinRecargar('Tickets');">Tickets</a>
-                          <a class="dropdown-item" onclick="loadIndexGraphsSinRecargar('TicketPromedio');">Ticket Promedio</a>
-                          <a class="dropdown-item" onclick="loadIndexGraphsSinRecargar('Ganancia');">Ganancia</a>
-                        </div>
-                      </div>
-                      
+                      </button> -->                      
                     </div>
                   </div>
                 </div>
                 <br>
                 <div class="row">
                   <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="card">
+                    <!-- <div class="card">
                       <div class="body">
+                        <div style="width:100%;">
+                          <div>
+                            <div id="chart"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> -->
+
+                    <div class="card" data-html2canvas-ignore="true">
+                      <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                          SEMANA ACTUAL VS SEMANA PASADA
+                        </div>
+                      <div class="card-body">
+                        <div class="btn-group">
+                          <button type="button" class="btn share_export_btn bg-dark text-white" id="btnUnidadesCharts">Dinero</button>
+                          <button type="button" class="btn share_export_btn dropdown-toggle dropdown-toggle-split bg-dark text-white" id="dropdownMenuReference" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                            <span class="sr-only">Toggle Dropdown</span>
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
+                            <a class="dropdown-item bg-dark text-white" onclick="loadIndexGraphsSinRecargar('Dinero');">Dinero</a>
+                            <a class="dropdown-item bg-dark text-white" onclick="loadIndexGraphsSinRecargar('Tickets');">Tickets</a>
+                            <a class="dropdown-item bg-dark text-white" onclick="loadIndexGraphsSinRecargar('TicketPromedio');">Ticket Promedio</a>
+                            <a class="dropdown-item bg-dark text-white" onclick="loadIndexGraphsSinRecargar('Ganancia');">Ganancia</a>
+                          </div>
+                        </div>
+                        <br>
+                        <br>
                         <div style="width:100%;">
                           <div>
                             <div id="chart"></div>
@@ -283,7 +297,7 @@
                               </table>
                           </div>
                       </div>
-                  </div>
+                    </div>
                   </div>
                   <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
                     <div class="card">

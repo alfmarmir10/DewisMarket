@@ -3212,30 +3212,33 @@ function renderIndexGraphs(documentos, unidades){
     var fecha1String = validarFecha(fecha1)[0] + "-" + validarFecha(fecha1)[1] + "-" + fecha1.getFullYear().toString().substr(2,2);
 
     // SEMANA PASADA //
-    var fecha7SemanaPasadaString = validarFecha(fecha7)[0] + "-" + validarFecha(fecha7)[1] + "-" + fecha7.getFullYear().toString().substr(2,2);
-    var fecha6SemanaPasada = new Date(fecha7 - 86400000);
-    var fecha6SemanaPasadaString = validarFecha(fecha6)[0] + "-" + validarFecha(fecha6)[1] + "-" + fecha6.getFullYear().toString().substr(2,2);
-    var fecha5SemanaPasada = new Date(fecha6 - 86400000);
-    var fecha5SemanaPasadaString = validarFecha(fecha5)[0] + "-" + validarFecha(fecha5)[1] + "-" + fecha5.getFullYear().toString().substr(2,2);
-    var fecha4SemanaPasada = new Date(fecha5 - 86400000);
-    var fecha4SemanaPasadaString = validarFecha(fecha4)[0] + "-" + validarFecha(fecha4)[1] + "-" + fecha4.getFullYear().toString().substr(2,2);
-    var fecha3SemanaPasada = new Date(fecha4 - 86400000);
-    var fecha3SemanaPasadaString = validarFecha(fecha3)[0] + "-" + validarFecha(fecha3)[1] + "-" + fecha3.getFullYear().toString().substr(2,2);
-    var fecha2SemanaPasada = new Date(fecha3 - 86400000);
-    var fecha2SemanaPasadaString = validarFecha(fecha2)[0] + "-" + validarFecha(fecha2)[1] + "-" + fecha2.getFullYear().toString().substr(2,2);
-    var fecha1SemanaPasada = new Date(fecha2 - 86400000);
-    var fecha1SemanaPasadaString = validarFecha(fecha1)[0] + "-" + validarFecha(fecha1)[1] + "-" + fecha1.getFullYear().toString().substr(2,2);
+    var fecha7SemanaPasada = new Date(fecha1 - 86400000);
+    var fecha6SemanaPasada = new Date(fecha7SemanaPasada - 86400000);
+    var fecha5SemanaPasada = new Date(fecha6SemanaPasada - 86400000);
+    var fecha4SemanaPasada = new Date(fecha5SemanaPasada - 86400000);
+    var fecha3SemanaPasada = new Date(fecha4SemanaPasada - 86400000);
+    var fecha2SemanaPasada = new Date(fecha3SemanaPasada - 86400000);
+    var fecha1SemanaPasada = new Date(fecha2SemanaPasada - 86400000);
+    var fecha7SemanaPasadaString = validarFecha(fecha7SemanaPasada)[0] + "-" + validarFecha(fecha7SemanaPasada)[1] + "-" + fecha7SemanaPasada.getFullYear().toString().substr(2,2);
+    var fecha6SemanaPasadaString = validarFecha(fecha6SemanaPasada)[0] + "-" + validarFecha(fecha6SemanaPasada)[1] + "-" + fecha6SemanaPasada.getFullYear().toString().substr(2,2);
+    var fecha5SemanaPasadaString = validarFecha(fecha5SemanaPasada)[0] + "-" + validarFecha(fecha5SemanaPasada)[1] + "-" + fecha5SemanaPasada.getFullYear().toString().substr(2,2);
+    var fecha4SemanaPasadaString = validarFecha(fecha4SemanaPasada)[0] + "-" + validarFecha(fecha4SemanaPasada)[1] + "-" + fecha4SemanaPasada.getFullYear().toString().substr(2,2);
+    var fecha3SemanaPasadaString = validarFecha(fecha3SemanaPasada)[0] + "-" + validarFecha(fecha3SemanaPasada)[1] + "-" + fecha3SemanaPasada.getFullYear().toString().substr(2,2);
+    var fecha2SemanaPasadaString = validarFecha(fecha2SemanaPasada)[0] + "-" + validarFecha(fecha2SemanaPasada)[1] + "-" + fecha2SemanaPasada.getFullYear().toString().substr(2,2);
+    var fecha1SemanaPasadaString = validarFecha(fecha1SemanaPasada)[0] + "-" + validarFecha(fecha1SemanaPasada)[1] + "-" + fecha1SemanaPasada.getFullYear().toString().substr(2,2);
 
     
-    var v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0;
+    var v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0, v6 = 0, v7 = 0, v1SemanaPasada = 0, v2SemanaPasada = 0, v3SemanaPasada = 0, v4SemanaPasada = 0, v5SemanaPasada = 0, v6SemanaPasada = 0, v7SemanaPasada = 0;
     //console.log(getNum(documentos[0][fecha1String][unidades]));
     // console.log(fecha7String);
 
     try {
         v1 = parseFloat(getNum(documentos[0][fecha1String][unidades])).toFixed(2);
+        v1SemanaPasada = parseFloat(getNum(documentos[0][fecha1SemanaPasadaString][unidades])).toFixed(2);
     } catch (error) {
         try {
             v1 = parseFloat(getNum(documentos[1][fecha1String][unidades])).toFixed(2);
+            v1SemanaPasada = parseFloat(getNum(documentos[1][fecha1SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
@@ -3243,9 +3246,11 @@ function renderIndexGraphs(documentos, unidades){
 
     try {
         v2 = parseFloat(getNum(documentos[0][fecha2String][unidades])).toFixed(2);   
+        v2SemanaPasada = parseFloat(getNum(documentos[0][fecha2SemanaPasadaString][unidades])).toFixed(2);
     } catch (error) {
         try {
-            v2 = parseFloat(getNum(documentos[1][fecha2String][unidades])).toFixed(2);       
+            v2 = parseFloat(getNum(documentos[1][fecha2String][unidades])).toFixed(2);      
+            v2SemanaPasada = parseFloat(getNum(documentos[1][fecha2SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
@@ -3253,9 +3258,11 @@ function renderIndexGraphs(documentos, unidades){
 
     try {
         v3 = parseFloat(getNum(documentos[0][fecha3String][unidades])).toFixed(2);   
+        v3SemanaPasada = parseFloat(getNum(documentos[0][fecha3SemanaPasadaString][unidades])).toFixed(2);
     } catch (error) {
         try {
             v3 = parseFloat(getNum(documentos[1][fecha3String][unidades])).toFixed(2);   
+            v3SemanaPasada = parseFloat(getNum(documentos[1][fecha3SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
@@ -3263,9 +3270,11 @@ function renderIndexGraphs(documentos, unidades){
 
     try {
         v4 = parseFloat(getNum(documentos[0][fecha4String][unidades])).toFixed(2);   
+        v4SemanaPasada = parseFloat(getNum(documentos[0][fecha4SemanaPasadaString][unidades])).toFixed(2);
     } catch (error) {
         try {
             v4 = parseFloat(getNum(documentos[1][fecha4String][unidades])).toFixed(2);   
+            v4SemanaPasada = parseFloat(getNum(documentos[1][fecha4SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
@@ -3274,19 +3283,23 @@ function renderIndexGraphs(documentos, unidades){
 
     try {
         v5 = parseFloat(getNum(documentos[0][fecha5String][unidades])).toFixed(2);   
+        v5SemanaPasada = parseFloat(getNum(documentos[0][fecha5SemanaPasadaString][unidades])).toFixed(2);
     } catch (error) {
         try {
             v5 = parseFloat(getNum(documentos[1][fecha5String][unidades])).toFixed(2);   
+            v5SemanaPasada = parseFloat(getNum(documentos[1][fecha5SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
     }
 
     try {
-        v6 = parseFloat(getNum(documentos[0][fecha6String][unidades])).toFixed(2);   
+        v6 = parseFloat(getNum(documentos[0][fecha6String][unidades])).toFixed(2);
+        v6SemanaPasada = parseFloat(getNum(documentos[0][fecha6SemanaPasadaString][unidades])).toFixed(2);
     } catch (error) {
         try {
             v6 = parseFloat(getNum(documentos[1][fecha6String][unidades])).toFixed(2);      
+            v6SemanaPasada = parseFloat(getNum(documentos[1][fecha6SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
@@ -3294,9 +3307,12 @@ function renderIndexGraphs(documentos, unidades){
 
     try {
         v7 = parseFloat(getNum(documentos[0][fecha7String][unidades])).toFixed(2);   
+        v7SemanaPasada = parseFloat(getNum(documentos[0][fecha7SemanaPasadaString][unidades])).toFixed(2);
+        console.log(v7SemanaPasada);
     } catch (error) {
         try {
             v7 = parseFloat(getNum(documentos[1][fecha7String][unidades])).toFixed(2);   
+            v7SemanaPasada = parseFloat(getNum(documentos[1][fecha7SemanaPasadaString][unidades])).toFixed(2);
         } catch (error) {
             
         }
@@ -3315,7 +3331,7 @@ function renderIndexGraphs(documentos, unidades){
             {
             type: 'area',
             name: "Semana Pasada: "+unidades,
-            data: [v1-(v1*.2).toFixed(1),v2-(v2*.2).toFixed(1),(v3-(v3*.2)).toFixed(1),(v4-(v4*.2)).toFixed(1),v5,(v6-(v6*.2)).toFixed(1),v7]
+            data: [v1SemanaPasada,v2SemanaPasada,v3SemanaPasada,v4SemanaPasada,v5SemanaPasada,v6SemanaPasada,v7SemanaPasada]
             }
         ],
         xaxis: {
