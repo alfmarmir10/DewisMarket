@@ -18,8 +18,11 @@ var idNE;
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
-    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    // d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    d.setTime(d.getTime() + exdays);
     var expires = "expires="+d.toUTCString();
+    // console.log(d.toUTCString());
+    console.log(cname + "=" + cvalue + ";" + expires + ";path=/");
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
@@ -176,7 +179,8 @@ function IniciarSesion(){
             console.log("Get Doc Negocio");
             if (doc.exists) {
                 console.log("Doc Negocio Existe");
-                setCookie("nombreNegocio", doc.data().Nombre, 1);
+                setCookie("nombreNegocio", doc.data().Nombre, (86400000 * 365));
+                
                 banderaNegocio = true;
 
                 db.collection("Negocios").doc(idNegocio).collection("Usuarios").where("Correo", "==", correo)
@@ -189,8 +193,8 @@ function IniciarSesion(){
                     });
 
                     if (banderaNegocio && banderaUsuario) {
-                        setCookie("username", usuario[0], 1);
-                        setCookie("idNegocio", idNegocio, 1);
+                        setCookie("username", usuario[0], (86400000 * 365));
+                        setCookie("idNegocio", idNegocio, (86400000 * 365));
                         // alert("¡Bienvenido, " + usuario[0] + "!");
                         window.location.href=idNegocio+"/index.html";
                     } else if(!banderaUsuario){

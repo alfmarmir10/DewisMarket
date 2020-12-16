@@ -71,6 +71,13 @@
             }
         });
 
+        $(Document).on("keydown", "#txtBuscar", function(e){
+          var value = $(this).val().toLowerCase();
+          $("#tabla_catalogo tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+
         function sortTable(table, col, reverse) {
             var tb = table.tBodies[0], // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
                 tr = Array.prototype.slice.call(tb.rows, 0), // put rows into array
@@ -382,6 +389,10 @@
                                     <div class="row text-center">
                                         <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
                                         <div class="col-sm">
+                                          <input id="txtBuscar" type="text" placeholder="Escribe aquí..." class="form-control"></input>
+                                          <label class="reclaim-black" id="labelBuscarCatalogo">Buscar</label>
+                                        </div>
+                                        <!-- <div class="col-sm">
                                           <input id="cmbDescripcion" placeholder="Selecciona..." class="form-control" list="cmbDescripcion_list"></input>
                                           <script> llenarComboBoxDescripcionCatalogoListener(); </script>
                                           <label class="reclaim-black" id="labelDescripcionDListCatalogo">Descripcion</label>
@@ -393,17 +404,13 @@
                                                 <option value="Comestible">Comestible</option>
                                                 <option value="No Comestible">No Comestible</option>
                                             </datalist>
-                                            <!-- <select id="cmbCategoria1" class="form-control">
-                                                <option value="Comestible">Comestible</option>
-                                                <option value="No Comestible">No Comestible</option>
-                                            </select> -->
                                             <label class="reclaim-black" id="labelCategoria1DListCatalogo">Categoría 1</label>
                                         </div>
                                         <div class="col-sm">
                                             <input id="Cat2" placeholder="Selecciona..."></input>
                                             <script> llenarComboBox("Cat2", "cmbCategoria2", "form-control"); </script>
                                             <label class="reclaim-black" id="labelCategoria2DListCatalogo">Categoría 2</label>
-                                        </div>
+                                        </div> -->
             
                                         <div class="col-sm">
                                             <div class="btn-group" id="btnCatalogo">
@@ -665,7 +672,7 @@
             var perf = firebase.performance();
         </script>
         <script>
-            //loadDashboardCharts();
+            CargarCatalogoFROM1doc();
         </script>
 	</body>
 </html>
