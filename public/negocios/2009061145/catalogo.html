@@ -293,7 +293,7 @@
         <div class="container-fluid">
             <div class="row">
               <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-                <div class="sidebar-sticky pt-3">
+                <div class="sidebar-sticky pt-3" style="z-index: 1020;">
                   <ul class="nav flex-column">
                     <div class="card bg-info text-center text-white">
                       <div class="head font-weight-bold">
@@ -388,8 +388,8 @@
                                 <div class="form-inline">
                                     <div class="row text-center">
                                         <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
-                                        <div class="col-sm">
-                                          <input id="txtBuscar" type="text" placeholder="Escribe aquí..." class="form-control"></input>
+                                        <div class="col-lg-8">
+                                          <input id="txtBuscar" type="text" placeholder="Escribe aquí..." class="form-control" style="width: 100%;"></input>
                                           <label class="reclaim-black" id="labelBuscarCatalogo">Buscar</label>
                                         </div>
                                         <!-- <div class="col-sm">
@@ -412,7 +412,7 @@
                                             <label class="reclaim-black" id="labelCategoria2DListCatalogo">Categoría 2</label>
                                         </div> -->
             
-                                        <div class="col-sm">
+                                        <div class="col-md-4">
                                             <div class="btn-group" id="btnCatalogo">
                                                 <button type="button" class="btn btn-warning" onclick="PDFCatalogoCalcularNombreArchivo(); return false;">Descargar</button>
                                                 <button type="button" class="btn btn-warning dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -508,19 +508,19 @@
                             <span class="sr-only">Toggle Dropdown</span>
                           </button>
                           <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
-                            <a class="dropdown-item" onclick="loadGraphsProductoSinRecargar('Dinero');">Dinero</a>
-                            <a class="dropdown-item" onclick="loadGraphsProductoSinRecargar('Piezas');">Piezas</a>
-                            <a class="dropdown-item" onclick="loadGraphsProductoSinRecargar('Ganancia');">Ganancia</a>
+                            <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Dinero');">Dinero</a>
+                            <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Piezas');">Piezas</a>
+                            <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Ganancia');">Ganancia</a>
                           </div>
                         </div>
                         <div class="card" style="margin-top: 10px;">
-                          <div class="body">
+                          <div class="body reclaim-black">
                             <div style="width:100%;">
                               <div>
                                 <div id="chartProducto"></div>
                               </div>
                             </div>
-                            <h2 class="text-center font-weight-bold text-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2>
+                            <h2 class="text-center font-weight-bold text-black reclaim-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2>
                             
                           </div>
                         </div>

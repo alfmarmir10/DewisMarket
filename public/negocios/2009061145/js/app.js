@@ -2992,7 +2992,18 @@ function renderGraphsProducto(documentos, unidades){
             id: 'chartProducto',
             type: 'line',
             height: '400px',
-            redrawOnParentResize: true
+            redrawOnParentResize: true,
+            toolbar:{
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                }
+            }
         },
         series: [{
             name: unidades,
@@ -3062,7 +3073,18 @@ function renderGraphsProducto(documentos, unidades){
             breakpoint: 760,
             options: {
                 chart: {
-                    height: 200,
+                    height: 300,
+                    toolbar:{
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false
+                        }
+                    }
                 },
                 title:{
                     text: 'Ventas - '+unidades
@@ -3090,7 +3112,7 @@ function renderGraphsProducto(documentos, unidades){
                     }
                 },
                 dataLabels:{
-                    enabled: false
+                    enabled: true
                 }
             }
             }
@@ -3320,7 +3342,18 @@ function renderIndexGraphs(documentos, unidades){
 
     options = {
         chart: {
-            height: '400px'
+            height: '400px',
+            toolbar:{
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                }
+            }
         },
         series: [
             {
@@ -3370,32 +3403,72 @@ function renderIndexGraphs(documentos, unidades){
             fontSize: 20
             }
         },
+        legend:{
+            offsetY: 10,
+            horizontalAlign: 'center',
+            height: 35,
+            onItemClick: {
+                toggleDataSeries: true
+            },
+            onItemHover: {
+                highlightDataSeries: true
+            }
+        },
         responsive: [
             {
             breakpoint: 760,
             options: {
                 chart: {
-                height: 200,
+                    height: 300,
+                    toolbar:{
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false
+                        }
+                    }
                 },
                 title:{
-                text: 'Ventas - '+unidades
+                    text: 'Ventas - '+unidades
                 },
                 tooltip: {
-                fillSeriesColor: true,
-                theme: 'dark',
-                marker:{
-                    show: true
+                    fillSeriesColor: true,
+                    theme: 'dark',
+                    marker:{
+                        show: true
+                    },
+                    dataLabels:{
+                        enabled: true,
+                        enabledOnSeries: undefined
+                    },
+                    style:{
+                        fontSize: '14px'
+                    },
+                    x:{
+                        title: 'No'
+                    }
+                },
+                xaxis:{
+                    labels:{
+                        show: false
+                    }
                 },
                 dataLabels:{
-                    enabled: true,
-                    enabledOnSeries: undefined
+                    enabled: true
                 },
-                style:{
-                    fontSize: '14px'
-                },
-                x:{
-                    title: 'No'
-                }
+                legend:{
+                    offsetY: 0,
+                    horizontalAlign: 'center',
+                    onItemClick: {
+                        toggleDataSeries: true
+                    },
+                    onItemHover: {
+                        highlightDataSeries: true
+                    }
                 }
             }
             }
