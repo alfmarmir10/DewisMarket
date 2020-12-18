@@ -502,27 +502,42 @@
                   <div class="modal-body">
                     <div class="row">
                       <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                        <div class="btn-group">
-                          <button type="button" class="btn share_export_btn bg-primary text-white" id="btnUnidadesCharts">Dinero</button>
-                          <button type="button" class="btn share_export_btn bg-primary text-white dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
-                            <span class="sr-only">Toggle Dropdown</span>
-                          </button>
-                          <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
-                            <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Dinero');">Dinero</a>
-                            <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Piezas');">Piezas</a>
-                            <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Ganancia');">Ganancia</a>
-                          </div>
+                        <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                          VENTAS
                         </div>
-                        <div class="card" style="margin-top: 10px;">
-                          <div class="body reclaim-black">
-                            <div style="width:100%;">
-                              <div>
-                                <div id="chartProducto"></div>
-                              </div>
+                        <div class="card-body reclaim-black border">
+                          <div class="btn-group">
+                            <button type="button" class="btn share_export_btn bg-primary text-white" id="btnUnidadesCharts">Dinero</button>
+                            <button type="button" class="btn share_export_btn bg-primary text-white dropdown-toggle dropdown-toggle-split" id="dropdownMenuReference" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-reference="parent">
+                              <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuReference">
+                              <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Dinero');">Dinero</a>
+                              <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Piezas');">Piezas</a>
+                              <a class="dropdown-item text-black" onclick="loadGraphsProductoSinRecargar('Ganancia');">Ganancia</a>
                             </div>
-                            <h2 class="text-center font-weight-bold text-black reclaim-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2>
-                            
                           </div>
+                          <div style="width:100%;">
+                            <div>
+                              <div id="chartProducto"></div>
+                            </div>
+                          </div>
+                          <h2 class="text-center font-weight-bold text-black reclaim-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card-header bg-warning text-dark" style="font-weight: bold;">
+                          COSTOS
+                        </div>
+                        <div class="card-body reclaim-black border">
+                          <div style="width:100%;">
+                            <div>
+                              <div id="chartCostosProducto"></div>
+                            </div>
+                          </div>
+                          <!-- <h2 class="text-center font-weight-bold text-black reclaim-black" id="chartDescripcionArticulo" style="background-color:moccasin; padding: 7px;">123</h2> -->
                         </div>
                       </div>
                     </div>

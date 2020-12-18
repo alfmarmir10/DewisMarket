@@ -21,11 +21,13 @@ var listenerCatalogoListVender;
 var listenerCatalogoListCatalogo;
 var listenerCat2ListCatalogo;
 var documentos = Array();
+var documentosCostos = Array();
 var unidades;
 var idCatalogoGraphs;
 var fechasString = Array();
 var valores = Array();
 var banderaX = false;
+var banderaX2 = false;
 var chartProducto;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2953,7 +2955,14 @@ function getNum(val) {
     .onSnapshot(function(doc) {
         documentos = [];
         documentos.push(doc.data());
-        renderGraphsProducto(documentos, unidades);
+
+        listenerIndexGraphs = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(Cod).collection("HistoricoCostos").doc(fecha7.getFullYear().toString())
+        .onSnapshot(function(doc) {
+            documentosCostos = [];
+            documentosCostos.push(doc.data());
+            
+            renderGraphsProducto(documentos, documentosCostos, unidades);
+        });
     });
 }
 
@@ -2962,11 +2971,14 @@ function loadGraphsProductoSinRecargar(unidadesBtn){
     renderGraphsProducto(documentos, unidades);
 }
 
-function renderGraphsProducto(documentos, unidades){
+function renderGraphsProducto(documentos, documentosCostos ,unidades){
     var fecha7 = new Date();
     
     fechasString = [];
+    fechasStringCostos = [];
     valores = [];
+    valoresCostos = [];
+    proveedoresCostos = [];
     document.getElementById('btnUnidadesCharts').innerHTML = unidades;
 
     for (x=0;x<30;x++){
@@ -2987,6 +2999,41 @@ function renderGraphsProducto(documentos, unidades){
         }
     }
 
+    var keys = Object.keys(documentosCostos[0]);
+    keys.sort();
+
+    // console.log(documentosCostos[0][keys[0]]["Fecha"]);
+    // console.log(keys[0]);
+    
+    
+
+    for (x=0;x<30;x++){
+        try {
+            fechasStringCostos.push(documentosCostos[0][keys[x]]["Fecha"]);
+        } catch (error) {
+            fechasStringCostos.push('');
+        }
+    }
+
+    for (x=0;x<(fechasStringCostos.length);x++){
+        try {
+            var vTemp = parseFloat(getNum(documentosCostos[0][keys[x]]["Costo"])).toFixed(2);
+            valoresCostos.push(vTemp);
+        } catch (error) {
+            valoresCostos.push(0);
+        }
+    }
+
+    for (x=0;x<(fechasStringCostos.length);x++){
+        try {
+            proveedoresCostos.push(documentosCostos[0][keys[x]]["Proveedor"]);
+        } catch (error) {
+            proveedoresCostos.push('');
+        }
+    }
+
+    console.log(proveedoresCostos);
+    
     options = {
         chart: {
             id: 'chartProducto',
@@ -3124,6 +3171,158 @@ function renderGraphsProducto(documentos, unidades){
     }
     chart = new ApexCharts(document.querySelector("#chartProducto"), options);
     chart.render().then(banderaX = true);
+
+
+    options = {
+        chart: {
+            id: 'chartCostosProducto',
+            type: 'line',
+            height: '400px',
+            redrawOnParentResize: true,
+            toolbar:{
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                }
+            }
+        },
+        series: [{
+            name: "Costos",
+            data: [valoresCostos[0],valoresCostos[1],valoresCostos[2],valoresCostos[3],valoresCostos[4],valoresCostos[5],valoresCostos[6],valoresCostos[7],valoresCostos[8],valoresCostos[9]
+            ,valoresCostos[10],valoresCostos[11],valoresCostos[12],valoresCostos[13],valoresCostos[14],valoresCostos[15],valoresCostos[16],valoresCostos[17],valoresCostos[18],valoresCostos[19]
+            ,valoresCostos[20],valoresCostos[21],valoresCostos[22],valoresCostos[23],valoresCostos[24],valoresCostos[25],valoresCostos[26],valoresCostos[27],valoresCostos[28],valoresCostos[29]]
+        }],
+        xaxis: {
+            categories: [fechasStringCostos[0],fechasStringCostos[1],fechasStringCostos[2],fechasStringCostos[3],fechasStringCostos[4],fechasStringCostos[5],fechasStringCostos[6],fechasStringCostos[7],fechasStringCostos[8],fechasStringCostos[9]
+            ,fechasStringCostos[10],fechasStringCostos[11],fechasStringCostos[12],fechasStringCostos[13],fechasStringCostos[14],fechasStringCostos[15],fechasStringCostos[16],fechasStringCostos[17],fechasStringCostos[18],fechasStringCostos[19]
+            ,fechasStringCostos[20],fechasStringCostos[21],fechasStringCostos[22],fechasStringCostos[23],fechasStringCostos[24],fechasStringCostos[25],fechasStringCostos[26],fechasStringCostos[27],fechasStringCostos[28],fechasStringCostos[29]]
+        },
+        // series: [{
+        //     name: "Costos",
+        //     data: [valoresCostos[29],valoresCostos[28],valoresCostos[27],valoresCostos[26],valoresCostos[25],valoresCostos[24],valoresCostos[23],valoresCostos[22],valoresCostos[21],valoresCostos[20]
+        //     ,valoresCostos[19],valoresCostos[18],valoresCostos[17],valoresCostos[16],valoresCostos[15],valoresCostos[14],valoresCostos[13],valoresCostos[12],valoresCostos[11],valoresCostos[10]
+        //     ,valoresCostos[9],valoresCostos[8],valoresCostos[7],valoresCostos[6],valoresCostos[5],valoresCostos[4],valoresCostos[3],valoresCostos[2],valoresCostos[1],valoresCostos[0]]
+        // }],
+        // xaxis: {
+        //     categories: [fechasStringCostos[29],fechasStringCostos[28],fechasStringCostos[27],fechasStringCostos[26],fechasStringCostos[25],fechasStringCostos[24],fechasStringCostos[23],fechasStringCostos[22],fechasStringCostos[21],fechasStringCostos[20]
+        //     ,fechasStringCostos[19],fechasStringCostos[18],fechasStringCostos[17],fechasStringCostos[16],fechasStringCostos[15],fechasStringCostos[14],fechasStringCostos[13],fechasStringCostos[12],fechasStringCostos[11],fechasStringCostos[10]
+        //     ,fechasStringCostos[9],fechasStringCostos[8],fechasStringCostos[7],fechasStringCostos[6],fechasStringCostos[5],fechasStringCostos[4],fechasStringCostos[3],fechasStringCostos[2],fechasStringCostos[1],fechasStringCostos[0]]
+        // },
+        stroke:{
+            curve: 'smooth',
+            width: 1.5
+        },
+        theme: {
+            mode: 'light', 
+            palette: 'palette7', 
+            monochrome: {
+                enabled: false,
+                color: '#255aee',
+                shadeTo: 'light',
+                shadeIntensity: 0.65
+            },
+        },
+        title: {
+            text: 'Costos',
+            align: 'left',
+            margin: 10,
+            offsetX: 0,
+            offsetY: 0,
+            floating: false,
+            style: {
+            fontSize:  24,
+            fontWeight:  'bold',
+            fontFamily:  'Helvetica',
+            color:  '#263238'
+            }
+        },
+        dataLabels:{
+            enabled: true,
+            enabledOnSeries: undefined,
+            formatter: function (value) {
+                if (value == 0){
+                    return "";
+                } else {
+                    return value;
+                }
+                
+            }
+        },
+        // 
+        tooltip: {
+            custom: function({ series, seriesIndex, dataPointIndex, w }) {
+              return (
+                '<div class="arrow_box">' +
+                "<span>" +
+                proveedoresCostos[dataPointIndex] +
+                ": " +
+                series[seriesIndex][dataPointIndex] +
+                "</span>" +
+                "</div>"
+              );
+            }
+          },
+        responsive: [
+            {
+            breakpoint: 760,
+            options: {
+                chart: {
+                    height: 300,
+                    toolbar:{
+                        tools: {
+                            download: true,
+                            selection: false,
+                            zoom: false,
+                            zoomin: false,
+                            zoomout: false,
+                            pan: false,
+                            reset: false
+                        }
+                    }
+                },
+                title:{
+                    text: 'Ventas - '+unidades
+                },
+                tooltip: {
+                    fillSeriesColor: true,
+                    theme: 'dark',
+                    marker:{
+                        show: true
+                    },
+                    dataLabels:{
+                        enabled: true,
+                        enabledOnSeries: undefined
+                    },
+                    style:{
+                        fontSize: '14px'
+                    },
+                    x:{
+                        title: 'No'
+                    }
+                },
+                xaxis:{
+                    labels:{
+                        show: false
+                    }
+                },
+                dataLabels:{
+                    enabled: true
+                }
+            }
+            }
+        ]
+    }
+
+    if (banderaX2 == true){
+        chart2.destroy();
+    }
+    chart2 = new ApexCharts(document.querySelector("#chartCostosProducto"), options);
+    chart2.render().then(banderaX2 = true);
  }
 
 
