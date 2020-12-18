@@ -2968,7 +2968,7 @@ function getNum(val) {
 
 function loadGraphsProductoSinRecargar(unidadesBtn){
     unidades = unidadesBtn;
-    renderGraphsProducto(documentos, unidades);
+    renderGraphsProducto(documentos, documentosCostos, unidades);
 }
 
 function renderGraphsProducto(documentos, documentosCostos ,unidades){
@@ -3286,7 +3286,7 @@ function renderGraphsProducto(documentos, documentosCostos ,unidades){
                     }
                 },
                 title:{
-                    text: 'Ventas - '+unidades
+                    text: 'Costos'
                 },
                 tooltip: {
                     fillSeriesColor: true,
