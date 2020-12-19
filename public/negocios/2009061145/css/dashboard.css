@@ -27,11 +27,11 @@ body {
  * Sidebar
  */
 
- #tabla_catalogo thead tr th{
+ /* #tabla_catalogo thead tr th{
    position: sticky;
-   top: 0;
-   z-index: 1021;
- }
+   top: 46px;
+   z-index: 1019;
+ } */
 
 .sidebar {
   position: fixed;
@@ -137,6 +137,20 @@ body {
 }
 
 @media (max-width: 767.98px) {
+  /* #tabla_catalogo{
+    position: relative;
+  }
+
+  #tabla_catalogo thead tr th{
+    position: -webkit-sticky;
+    position: -moz-sticky;
+    position: -o-sticky;
+    position: -ms-sticky;
+    position: sticky;
+    top: -50px;
+    z-index: 1019;
+  } */
+
   #h1Label {
     font-size: 40;
   }

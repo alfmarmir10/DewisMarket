@@ -2132,8 +2132,8 @@ function agregarElementosNE(CB, Id, Des, Can, Cos, Tot, Prov, Fol){
     var hora2 = $("#hora").text()+":"+$("#minutos").text()+":"+$("#segundos").text();
     idNE = fecha + "_" + hora + "_" + Fol;
     var f = $("#docOrigen").html();
-    var h2 = $("#fecha2").html();
-    var f2 = $("#hora2").html();
+    var f2 = $("#fecha2").html();
+    var h2 = $("#hora2").html();
     if (f != ""){
         idNE = f;
     }
@@ -2999,8 +2999,13 @@ function renderGraphsProducto(documentos, documentosCostos ,unidades){
         }
     }
 
-    var keys = Object.keys(documentosCostos[0]);
-    keys.sort();
+    try {
+        var keys = Object.keys(documentosCostos[0]);
+        keys.sort();
+    } catch (error) {
+        
+    }
+    
 
     // console.log(documentosCostos[0][keys[0]]["Fecha"]);
     // console.log(keys[0]);
@@ -3155,7 +3160,9 @@ function renderGraphsProducto(documentos, documentosCostos ,unidades){
                 },
                 xaxis:{
                     labels:{
-                        show: false
+                        show: true,
+                        rotate: -45,
+                        rotateAlways: true
                     }
                 },
                 dataLabels:{
@@ -3200,19 +3207,14 @@ function renderGraphsProducto(documentos, documentosCostos ,unidades){
         xaxis: {
             categories: [fechasStringCostos[0],fechasStringCostos[1],fechasStringCostos[2],fechasStringCostos[3],fechasStringCostos[4],fechasStringCostos[5],fechasStringCostos[6],fechasStringCostos[7],fechasStringCostos[8],fechasStringCostos[9]
             ,fechasStringCostos[10],fechasStringCostos[11],fechasStringCostos[12],fechasStringCostos[13],fechasStringCostos[14],fechasStringCostos[15],fechasStringCostos[16],fechasStringCostos[17],fechasStringCostos[18],fechasStringCostos[19]
-            ,fechasStringCostos[20],fechasStringCostos[21],fechasStringCostos[22],fechasStringCostos[23],fechasStringCostos[24],fechasStringCostos[25],fechasStringCostos[26],fechasStringCostos[27],fechasStringCostos[28],fechasStringCostos[29]]
+            ,fechasStringCostos[20],fechasStringCostos[21],fechasStringCostos[22],fechasStringCostos[23],fechasStringCostos[24],fechasStringCostos[25],fechasStringCostos[26],fechasStringCostos[27],fechasStringCostos[28],fechasStringCostos[29]],
+            labels:{
+                show: true,
+                rotate: -45,
+                rotateAlways: true,
+                minHeight: 70
+            }
         },
-        // series: [{
-        //     name: "Costos",
-        //     data: [valoresCostos[29],valoresCostos[28],valoresCostos[27],valoresCostos[26],valoresCostos[25],valoresCostos[24],valoresCostos[23],valoresCostos[22],valoresCostos[21],valoresCostos[20]
-        //     ,valoresCostos[19],valoresCostos[18],valoresCostos[17],valoresCostos[16],valoresCostos[15],valoresCostos[14],valoresCostos[13],valoresCostos[12],valoresCostos[11],valoresCostos[10]
-        //     ,valoresCostos[9],valoresCostos[8],valoresCostos[7],valoresCostos[6],valoresCostos[5],valoresCostos[4],valoresCostos[3],valoresCostos[2],valoresCostos[1],valoresCostos[0]]
-        // }],
-        // xaxis: {
-        //     categories: [fechasStringCostos[29],fechasStringCostos[28],fechasStringCostos[27],fechasStringCostos[26],fechasStringCostos[25],fechasStringCostos[24],fechasStringCostos[23],fechasStringCostos[22],fechasStringCostos[21],fechasStringCostos[20]
-        //     ,fechasStringCostos[19],fechasStringCostos[18],fechasStringCostos[17],fechasStringCostos[16],fechasStringCostos[15],fechasStringCostos[14],fechasStringCostos[13],fechasStringCostos[12],fechasStringCostos[11],fechasStringCostos[10]
-        //     ,fechasStringCostos[9],fechasStringCostos[8],fechasStringCostos[7],fechasStringCostos[6],fechasStringCostos[5],fechasStringCostos[4],fechasStringCostos[3],fechasStringCostos[2],fechasStringCostos[1],fechasStringCostos[0]]
-        // },
         stroke:{
             curve: 'smooth',
             width: 1.5
@@ -3266,7 +3268,7 @@ function renderGraphsProducto(documentos, documentosCostos ,unidades){
                 "</div>"
               );
             }
-          },
+        },
         responsive: [
             {
             breakpoint: 760,
@@ -3307,7 +3309,12 @@ function renderGraphsProducto(documentos, documentosCostos ,unidades){
                 },
                 xaxis:{
                     labels:{
-                        show: false
+                        show: true,
+                        rotate: -45,
+                        rotateAlways: true,
+                        minHeight: 80,
+                        minWidth: 80,
+                        offsetX: 100
                     }
                 },
                 dataLabels:{
