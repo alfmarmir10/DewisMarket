@@ -3610,9 +3610,8 @@ function renderIndexGraphs(documentos, unidades){
             }
         },
         legend:{
-            offsetY: 10,
+            offsetY: -40,
             horizontalAlign: 'center',
-            height: 35,
             onItemClick: {
                 toggleDataSeries: true
             },
