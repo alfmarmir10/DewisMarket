@@ -68,6 +68,14 @@ font-weight: 200;
     max-height: 100%;
 }
 
+#sidebar-collapse-img{
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    width: 25px;
+    height: 25px;
+}
+
   @media (min-width: 420px) {
     
 
