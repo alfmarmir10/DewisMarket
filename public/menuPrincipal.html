@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="shortcut icon" href="./img/favicon.ico" type="image/x-icon"/>
 <title>Dewis Market - Menú Principal</title>
 
 <!-- Scripts BOOTSTRAP -->
@@ -57,9 +58,6 @@
                     <li class="nav-item active">
                         <a class="nav-link text-center active" aria-current="page" href="#">Inicio</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-center" aria-current="page" href="#">Carrito</a>
-                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-center" href="#" id="dropdown-departamentos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Departamentos
@@ -94,67 +92,28 @@
             <!-- <a type="button" id="sidebarCollapse">
                 <img id="sidebarCollapse-img" src="./img/shoppingCart-icon.jpg" alt="">
             </a> -->
-            <button type="button" id="sidebarCollapse" class="btn btn-white">
-                <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
-                <!-- <span>Toggle Sidebar</span> -->
-            </button>
+            <div class="d-flex justify-content-end">
+                <button type="button" id="sidebarCollapse" class="btn btn-white">
+                    <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
+                    <!-- <span>Toggle Sidebar</span> -->
+                </button>
+            </div>
         
             <section class="carousel-mas-vendidos">
                 <div class="container">
                   <div class="row">
-                    <div class="col-lg-3 col-md-4 col-sm-6"><img id="mas-vendidos-1" alt="" class="imgCatalogo"><script>getImgMasVendidos(1,".webp",1);</script></div>
-                    <div class="col-lg-3 col-md-4 col-sm-6"><img id="mas-vendidos-2" alt="" class="imgCatalogo"><script>getImgMasVendidos(2,".png",2);</script></div>
-                    <div class="col-lg-3 col-md-4 col-sm-6"><img id="mas-vendidos-3" alt="" class="imgCatalogo"><script>getImgMasVendidos(3,".webp",3);</script></div>
-                    <div class="col-lg-3 col-md-4 col-sm-6"><img id="mas-vendidos-4" alt="" class="imgCatalogo"><script>getImgMasVendidos(5,".png",4);</script></div>
+                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-1" alt="" class="imgCatalogo"><script>getImgMasVendidos(1,".webp",1);</script></div>
+                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-2" alt="" class="imgCatalogo"><script>getImgMasVendidos(2,".png",2);</script></div>
+                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-3" alt="" class="imgCatalogo"><script>getImgMasVendidos(3,".webp",3);</script></div>
+                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-4" alt="" class="imgCatalogo"><script>getImgMasVendidos(5,".png",4);</script></div>
                   </div>
                 </div>
             </section>
         </div>
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h3>Bootstrap Sidebar</h3>
+        <nav id="sidebar" class=".sidebar active" style="font-family: Arial, Helvetica, sans-serif;">
+            <div class="sidebar-header text-center">
+                <h3 class="font-weight-bold">Carrito</h3>
             </div>
-
-            <ul class="list-unstyled components">
-                <p>Dummy Heading</p>
-                <li class="active">
-                    <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Home</a>
-                    <ul class="collapse list-unstyled" id="homeSubmenu">
-                        <li>
-                            <a href="#">Home 1</a>
-                        </li>
-                        <li>
-                            <a href="#">Home 2</a>
-                        </li>
-                        <li>
-                            <a href="#">Home 3</a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#">About</a>
-                </li>
-                <li>
-                    <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Pages</a>
-                    <ul class="collapse list-unstyled" id="pageSubmenu">
-                        <li>
-                            <a href="#">Page 1</a>
-                        </li>
-                        <li>
-                            <a href="#">Page 2</a>
-                        </li>
-                        <li>
-                            <a href="#">Page 3</a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#">Portfolio</a>
-                </li>
-                <li>
-                    <a href="#">Contact</a>
-                </li>
-            </ul>
 
             <ul class="list-unstyled CTAs">
                 <li>

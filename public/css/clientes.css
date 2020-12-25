@@ -76,6 +76,78 @@ font-weight: 200;
     height: 25px;
 }
 
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 450px;
+    max-width: 450px;
+    margin-right: 0px;
+    background: rgba(255,255,255,0.5);
+    color: #fff;
+    transition: all 0.3s;
+}
+
+#sidebar.active {
+    /* margin-right: -450px; */
+    display: none;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: rgba(0,0,0,0.7);
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #47748b;
+}
+
+#sidebar ul p {
+    color: #fff;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    color: #7386D5;
+    background: #fff;
+}
+
+#sidebar ul li.active>a,
+a[aria-expanded="true"] {
+    color: #fff;
+    background: #6d7fcc;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+#sidebarCollapse{
+    border-radius: 50%;
+    box-shadow: 0 1px 6px 0 #20212447;
+    border-color: #dfe1e500;
+}
+
+
   @media (min-width: 420px) {
     
 
@@ -97,6 +169,16 @@ font-weight: 200;
     .card-subtitle{
         font-size: 15px;
     
+    }
+
+    #sidebar {
+        margin-right: 0px;
+    }
+    #sidebar.active {
+        display: none;
+    }
+    #sidebarCollapse span {
+        display: none;
     }
 }
 
