@@ -93,20 +93,65 @@
                 <img id="sidebarCollapse-img" src="./img/shoppingCart-icon.jpg" alt="">
             </a> -->
             <div class="d-flex justify-content-end">
-                <button type="button" id="sidebarCollapse" class="btn btn-white">
+                <button type="button" id="sidebarCollapse" class="btn btn-white mb-2">
                     <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
                     <!-- <span>Toggle Sidebar</span> -->
                 </button>
             </div>
         
             <section class="carousel-mas-vendidos">
-                <div class="container">
-                  <div class="row">
-                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-1" alt="" class="imgCatalogo"><script>getImgMasVendidos(1,".webp",1);</script></div>
-                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-2" alt="" class="imgCatalogo"><script>getImgMasVendidos(2,".png",2);</script></div>
-                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-3" alt="" class="imgCatalogo"><script>getImgMasVendidos(3,".webp",3);</script></div>
-                    <div class="col-sm-6 col-md-6 col-lg-3"><img id="mas-vendidos-4" alt="" class="imgCatalogo"><script>getImgMasVendidos(5,".png",4);</script></div>
-                  </div>
+                <div class="container-fluid">
+                    <div class="card" style="width: 100%; min-width: 100%;">
+                        <div class="card-header bg-info font-weight-bold border-5 rounded text-uppercase h3">Lo más vendido</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-6 col-md-6 col-lg-3">
+                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%; min-height: 100%;">
+                                        <img id="mas-vendidos-1" alt="" class="imgCatalogo card-img-top"><script>getImgMasVendidos(1,".webp",1);</script>
+                                        <div class="card-body text-center">
+                                        <h5 class="card-title font-weight-bold">La Lechera 387gr</h5>
+                                        </div>
+                                        <div class="card-body text-center">
+                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-3">
+                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%;">
+                                        <img id="mas-vendidos-2" alt="" class="imgCatalogo"><script>getImgMasVendidos(2,".png",2);</script>
+                                        <div class="card-body text-center">
+                                        <h5 class="card-title font-weight-bold">La Lechera 335gr Botella</h5>
+                                        </div>
+                                        <div class="card-body text-center">
+                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-3">
+                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%;">
+                                        <img id="mas-vendidos-3" alt="" class="imgCatalogo"><script>getImgMasVendidos(3,".webp",3);</script>
+                                        <div class="card-body text-center">
+                                        <h5 class="card-title font-weight-bold">La Lechera 325gr Untable</h5>
+                                        </div>
+                                        <div class="card-body text-center">
+                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-3">
+                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%;">
+                                        <img id="mas-vendidos-4" alt="" class="imgCatalogo"><script>getImgMasVendidos(5,".png",4);</script>
+                                        <div class="card-body text-center">
+                                        <h5 class="card-title font-weight-bold">Fiore Nocturna c/ alas 8pz</h5>
+                                        </div>
+                                        <div class="card-body text-center">
+                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                        
                 </div>
             </section>
         </div>
