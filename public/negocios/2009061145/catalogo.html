@@ -155,6 +155,22 @@
           }
         });
 
+        $(Document).on("keydown", "#precioActualizarPrecioECommerce", function(e){
+          if(e.keyCode == 13){
+              document.getElementById('btnAceptarActualizaPrecioECommerce').click();
+          } else {
+              var x = event.charCode || event.keyCode;
+
+              if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+          }
+        });
+
+        $(Document).on("keydown", "#nombreActualizarImagenECommerce", function(e){
+          if(e.keyCode == 13){
+              document.getElementById('btnAceptarActualizaImagenECommerce').click();
+          }
+        });
+
           $(Document).on("keyup", "#precioActualizarPrecio", function(e){
             var Costo = parseFloat($("#costoActualizarPrecio").val());
             var Precio = parseFloat($("#precioActualizarPrecio").val());
@@ -180,7 +196,6 @@
                 alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
                 return;
               }
-              var idNegocio = getCookie("idNegocio");
               var CB = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
               var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[7].innerText);
               if (isNaN(PrecioOriginal)) PrecioOriginal = "";
@@ -209,7 +224,6 @@
                 alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
                 return;
               }
-              var idNegocio = getCookie("idNegocio");
               var CB = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
               var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[15].innerText);
               if (isNaN(PrecioOriginal)) PrecioOriginal = "";
@@ -222,6 +236,24 @@
               $("#margenActualizarPrecioECommerce").val(Margen.toFixed(1)+"%");
               $("#codigoBarrasActualizarPrecioECommerce").val(CB);
               $("#rowActualizarPrecioECommerce").val(row);
+            } else {
+              
+            }
+        };
+
+        function indexECommerceImagen(x){
+            // var idNegocio = getCookie("idNegocio");
+            var row = x.parentNode.rowIndex;
+            var docId = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
+            var Des = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
+            if (confirm("¿Deseas especificar el nombre de la imagen para e-Commerce?")) {
+              var Nombre = document.getElementById("tabla_catalogo").rows[row].cells[17].innerText;
+              
+              $("#modalActualizarImagenECommerce").modal('toggle');
+              $("#modalActualizarImagenECommerceLabel").text(Des);
+              $("#nombreActualizarImagenECommerce").val(Nombre);
+              $("#docId").val(docId);
+              $("#rowActualizarImagenECommerce").val(row);
             } else {
               
             }
@@ -263,9 +295,21 @@
         function eCommerceCheck(x){
           var row = x.parentNode.rowIndex;
           var PrecioECommerce = document.getElementById("tabla_catalogo").rows[row].cells[15].innerText;
+          var ImagenECommerce = document.getElementById("tabla_catalogo").rows[row].cells[17].innerText;
+          var banderaPrecio = true;
+          var banderaImagen = true;
           var docId = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
           if (PrecioECommerce == "-"){
+            banderaPrecio = false;
             alert("Establece un precio primero, por favor.");
+          }
+
+          if (ImagenECommerce == "-"){
+            banderaImagen = false;
+            alert("Especifica un nombre de imagen primero, por favor.");
+          }
+
+          if (banderaPrecio == false || banderaImagen == false){
             var checkBox = document.getElementById(docId+'_checkBox');
             checkBox.checked = false;
             return;
@@ -282,6 +326,9 @@
             document.getElementById('precioActualizarPrecioECommerce').focus();
         });
         
+        $(document).on("shown.bs.modal", "#modalActualizarImagenECommerce", function(e) {
+            document.getElementById('nombreActualizarImagenECommerce').focus();
+        });
         // SCRIPTS GENERALES
         
         $(document).on("hide.bs.modal", "#modalValidarPrecio", function(e) {
@@ -501,6 +548,7 @@
                                                 <th scope="col" style="text-align: center;" class="bg-info" data-html2canvas-ignore="true">eCommerce</th>
                                                 <th scope="col" style="text-align: center;" class="bg-info">$ PRECIO eCommerce</th>
                                                 <th scope="col" style="text-align: center;" class="bg-info">Margen eCommerce</th>
+                                                <th scope="col" style="text-align: center;" class="bg-info">Nombre Imagen eCommerce</th>
                                             </tr>
                                         </thead>
                                         <tbody>                                          
@@ -676,6 +724,33 @@
                   </div>
               </div>
           </div>
+      </div>
+      <div class="modal fade" id="modalActualizarImagenECommerce" tabindex="-1" aria-labelledby="modalActualizarImagenECommerceLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                    <!-- Nav tabs -->
+                    <div class="container text-center font-weight-bold bg-info text-white"><h5 class="modal-title" id="modalActualizarImagenECommerceLabel"></h5></div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                          <label for="nombreActualizarImagenECommerce" class="font-weight-bold">Nombre de archivo:</label>
+                          <small id="idNegocioHelp" class="form-text text-muted">Ejemplo: AceiteAve850ml.png -No olvides el formato de la imagen-</small>
+                          <input type="text" class="form-control" id="nombreActualizarImagenECommerce" aria-describedby="costoHelp">
+                          <input type="text" class="form-control" id="docId" aria-describedby="" hidden disabled="true">
+                          <input type="text" class="form-control" id="rowActualizarImagenECommerce" aria-describedby="" hidden disabled="true">
+                        </div>
+                        <br>
+                        <button type="button" class="btn btn-warning" id="btnAceptarActualizaImagenECommerce" onclick="actualizarImagenECommerce($('#nombreActualizarImagenECommerce').val(), $('#docId').val(), $('#rowActualizarImagenECommerce').val())">Continuar</button>                                        
+                      </form>
+                </div>
+            </div>
+        </div>
       </div>
         <div class="modal fade" id="modalEditarArticuloCatalogo" tabindex="-1" aria-labelledby="modalEditarArticuloCatalogoLabel" aria-hidden="true">
           <div class="modal-dialog">

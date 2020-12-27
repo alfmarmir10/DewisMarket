@@ -1587,6 +1587,36 @@ function actualizarPrecioECommerce(CB, row, precio, margen, precioOriginal){
     }
 }
 
+function actualizarImagenECommerce(nombre, docId, row){
+    if (nombre == null || nombre == ""){
+        alert("El nombre no puede ser nulo");
+        return;
+    }
+    if (confirm("El nombre de la imagen para e-Commerce será: \n\n"+ nombre + " \n\n ¿Es correcto?")) {
+        var idNegocio = getCookie("idNegocio");
+        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docId).update({
+            NombreImagenECommerce: nombre
+        })
+        .then(function() {
+            var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+            catalogoListRef.update({
+                [[docId+".NombreImagenECommerce"]]: nombre
+            })
+            .then(function(){
+                document.getElementById("tabla_catalogo").rows[row].cells[17].innerText = nombre;
+                alert("Nombre de imagen para eCommerce actualizado correctamente");
+                $("#modalActualizarImagenECommerce").modal('toggle');
+            })
+            .catch(function(error){
+                console.error(error);
+            });
+        })
+        .catch(function(error){
+            console.log("Error actualizando nombre de imagen para eCommerce en docId: \n" + error);
+        });
+    }
+}
+
 function actualizarArticuloCatalogo(CB, row, Des, Uni, Pres, Cat1, Cat2, IdCat, DesOriginal, rowOriginal){
     if ( CB == "" || Des == "" || Uni == "" || Pres == "" || Cat1 == "" || Cat2 == "" ){
         alert("Todos los campos son requeridos, verifica por favor.");
@@ -4108,6 +4138,7 @@ function CargarCatalogoFROM1doc(){
                 if (docs[0][keys[x-1]]["UltimoCosto"] != undefined){
                     UltimoCosto = docs[0][keys[x-1]]["UltimoCosto"];
                 }
+
                 var UltimoProveedor = "-";
                 if (docs[0][keys[x-1]]["UltimoProveedor"] != undefined){
                     UltimoProveedor = docs[0][keys[x-1]]["UltimoProveedor"];
@@ -4151,6 +4182,11 @@ function CargarCatalogoFROM1doc(){
                     MargenActualECommerce = docs[0][keys[x-1]]["MargenActualECommerce"];
                     if (isNaN(MargenActualECommerce)) MargenActualECommerce = "-";
                 }
+
+                var ImagenECommerce = "-";
+                if (docs[0][keys[x-1]]["NombreImagenECommerce"] != undefined){
+                    ImagenECommerce = docs[0][keys[x-1]]["NombreImagenECommerce"];
+                }
                 
                 var CB = docs[0][keys[x-1]]["CodigoBarras"];
                 var DES = docs[0][keys[x-1]]["Descripcion"];
@@ -4175,6 +4211,7 @@ function CargarCatalogoFROM1doc(){
                 +eCommerce
                 +"<td style='text-align: center' id='"+i+"_precioECommerce' contenteditable='true' onclick='indexECommerce(this)'>"+PrecioECommerce+"</td>"
                 +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActualECommerce+" %</td>"
+                +"<td style='text-align: center' id='"+i+"_imagenECommerce' contenteditable='true' onclick='indexECommerceImagen(this)'>"+ImagenECommerce+"</td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;

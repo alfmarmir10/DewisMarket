@@ -10,68 +10,137 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
 
 setCookie("idNegocio-eCommerce", 20009061145, (86400000 * 365));
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
 
 function loadImgMasVendidos(){
     var idNegocio = getCookie("idNegocio");
 
-    db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('eCom', '==', "Sí").get()
-    .then((querySnapshot) => {
-        querySnapshot.forEach(function(doc){
-            var banderaCosto = true;
-            var banderaPrecio = true;
-            CB.innerHTML = doc.get("CodigoBarras");
-            ID.innerHTML = doc.id;
-            
-            console.log("Costo:"+getNum(doc.data().UltimoCosto));
-            console.log("Precio:"+getNum(doc.data().Precio));
+    db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo")
+    .get().then(function(doc) {
+        var docs = Array();
+        docs.push(doc.data());
+        
+        var keys = Object.keys(docs[0]);
+        // console.log(keys);
+        //keys.sort();
+        // console.log("Ordenado:"+keys);
+        var bandera;
+        var i = 0;
+        var contadorRow = 1;
+        var contadorImagenImpresa = 0;
 
+        var CardBodyMasVendidos = document.getElementById('card-body-mas-vendidos');
+        CardBodyMasVendidos.innerHTML = '';
 
+        for(x = keys.length; x > 0; x--){
+            i = i + 1;
+            bandera = false;
+            try{
+                if (docs[0][keys[x-1]]['eCommerce'] != undefined){
+                    if (docs[0][keys[x-1]]['eCommerce'] == "Sí"){
+                        bandera = true;
+                    }
+                }
+            }
+            catch{
+                bandera = false;
+            }
 
-            var CardBodyMasVendidos = document.getElementById('card-body-mas-vendidos');
-            CardBodyMasVendidos.innerHTML = '';
+            if (bandera == true){
+                contadorImagenImpresa = contadorImagenImpresa + 1;
+                console.log(docs[0][keys[x-1]]["Descripcion"]);
+                // FALTA AGREGAR UNA BANDERA QUE CUENTE CUANDO SE IMPRIME CADA CARD, no utilizar i para el IF % 5
+    
+                var btn = document.createElement("button");
+                var classBtn = document.createAttribute("class");
+                classBtn.value = "btn btn-sm bg-warning font-weight-bold";
+                btn.setAttributeNode(classBtn);
+                btn.textContent = "Añadir a carrito";
+    
+                var cardBody2 = document.createElement("div");
+                var classCardBody2 = document.createAttribute("class"); 
+                classCardBody2.value = "card-body text-center";
+                cardBody2.setAttributeNode(classCardBody2);
+                cardBody2.appendChild(btn);
+    
+                var descr = document.createElement("h5");
+                var classDescr = document.createAttribute("class");
+                classDescr.value = "card-title font-weight-bold";
+                descr.setAttributeNode(classDescr);
+                descr.textContent = docs[0][keys[x-1]]["Descripcion"];
 
-            var btn = document.createElement("button");
-            var classBtn = document.createAttribute("class");
-            classBtn.value = "btn btn-sm bg-warning font-weight-bold";
-            btn.setAttributeNode(classBtn);
-            btn.textContent = "Añadir a carrito";
+                var cardBody = document.createElement("div");
+                var classCardBody = document.createAttribute("class"); 
+                classCardBody.value = "card-body text-center";
+                cardBody.setAttributeNode(classCardBody);
+                cardBody.appendChild(descr);
 
-            var cardBody2 = document.createElement("div");
-            var classCardBody2 = document.createAttribute("class"); 
-            classCardBody2.value = "card-body text-center";
-            cardBody2.setAttributeNode(classCardBody2);
-            cardBody2.appendChild(btn);
+                var Img = document.createElement("img");
+                var classImg = document.createAttribute("class");
+                classImg.value = "imgCatalogo card-img-top";
+                var IdImg = document.createAttribute("Id");
+                IdImg.value = "img-mas-vendidos"+contadorImagenImpresa;
+                Img.setAttributeNode(IdImg);
+                var srcImg = document.createAttribute("src");
+                srcImg.value = getImgMasVendidos(docs[0][keys[x-1]]["NombreImagenECommerce"], "img-mas-vendidos"+contadorImagenImpresa);
+                Img.setAttributeNode(classImg);
+                // Img.setAttributeNode(srcImg);
 
-            var descr = document.createElement("h5");
-            var classDescr = document.createAttribute("class");
-            classDescr.value = "card-title font-weight-bold";
-            descr.setAttributeNode(classDescr);
-            descr.textContent = doc.data().Descripcion;
+                var card = document.createElement("div");
+                var classCard = document.createAttribute("class"); 
+                classCard.value = "card shadow-sm";
+                card.setAttributeNode(classCard);
+                var styleCard = document.createAttribute("style"); 
+                styleCard.value = "width: 100%; min-width: 100%; min-height: 100%;";
+                card.setAttributeNode(styleCard);
+                card.appendChild(Img);
+                card.appendChild(cardBody);
+                card.appendChild(cardBody2);
+                
+                var col = document.createElement("div");
+                var classCol = document.createAttribute("class");
+                classCol.value = "col-sm-6 col-md-6 col-lg-3";
+                col.setAttributeNode(classCol);
+                col.appendChild(card);
 
-            var row = document.createElement("div");
-            var classRow = document.createAttribute("class");
-            classRow.value = "row";
-            row.setAttributeNode(classRow);
-
-            var col = document.createElement("div");
-            var classCol = document.createAttribute("class");
-            classCol.value = "col-sm-6 col-md-6 col-lg-3";
-            col.setAttributeNode(classCol);
-
-
-
-            var att2 = document.createAttribute("placeholder");
-            att2.value = "Selecciona...";
-            node.setAttributeNode(att2);
-            document.getElementById('tdDescripcion_agregar').appendChild(node);
-            
-        })
+                console.log("contador: "+contadorImagenImpresa);
+                console.log("contadorRow: "+contadorRow);
+                if (contadorImagenImpresa == 1){
+                    var row = document.createElement("div");
+                    var classRow = document.createAttribute("class");
+                    classRow.value = "row";
+                    row.setAttributeNode(classRow);
+                    var idRow = document.createAttribute("id");
+                    idRow.value = "1row";
+                    row.setAttributeNode(idRow);
+                    row.appendChild(col);
+                    contadorRow = contadorRow + 1;
+                    var parent = document.getElementById("card-body-mas-vendidos");
+                    parent.appendChild(row);
+                } else {
+                    var row = document.getElementById("1row");
+                    row.appendChild(col);
+                }   
+            }
+        }
     })
-    .catch(function(error){
-        alert("Error: "+error);
-    });
 }
 
 function setCookie(cname, cvalue, exdays) {
@@ -179,16 +248,26 @@ function loadImgCarousel(){
     // var url = "img/bg3.jpg"; 
 }
 
-function getImgMasVendidos(idImg, formato, idElement){
-    console.log(idImg+formato);
-    var storageRef = firebase.storage().ref(idImg+formato);
+function getImgMasVendidos(NombreImagenECommerce, elemento){
+    var storageRef = firebase.storage().ref(NombreImagenECommerce);
         storageRef.getDownloadURL().then(function(url) {
-            // var urlString = url;
-            // console.log(urlString);
-            // return urlString;
-            document.getElementById('mas-vendidos-'+idElement).src = url;
-            
+            // document.getElementById('mas-vendidos-'+idElement).src = url;
+            document.getElementById(elemento).src = url;
         }).catch(function(error) {
             console.error("Error: "+error);
         });
 }
+
+// function getImgMasVendidos(idImg, formato, idElement){
+//     console.log(idImg+formato);
+//     var storageRef = firebase.storage().ref(idImg+formato);
+//         storageRef.getDownloadURL().then(function(url) {
+//             // var urlString = url;
+//             // console.log(urlString);
+//             // return urlString;
+//             document.getElementById('mas-vendidos-'+idElement).src = url;
+            
+//         }).catch(function(error) {
+//             console.error("Error: "+error);
+//         });
+// }
