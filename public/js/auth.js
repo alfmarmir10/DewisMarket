@@ -11,6 +11,79 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+setCookie("idNegocio-eCommerce", 20009061145, (86400000 * 365));
+
+function loadImgMasVendidos(){
+    var idNegocio = getCookie("idNegocio");
+
+    db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('eCom', '==', "Sí").get()
+    .then((querySnapshot) => {
+        querySnapshot.forEach(function(doc){
+            var banderaCosto = true;
+            var banderaPrecio = true;
+            CB.innerHTML = doc.get("CodigoBarras");
+            ID.innerHTML = doc.id;
+            
+            console.log("Costo:"+getNum(doc.data().UltimoCosto));
+            console.log("Precio:"+getNum(doc.data().Precio));
+
+
+
+            var CardBodyMasVendidos = document.getElementById('card-body-mas-vendidos');
+            CardBodyMasVendidos.innerHTML = '';
+
+            var btn = document.createElement("button");
+            var classBtn = document.createAttribute("class");
+            classBtn.value = "btn btn-sm bg-warning font-weight-bold";
+            btn.setAttributeNode(classBtn);
+            btn.textContent = "Añadir a carrito";
+
+            var cardBody2 = document.createElement("div");
+            var classCardBody2 = document.createAttribute("class"); 
+            classCardBody2.value = "card-body text-center";
+            cardBody2.setAttributeNode(classCardBody2);
+            cardBody2.appendChild(btn);
+
+            var descr = document.createElement("h5");
+            var classDescr = document.createAttribute("class");
+            classDescr.value = "card-title font-weight-bold";
+            descr.setAttributeNode(classDescr);
+            descr.textContent = doc.data().Descripcion;
+
+            var row = document.createElement("div");
+            var classRow = document.createAttribute("class");
+            classRow.value = "row";
+            row.setAttributeNode(classRow);
+
+            var col = document.createElement("div");
+            var classCol = document.createAttribute("class");
+            classCol.value = "col-sm-6 col-md-6 col-lg-3";
+            col.setAttributeNode(classCol);
+
+
+
+            var att2 = document.createAttribute("placeholder");
+            att2.value = "Selecciona...";
+            node.setAttributeNode(att2);
+            document.getElementById('tdDescripcion_agregar').appendChild(node);
+            
+        })
+    })
+    .catch(function(error){
+        alert("Error: "+error);
+    });
+}
+
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    // d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    d.setTime(d.getTime() + exdays);
+    var expires = "expires="+d.toUTCString();
+    // console.log(d.toUTCString());
+    console.log(cname + "=" + cvalue + ";" + expires + ";path=/");
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
 function startOAuth(){
 
     var ui = new firebaseui.auth.AuthUI(firebase.auth());

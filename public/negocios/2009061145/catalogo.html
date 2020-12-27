@@ -161,21 +161,28 @@
             var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
             $("#margenActualizarPrecio").val(Margen.toFixed(1)+"%");
           });
+
+        $(Document).on("keyup", "#precioActualizarPrecioECommerce", function(e){
+          var Costo = parseFloat($("#costoActualizarPrecioECommerce").val());
+          var Precio = parseFloat($("#precioActualizarPrecioECommerce").val());
+          var Margen = parseFloat((((parseFloat(Precio)/Costo)-1)*100));
+          $("#margenActualizarPrecioECommerce").val(Margen.toFixed(1)+"%");
+        });
         
         function index(x){
             // var idNegocio = getCookie("idNegocio");
             var row = x.parentNode.rowIndex;
             if (confirm("¿Deseas modificar el precio?")) {
               // var Costo = parseFloat($("#"+row+"_costoProducto").text());
-              var Costo = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[8].innerText);
-              var Des = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
+              var Costo = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[9].innerText);
+              var Des = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
               if (isNaN(Costo)){
                 alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
                 return;
               }
               var idNegocio = getCookie("idNegocio");
-              var CB = document.getElementById("tabla_catalogo").rows[row].cells[0].innerText;
-              var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[6].innerText);
+              var CB = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
+              var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[7].innerText);
               if (isNaN(PrecioOriginal)) PrecioOriginal = "";
               var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
               if (isNaN(Margen)) Margen = "-";
@@ -189,19 +196,48 @@
             } else {
               
             }
-        }
+        };
+
+        function indexECommerce(x){
+            // var idNegocio = getCookie("idNegocio");
+            var row = x.parentNode.rowIndex;
+            if (confirm("¿Deseas modificar el precio para e-Commerce?")) {
+              // var Costo = parseFloat($("#"+row+"_costoProducto").text());
+              var Costo = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[9].innerText);
+              var Des = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
+              if (isNaN(Costo)){
+                alert("No se puede especificar el precio sin un COSTO. Verifica por favor.");
+                return;
+              }
+              var idNegocio = getCookie("idNegocio");
+              var CB = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
+              var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[15].innerText);
+              if (isNaN(PrecioOriginal)) PrecioOriginal = "";
+              var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
+              if (isNaN(Margen)) Margen = "-";
+              $("#modalActualizarPrecioECommerce").modal('toggle');
+              $("#modalActualizarPrecioECommerceLabel").text(Des);
+              $("#costoActualizarPrecioECommerce").val(Costo);
+              $("#precioActualizarPrecioECommerce").val(PrecioOriginal);
+              $("#margenActualizarPrecioECommerce").val(Margen.toFixed(1)+"%");
+              $("#codigoBarrasActualizarPrecioECommerce").val(CB);
+              $("#rowActualizarPrecioECommerce").val(row);
+            } else {
+              
+            }
+        };
 
         function openModalEditarArticuloCatalogo(x){
             var idNegocio = getCookie("idNegocio");
             var row = x.parentNode.rowIndex;
-            var CB = document.getElementById("tabla_catalogo").rows[row].cells[0].innerText;
-            var Des = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
-            var Uni = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
-            var Pres = document.getElementById("tabla_catalogo").rows[row].cells[3].innerText;
-            var Cat1 = document.getElementById("tabla_catalogo").rows[row].cells[4].innerText;
-            var Cat2 = document.getElementById("tabla_catalogo").rows[row].cells[5].innerText;
-            var IdCatalogo = document.getElementById("tabla_catalogo").rows[row].cells[11].innerText;
-            var rowOriginal = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
+            var CB = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
+            var Des = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
+            var Uni = document.getElementById("tabla_catalogo").rows[row].cells[3].innerText;
+            var Pres = document.getElementById("tabla_catalogo").rows[row].cells[4].innerText;
+            var Cat1 = document.getElementById("tabla_catalogo").rows[row].cells[5].innerText;
+            var Cat2 = document.getElementById("tabla_catalogo").rows[row].cells[6].innerText;
+            var IdCatalogo = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
+            var rowOriginal = document.getElementById("tabla_catalogo").rows[row].cells[13].innerText;
 
             $("#modalEditarArticuloCatalogo").modal('toggle');
             $("#modalEditarArticuloCatalogoLabel").text("Editar Producto");
@@ -215,14 +251,36 @@
             $("#rowEditarArticulo").val(row);
             $("#rowOriginalEditarArticulo").val(rowOriginal);
             $("#IdCatalogoEditarArticulo").val(IdCatalogo);
-        }
+        };
 
         function getIdCatalogoProducto(x){
           var row = x.parentNode.rowIndex;
-          var IdCatalogo = document.getElementById("tabla_catalogo").rows[row].cells[11].innerText;
+          var IdCatalogo = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
           loadGraphsProducto('Dinero', IdCatalogo);
-          document.getElementById('chartDescripcionArticulo').innerHTML = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
-        }
+          document.getElementById('chartDescripcionArticulo').innerHTML = document.getElementById("tabla_catalogo").rows[row].cells[2].innerText;
+        };
+
+        function eCommerceCheck(x){
+          var row = x.parentNode.rowIndex;
+          var PrecioECommerce = document.getElementById("tabla_catalogo").rows[row].cells[15].innerText;
+          var docId = document.getElementById("tabla_catalogo").rows[row].cells[12].innerText;
+          if (PrecioECommerce == "-"){
+            alert("Establece un precio primero, por favor.");
+            var checkBox = document.getElementById(docId+'_checkBox');
+            checkBox.checked = false;
+            return;
+          } else {
+            habilitarECommerce(docId);
+          }
+        };
+
+        $(document).on("shown.bs.modal", "#modalActualizarPrecio", function(e) {
+            document.getElementById('precioActualizarPrecio').focus();
+        });
+
+        $(document).on("shown.bs.modal", "#modalActualizarPrecioECommerce", function(e) {
+            document.getElementById('precioActualizarPrecioECommerce').focus();
+        });
         
         // SCRIPTS GENERALES
         
@@ -244,10 +302,6 @@
             } catch(error){
                 console.log("Service is not running");
             };
-        });
-
-        $(document).on("shown.bs.modal", "#modalActualizarPrecio", function(e) {
-            document.getElementById('precioActualizarPrecio').focus();
         });
 
         $(document).on("shown.bs.modal", "#modalValidarPrecio", function(e) {
@@ -384,7 +438,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" style="min-width: 100%;">
                                 <div class="form-inline">
                                     <div class="row text-center">
                                         <!-- <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12"> -->
@@ -428,21 +482,25 @@
                                     </div>
                                 </div>
                                 <br><br>
-                                <div class="table-responsive-xl">
+                                <div class="table-responsive">
                                     <table class="table table-striped " id="tabla_catalogo">
-                                        <thead class="thead-dark sticky-top">
+                                        <thead class="thead-dark">
                                             <tr">
+                                              <th scope="col" style="text-align: center; color: black!important;" class="bg-white border-0" data-html2canvas-ignore="true">EDITAR ARTÍCULO</th>
                                                 <th scope="col" style="text-align: center">CÓDIGO BARRAS</th>
                                                 <th scope="col" style="text-align: center" id="thDescripcion_tabla_catalogo">DESCRIPCIÓN</th>
                                                 <th scope="col" style="text-align: center">UNIDADES</th>
                                                 <th scope="col" style="text-align: center">PRESENTACIÓN</th>
-                                                <th scope="col" style="text-align: center">CATEGORÍA 1</th>
+                                                <th scope="col" style="text-align: center; min-width: 120px;">CATEGORÍA 1</th>
                                                 <th scope="col" style="text-align: center">CATEGORÍA 2</th>
                                                 <th scope="col" style="text-align: center">$ PRECIO</th>
                                                 <th scope="col" style="text-align: center">EXISTENCIA</th>
                                                 <th scope="col" style="text-align: center">ÚLT. COSTO</th>
                                                 <th scope="col" style="text-align: center">ÚLT. PROV</th>
                                                 <th scope="col" style="text-align: center">MARGEN</th>
+                                                <th scope="col" style="text-align: center;" class="bg-info" data-html2canvas-ignore="true">eCommerce</th>
+                                                <th scope="col" style="text-align: center;" class="bg-info">$ PRECIO eCommerce</th>
+                                                <th scope="col" style="text-align: center;" class="bg-info">Margen eCommerce</th>
                                             </tr>
                                         </thead>
                                         <tbody>                                          
@@ -582,6 +640,43 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modalActualizarPrecioECommerce" tabindex="-1" aria-labelledby="modalActualizarPrecioECommerceLabel" aria-hidden="true">
+          <div class="modal-dialog">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <!-- <h5 class="modal-title" id="exampleModalLabel">Inicia Sesión</h5> -->
+                      <!-- Nav tabs -->
+                      <div class="container text-center font-weight-bold bg-info text-white"><h5 class="modal-title" id="modalActualizarPrecioECommerceLabel"></h5></div>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <form>
+                          <div class="form-group">
+                            <label for="costoActualizarPrecio" class="font-weight-bold">Costo:</label>
+                            <small id="idNegocioHelp" class="form-text text-muted">Costo Actual</small>
+                            <input type="text" class="form-control" id="costoActualizarPrecioECommerce" aria-describedby="costoHelp" disabled="true">
+                            <input type="text" class="form-control" id="codigoBarrasActualizarPrecioECommerce" aria-describedby="codigoBarrasHelp" hidden="true" disabled="true">
+                            <input type="text" class="form-control" id="rowActualizarPrecioECommerce" aria-describedby="rowHelp" hidden="true" disabled="true">
+                          </div>
+                          <div class="form-group">
+                            <label for="precioActualizarPrecioECommerce" class="font-weight-bold">Precio:</label>
+                            <small id="idNegocioHelp" class="form-text text-muted">Captura el nuevo precio de venta</small>
+                            <input type="text" class="form-control" id="precioActualizarPrecioECommerce" aria-describedby="precioHelp">
+                          </div>
+                          <div class="form-group">
+                              <label for="margenActualizarPrecioECommerce" class="font-weight-bold">Margen:</label>
+                              <small id="idNegocioHelp" class="form-text text-muted">El margen será de...</small>
+                              <input type="text" class="form-control" id="margenActualizarPrecioECommerce" aria-describedby="margenHelp" disabled="true">
+                            </div>
+                          <br>
+                          <button type="button" class="btn btn-warning" id="btnAceptarActualizaPrecioECommerce" onclick="actualizarPrecioECommerce($('#codigoBarrasActualizarPrecioECommerce').val(),$('#rowActualizarPrecioECommerce').val(),$('#precioActualizarPrecioECommerce').val(),$('#margenActualizarPrecioECommerce').val(), $('#precioActualizarPrecioECommerce').val())">Continuar</button>                                        
+                        </form>
+                  </div>
+              </div>
+          </div>
+      </div>
         <div class="modal fade" id="modalEditarArticuloCatalogo" tabindex="-1" aria-labelledby="modalEditarArticuloCatalogoLabel" aria-hidden="true">
           <div class="modal-dialog">
               <div class="modal-content">

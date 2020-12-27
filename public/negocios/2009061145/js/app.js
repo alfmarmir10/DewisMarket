@@ -1478,8 +1478,8 @@ function actualizarPrecio(CB, row, precio, margen, precioOriginal){
                         [[IdCat+".MargenActual"]]: parseFloat(margen) 
                     })
                     .then(function(){
-                        document.getElementById("tabla_catalogo").rows[row].cells[6].innerText = parseFloat(precio).toFixed(1);
-                        document.getElementById("tabla_catalogo").rows[row].cells[10].innerText = parseFloat(margen).toFixed(1)+" %";
+                        document.getElementById("tabla_catalogo").rows[row].cells[7].innerText = parseFloat(precio).toFixed(1);
+                        document.getElementById("tabla_catalogo").rows[row].cells[11].innerText = parseFloat(margen).toFixed(1)+" %";
                         alert("Precio Actualizado Correctamente");
                         $("#modalActualizarPrecio").modal('toggle');
                     })
@@ -1489,6 +1489,96 @@ function actualizarPrecio(CB, row, precio, margen, precioOriginal){
                 })
                 .catch(function(error){
                     console.log("Error actualizando precio: \n" + error);
+                });
+            })
+        })
+    } else {
+        $("#precioProducto").text(precioOriginal);
+    }
+}
+
+function habilitarECommerce(docId){
+    var idNegocio = getCookie("idNegocio");
+    var checkBox = document.getElementById(docId+'_checkBox');
+    if (checkBox.checked == !false){
+        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docId).update({
+            eCommerce: "Sí"
+        })
+        .then(function() {
+            var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+            catalogoListRef.update({
+                [[docId+".eCommerce"]]: "Sí"
+            })
+            .then(function(){
+                var checkBox = document.getElementById(docId+'_checkBox');
+                checkBox.checked = true;
+                alert("Habilitado Correctamente para eCommerce");
+            })
+            .catch(function(error){
+                console.error(error);
+            });
+        })
+        .catch(function(error){
+            console.log("Error habilitando para eCommerce en docId: \n" + error);
+        });
+    } else {
+        db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(docId).update({
+            eCommerce: "No"
+        })
+        .then(function() {
+            var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+            catalogoListRef.update({
+                [[docId+".eCommerce"]]: "No"
+            })
+            .then(function(){
+                var checkBox = document.getElementById(docId+'_checkBox');
+                checkBox.checked = false;
+                alert("Deshabilitado correctamente para eCommerce");
+            })
+            .catch(function(error){
+                console.error(error);
+            });
+        })
+        .catch(function(error){
+            console.log("Error deshabilitando para eCommerce en docId: \n" + error);
+        });
+    }
+    
+}
+
+function actualizarPrecioECommerce(CB, row, precio, margen, precioOriginal){
+    if (precio == 0 || precio == ""){
+        alert("El precio mínimo es de 0.01. No puede ser 0 (cero).");
+        return;
+    }
+    if (confirm("El margen para e-Commerce será del "+ parseFloat(margen).toFixed(1) + "%. \n\n ¿Es correcto?")) {
+        var idNegocio = getCookie("idNegocio");
+        db.collection("Negocios").doc(idNegocio).collection('Catalogo').where('CodigoBarras', '==', CB).get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach(function(doc){
+                var IdCat = doc.id;
+                db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc(doc.id).update({
+                    PrecioECommerce: parseFloat(precio),
+                    MargenActualECommerce: parseFloat(margen)
+                })
+                .then(function() {
+                    var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
+                    catalogoListRef.update({
+                        [[IdCat+".PrecioECommerce"]]: parseFloat(precio),
+                        [[IdCat+".MargenActualECommerce"]]: parseFloat(margen) 
+                    })
+                    .then(function(){
+                        document.getElementById("tabla_catalogo").rows[row].cells[15].innerText = parseFloat(precio).toFixed(1);
+                        document.getElementById("tabla_catalogo").rows[row].cells[16].innerText = parseFloat(margen).toFixed(1)+" %";
+                        alert("Precio Actualizado Correctamente");
+                        $("#modalActualizarPrecioECommerce").modal('toggle');
+                    })
+                    .catch(function(error){
+                        console.error(error);
+                    });
+                })
+                .catch(function(error){
+                    console.log("Error actualizando precio para eCommerce: \n" + error);
                 });
             })
         })
@@ -1517,10 +1607,10 @@ function actualizarArticuloCatalogo(CB, row, Des, Uni, Pres, Cat1, Cat2, IdCat, 
             // console.log(rowOriginal);
             // console.log(''+rowOriginal+'_descripcionProducto');
             $("#"+rowOriginal+"_descripcionProducto").text(Des);
-            document.getElementById("tabla_catalogo").rows[row].cells[2].innerText = Uni;
-            document.getElementById("tabla_catalogo").rows[row].cells[3].innerText = Pres;
-            document.getElementById("tabla_catalogo").rows[row].cells[4].innerText = Cat1;
-            document.getElementById("tabla_catalogo").rows[row].cells[5].innerText = Cat2;
+            document.getElementById("tabla_catalogo").rows[row].cells[3].innerText = Uni;
+            document.getElementById("tabla_catalogo").rows[row].cells[4].innerText = Pres;
+            document.getElementById("tabla_catalogo").rows[row].cells[5].innerText = Cat1;
+            document.getElementById("tabla_catalogo").rows[row].cells[6].innerText = Cat2;
             var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
             catalogoListRef.update({
                 [[IdCat+".Descripcion"]]: Des,
@@ -3610,7 +3700,7 @@ function renderIndexGraphs(documentos, unidades){
             }
         },
         legend:{
-            offsetY: -40,
+            offsetY: 5,
             horizontalAlign: 'center',
             onItemClick: {
                 toggleDataSeries: true
@@ -3999,7 +4089,7 @@ function CargarCatalogoFROM1doc(){
             bandera = false;
             try{
                 if (docs[0][keys[x-1]]['CodigoBarras'] != undefined){
-                bandera = true;
+                    bandera = true;
                 }
             }
             catch{
@@ -4027,6 +4117,7 @@ function CargarCatalogoFROM1doc(){
                     MargenActual = docs[0][keys[x-1]]["MargenActual"];
                     if (isNaN(MargenActual)) MargenActual = "-";
                 }
+
                 var Categoria1 = "-";
                 if (docs[0][keys[x-1]]["Categoria1"] != undefined){
                     Categoria1 = docs[0][keys[x-1]]["Categoria1"];
@@ -4040,12 +4131,34 @@ function CargarCatalogoFROM1doc(){
                     Precio = docs[0][keys[x-1]]["Precio"];
                 }
 
+                if (docs[0][keys[x-1]]["eCommerce"] != undefined){
+                    if (docs[0][keys[x-1]]["eCommerce"] == "Sí"){
+                        var eCommerce = "<td data-html2canvas-ignore='true' style='text-align: center' id='"+keys[x-1]+"' onclick='eCommerceCheck(this);'><input style='min-width:30px!important; min-height:30px!important;' type='checkbox' id='"+keys[x-1]+"_checkBox' value='eCommerce' checked></td>";
+                    } else {
+                        var eCommerce = "<td data-html2canvas-ignore='true' style='text-align: center' id='"+keys[x-1]+"' onclick='eCommerceCheck(this);'><input style='min-width:30px!important; min-height:30px!important;' type='checkbox' id='"+keys[x-1]+"_checkBox' value='eCommerce'></td>";
+                    }
+                }else{
+                    var eCommerce = "<td data-html2canvas-ignore='true' style='text-align: center' id='"+keys[x-1]+"' onclick='eCommerceCheck(this);'><input style='min-width:30px!important; min-height:30px!important;' type='checkbox' id='"+keys[x-1]+"_checkBox' value='eCommerce'></td>";
+                }
+
+                var PrecioECommerce = "-";
+                if (docs[0][keys[x-1]]["PrecioECommerce"] != undefined){
+                    PrecioECommerce = docs[0][keys[x-1]]["PrecioECommerce"];
+                }
+
+                var MargenActualECommerce = "-";
+                if (docs[0][keys[x-1]]["MargenActualECommerce"] != undefined){
+                    MargenActualECommerce = docs[0][keys[x-1]]["MargenActualECommerce"];
+                    if (isNaN(MargenActualECommerce)) MargenActualECommerce = "-";
+                }
+                
                 var CB = docs[0][keys[x-1]]["CodigoBarras"];
                 var DES = docs[0][keys[x-1]]["Descripcion"];
                 var UNI = docs[0][keys[x-1]]["Unidades"];
                 var PRES = docs[0][keys[x-1]]["Presentacion"];
 
                 var msg = "<tr>"
+                +"<td data-html2canvas-ignore='true' style='text-align: center' id='"+keys[x-1]+"' onclick='openModalEditarArticuloCatalogo(this)'><button class='btn btn-info btn-sm' name='"+keys[x-1]+"'>Editar</button></td>"
                 +"<td style='text-align: center' id='"+i+"_codigoBarrasProducto'>"+CB+"</td>"
                 +"<td style='text-align: center' onclick='getIdCatalogoProducto(this)'><a id='"+i+"_descripcionProducto' href='#' style='color: blue' data-toggle='modal' data-target='#modalInfoAdicionalProducto'>"+DES+"</a></td>"
                 +"<td style='text-align: center'>"+UNI+"</td>"
@@ -4059,7 +4172,9 @@ function CargarCatalogoFROM1doc(){
                 +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActual+" %</td>"
                 +"<td hidden id='"+i+"_idCatalogo'>"+keys[x-1]+"</td>"
                 +"<td hidden>"+i+"</td>"
-                +"<td style='text-align: center' id='"+keys[x-1]+"' onclick='openModalEditarArticuloCatalogo(this)'><button class='btn btn-info btn-sm' name='"+keys[x-1]+"'>Editar</button></td>"
+                +eCommerce
+                +"<td style='text-align: center' id='"+i+"_precioECommerce' contenteditable='true' onclick='indexECommerce(this)'>"+PrecioECommerce+"</td>"
+                +"<td style='text-align: center' id='"+i+"_margenProducto'>"+MargenActualECommerce+" %</td>"
                 +"</tr>";
                 var newRow  = tabla.insertRow(tabla.rows.length);
                 newRow.innerHTML = msg;
