@@ -225,15 +225,21 @@
                 return;
               }
               var CB = document.getElementById("tabla_catalogo").rows[row].cells[1].innerText;
+              var PrecioOriginalLocal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[7].innerText);
+              if (isNaN(PrecioOriginalLocal)) PrecioOriginalLocal = "";
               var PrecioOriginal = parseFloat(document.getElementById("tabla_catalogo").rows[row].cells[15].innerText);
               if (isNaN(PrecioOriginal)) PrecioOriginal = "";
+              var MargenLocal = parseFloat((((PrecioOriginalLocal/Costo)-1)*100));
               var Margen = parseFloat((((PrecioOriginal/Costo)-1)*100));
               if (isNaN(Margen)) Margen = "-";
+              if (isNaN(MargenLocal)) MargenLocal = "-";
               $("#modalActualizarPrecioECommerce").modal('toggle');
               $("#modalActualizarPrecioECommerceLabel").text(Des);
               $("#costoActualizarPrecioECommerce").val(Costo);
               $("#precioActualizarPrecioECommerce").val(PrecioOriginal);
+              $("#precioLocal").val(PrecioOriginalLocal);
               $("#margenActualizarPrecioECommerce").val(Margen.toFixed(1)+"%");
+              $("#margenLocal").val(MargenLocal.toFixed(1)+"%");
               $("#codigoBarrasActualizarPrecioECommerce").val(CB);
               $("#rowActualizarPrecioECommerce").val(row);
             } else {
@@ -535,7 +541,7 @@
                                             <tr">
                                               <th scope="col" style="text-align: center; color: black!important;" class="bg-white border-0" data-html2canvas-ignore="true">EDITAR ARTÍCULO</th>
                                                 <th scope="col" style="text-align: center">CÓDIGO BARRAS</th>
-                                                <th scope="col" style="text-align: center" id="thDescripcion_tabla_catalogo">DESCRIPCIÓN</th>
+                                                <th scope="col" style="text-align: center; min-width: 300px;" id="thDescripcion_tabla_catalogo">DESCRIPCIÓN</th>
                                                 <th scope="col" style="text-align: center">UNIDADES</th>
                                                 <th scope="col" style="text-align: center">PRESENTACIÓN</th>
                                                 <th scope="col" style="text-align: center; min-width: 120px;">CATEGORÍA 1</th>
@@ -709,15 +715,38 @@
                             <input type="text" class="form-control" id="rowActualizarPrecioECommerce" aria-describedby="rowHelp" hidden="true" disabled="true">
                           </div>
                           <div class="form-group">
-                            <label for="precioActualizarPrecioECommerce" class="font-weight-bold">Precio:</label>
-                            <small id="idNegocioHelp" class="form-text text-muted">Captura el nuevo precio de venta</small>
-                            <input type="text" class="form-control" id="precioActualizarPrecioECommerce" aria-describedby="precioHelp">
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                  <label for="precioActualizarPrecioECommerce" class="font-weight-bold">Precio e-Commerce:</label>
+                                  <small id="idNegocioHelp" class="form-text text-muted">Captura el nuevo precio de venta</small>
+                                  <input type="text" class="form-control" id="precioActualizarPrecioECommerce" aria-describedby="precioHelp">
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                  <label for="precioLocal" class="font-weight-bold">Precio Local:</label>
+                                  <small id="idPrecioLocalHelp" class="form-text text-muted">Precio de Venta en tienda física.</small>
+                                  <input type="text" class="form-control" id="precioLocal" aria-describedby="idPrecioLocalHelp" disabled="true">
+                                </div>
+                              </div>
+                            </div>
                           </div>
                           <div class="form-group">
-                              <label for="margenActualizarPrecioECommerce" class="font-weight-bold">Margen:</label>
-                              <small id="idNegocioHelp" class="form-text text-muted">El margen será de...</small>
-                              <input type="text" class="form-control" id="margenActualizarPrecioECommerce" aria-describedby="margenHelp" disabled="true">
+                            <div class="container-fluid">
+                              <div class="row">
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                  <label for="margenActualizarPrecioECommerce" class="font-weight-bold">Margen e-Commerce:</label>
+                                  <small id="idMargenHelp" class="form-text text-muted">El margen será de...</small>
+                                  <input type="text" class="form-control" id="margenActualizarPrecioECommerce" aria-describedby="margenHelp" disabled="true">
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                  <label for="margenLocal" class="font-weight-bold">Margen de Precio Local:</label>
+                                  <small id="idMargenLocalHelp" class="form-text text-muted">Sólo como referencia.</small>
+                                  <input type="text" class="form-control" id="margenLocal" aria-describedby="idMargenLocalHelp" disabled="true">
+                                </div>
+                              </div>
                             </div>
+                              
+                          </div>
                           <br>
                           <button type="button" class="btn btn-warning" id="btnAceptarActualizaPrecioECommerce" onclick="actualizarPrecioECommerce($('#codigoBarrasActualizarPrecioECommerce').val(),$('#rowActualizarPrecioECommerce').val(),$('#precioActualizarPrecioECommerce').val(),$('#margenActualizarPrecioECommerce').val(), $('#precioActualizarPrecioECommerce').val())">Continuar</button>                                        
                         </form>

@@ -43,6 +43,48 @@
             });
         });
 </script>
+<script type="text/javascript">
+    initApp = function() {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          var displayName = user.displayName;
+          var email = user.email;
+          var emailVerified = user.emailVerified;
+          var photoURL = user.photoURL;
+          var uid = user.uid;
+          var phoneNumber = user.phoneNumber;
+          var providerData = user.providerData;
+          user.getIdToken().then(function(accessToken) {
+            // document.getElementById('sign-in-status').textContent = 'Signed in';
+            // document.getElementById('sign-in').textContent = 'Sign out';
+            document.getElementById('account-details').textContent = JSON.stringify({
+              displayName: displayName,
+              email: email,
+              emailVerified: emailVerified,
+              phoneNumber: phoneNumber,
+              photoURL: photoURL,
+              uid: uid,
+              accessToken: accessToken,
+              providerData: providerData
+            }, null, '  ');
+          });
+        } else {
+          // User is signed out.
+        //   document.getElementById('sign-in-status').textContent = 'Signed out';
+        //   document.getElementById('sign-in').textContent = 'Sign in';
+        window.location.href='./indexLogin.html';
+          document.getElementById('account-details').textContent = 'null';
+        }
+      }, function(error) {
+        console.log(error);
+      });
+    };
+
+    window.addEventListener('load', function() {
+      initApp()
+    });
+  </script>
 </head>
 <body>
     <header>
@@ -62,7 +104,7 @@
                         <a class="nav-link dropdown-toggle text-center" href="#" id="dropdown-departamentos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                           Departamentos
                         </a>
-                        <ul id="dropdown-menu-departamentos"  class="dropdown-menu bg-transparent text-center" aria-labelledby="navbarDropdown">
+                        <ul id="dropdown-menu-departamentos"  class="dropdown-menu bg-transparent text-center rounded" aria-labelledby="navbarDropdown">
                           <li><a class="dropdown-item" href="#">Abarrotes</a></li>
                           <li><a class="dropdown-item" href="#">Limpieza</a></li>
                           <li><a class="dropdown-item" href="#">Cuidado Personal</a></li>
@@ -102,7 +144,7 @@
             <section class="carousel-mas-vendidos">
                 <div class="container-fluid">
                     <div class="card" style="width: 100%; min-width: 100%;">
-                        <div class="card-header bg-info font-weight-bold border-5 rounded text-uppercase h3">Lo más vendido</div>
+                        <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase h1 text-white">Lo más vendido</div>
                         <div id="card-body-mas-vendidos" class="card-body">
                             <!-- <div class="row" >
                                 <div class="col-sm-6 col-md-6 col-lg-3">
@@ -154,6 +196,7 @@
                     </div>                        
                 </div>
             </section>
+            <div id="account-details"></div>
         </div>
         <nav id="sidebar" class=".sidebar active" style="font-family: Arial, Helvetica, sans-serif;">
             <div class="sidebar-header text-center">

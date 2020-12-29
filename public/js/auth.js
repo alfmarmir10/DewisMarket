@@ -12,7 +12,15 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
-setCookie("idNegocio-eCommerce", 20009061145, (86400000 * 365));
+var user = firebase.auth().currentUser;
+
+if (user) {
+    console.log(user.name);
+} else {
+    console.log("Ningún usuario");
+}
+
+setCookie("idNegocio-eCommerce", 2009061145, (86400000 * 365));
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -30,7 +38,7 @@ function getCookie(cname) {
 }
 
 function loadImgMasVendidos(){
-    var idNegocio = getCookie("idNegocio");
+    var idNegocio = getCookie("idNegocio-eCommerce");
 
     db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo")
     .get().then(function(doc) {
@@ -70,17 +78,29 @@ function loadImgMasVendidos(){
     
                 var btn = document.createElement("button");
                 var classBtn = document.createAttribute("class");
-                classBtn.value = "btn btn-sm bg-warning font-weight-bold";
+                classBtn.value = "btn btn-block bg-warning font-weight-bold";
                 btn.setAttributeNode(classBtn);
-                btn.textContent = "Añadir a carrito";
+                btn.textContent = "COMPRAR";
     
                 var cardBody2 = document.createElement("div");
                 var classCardBody2 = document.createAttribute("class"); 
                 classCardBody2.value = "card-body text-center";
                 cardBody2.setAttributeNode(classCardBody2);
                 cardBody2.appendChild(btn);
+
+                var precio = document.createElement("h1");
+                var classPrecio = document.createAttribute("class");
+                classPrecio.value = "card-title font-weight-bold text-danger";
+                precio.setAttributeNode(classPrecio);
+                precio.textContent = "$"+docs[0][keys[x-1]]["PrecioECommerce"];
+
+                var cardBody3 = document.createElement("div");
+                var classCardBody3 = document.createAttribute("class"); 
+                classCardBody3.value = "card-body text-center";
+                cardBody3.setAttributeNode(classCardBody3);
+                cardBody3.appendChild(precio);
     
-                var descr = document.createElement("h5");
+                var descr = document.createElement("h2");
                 var classDescr = document.createAttribute("class");
                 classDescr.value = "card-title font-weight-bold";
                 descr.setAttributeNode(classDescr);
@@ -96,6 +116,9 @@ function loadImgMasVendidos(){
                 var classImg = document.createAttribute("class");
                 classImg.value = "imgCatalogo card-img-top";
                 var IdImg = document.createAttribute("Id");
+                var styleImg = document.createAttribute("style"); 
+                styleImg.value = "width: 100%; min-width: 100%; min-height: 100%; border: 0px solid black!important;";
+                Img.setAttributeNode(styleImg);
                 IdImg.value = "img-mas-vendidos"+contadorImagenImpresa;
                 Img.setAttributeNode(IdImg);
                 var srcImg = document.createAttribute("src");
@@ -105,19 +128,23 @@ function loadImgMasVendidos(){
 
                 var card = document.createElement("div");
                 var classCard = document.createAttribute("class"); 
-                classCard.value = "card shadow-sm";
+                classCard.value = "card shadow-lg bg-black";
                 card.setAttributeNode(classCard);
                 var styleCard = document.createAttribute("style"); 
-                styleCard.value = "width: 100%; min-width: 100%; min-height: 100%;";
+                styleCard.value = "width: 100%; min-width: 100%; min-height: 100%; border: 0.5px solid black!important;";
                 card.setAttributeNode(styleCard);
                 card.appendChild(Img);
                 card.appendChild(cardBody);
+                card.appendChild(cardBody3);
                 card.appendChild(cardBody2);
                 
                 var col = document.createElement("div");
                 var classCol = document.createAttribute("class");
                 classCol.value = "col-sm-6 col-md-6 col-lg-3";
                 col.setAttributeNode(classCol);
+                var styleCol = document.createAttribute("style"); 
+                styleCol.value = "padding-bottom: 15px;";
+                col.setAttributeNode(styleCol);
                 col.appendChild(card);
 
                 console.log("contador: "+contadorImagenImpresa);
@@ -163,6 +190,8 @@ function startOAuth(){
             // User successfully signed in.
             // Return type determines whether we continue the redirect automatically
             // or whether we leave that to developer to handle.
+            // setCookie("UsuarioLoggedIn", authResult., (86400000 * 365));
+            // alert(authResult);
             return true;
             },
             uiShown: function() {
