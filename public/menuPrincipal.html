@@ -11,6 +11,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
+<script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+
 <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-app.js"></script>
 
@@ -23,8 +25,8 @@
 <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
 <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
 
+<link rel="stylesheet" type="text/less" href="./css/plus-minus-input.scss">
 <link rel="stylesheet" href="./css/clientes.css">
-<link rel="stylesheet" href="./css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Spartan:wght@200&display=swap" rel="stylesheet">
 <script src="./js/auth.js"></script>
 <script>
@@ -37,11 +39,64 @@
       }
   });
 
-  $(document).ready(function () {
-            $('#sidebarCollapse').on('click', function () {
-                $('#sidebar').toggleClass('active');
-            });
+    $(document).ready(function () {
+      // This button will increment the value
+      $(Document).on("click", "[data-quantity='plus']", function(e){
+      // $('[data-quantity="plus"]').click(function(e){
+        console.log("Plus");
+          // Stop acting like a button
+          e.preventDefault();
+          // Get the field name
+          fieldName = $(this).attr('data-field');
+          // Get its current value
+          var currentVal = parseInt($('input[name='+fieldName+']').val());
+          console.log(currentVal);
+          console.log('input[name='+fieldName+']');
+          // If is not undefined
+          if (!isNaN(currentVal)) {
+              // Increment
+              $('input[name='+fieldName+']').val(currentVal + 1);
+          } else {
+              // Otherwise put a 0 there
+              $('input[name='+fieldName+']').val(1);
+          }
+      });
+      // This button will decrement the value till 0
+      $(Document).on("click", "[data-quantity='minus']", function(e){
+        console.log("Minus");
+          // Stop acting like a button
+          e.preventDefault();
+          // Get the field name
+          fieldName = $(this).attr('data-field');
+          // Get its current value
+          var currentVal = parseInt($('input[name='+fieldName+']').val());
+          console.log(currentVal);
+          console.log('input[name='+fieldName+']');
+          // If it isn't undefined or its greater than 0
+          if (!isNaN(currentVal) && currentVal > 0) {
+              // Decrement one
+              $('input[name='+fieldName+']').val(currentVal - 1);
+          } else {
+              // Otherwise put a 0 there
+              $('input[name='+fieldName+']').val(0);
+          }
         });
+
+          $(function(){
+              $("#menu-toggle").click(function(e) {
+                  e.preventDefault();
+                  $("#wrapper").toggleClass("toggled");
+              });
+
+              $(window).resize(function(e) {
+                if($(window).width()<=768){
+                  $("#wrapper").removeClass("toggled");
+                }else{
+                  $("#wrapper").addClass("toggled");
+                }
+              });
+            });
+      });
 </script>
 <script type="text/javascript">
     initApp = function() {
@@ -125,93 +180,26 @@
         </nav>
     </header>
     <main>
-      <div class="wrapper">
-        <!-- Sidebar  -->
-        
-
-        <!-- Page Content  -->
-        <div id="content">
-            <!-- <a type="button" id="sidebarCollapse">
-                <img id="sidebarCollapse-img" src="./img/shoppingCart-icon.jpg" alt="">
-            </a> -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
             <div class="d-flex justify-content-end">
-                <button type="button" id="sidebarCollapse" class="btn btn-white mb-2">
+                <button type="button" id="menu-toggle" class="btn btn-white mb-2">
                     <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
                     <!-- <span>Toggle Sidebar</span> -->
                 </button>
             </div>
-        
-            <section class="carousel-mas-vendidos">
-                <div class="container-fluid">
+            <div class="container-fluid">
+                <section class="carousel-mas-vendidos">
                     <div class="card" style="width: 100%; min-width: 100%;">
                         <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase h1 text-white">Lo más vendido</div>
                         <div id="card-body-mas-vendidos" class="card-body">
-                            <!-- <div class="row" >
-                                <div class="col-sm-6 col-md-6 col-lg-3">
-                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%; min-height: 100%;">
-                                        <img id="img-mas-vendidos-1" alt="" class="imgCatalogo card-img-top"><script>getImgMasVendidos(1,".webp",1);</script>
-                                        <div class="card-body text-center">
-                                            <h5 id="descripcion-mas-vendidos-1" class="card-title font-weight-bold">La Lechera 387gr</h5>
-                                        </div>
-                                        <div class="card-body text-center">
-                                            <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6 col-lg-3">
-                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%;">
-                                        <img id="img-mas-vendidos-2" alt="" class="imgCatalogo"><script>getImgMasVendidos(2,".png",2);</script>
-                                        <div class="card-body text-center">
-                                        <h5 id="descripcion-mas-vendidos-2" class="card-title font-weight-bold">La Lechera 335gr Botella</h5>
-                                        </div>
-                                        <div class="card-body text-center">
-                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6 col-lg-3">
-                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%;">
-                                        <img id="img-mas-vendidos-3" alt="" class="imgCatalogo"><script>getImgMasVendidos(3,".webp",3);</script>
-                                        <div class="card-body text-center">
-                                        <h5 id="descripcion-mas-vendidos-3" class="card-title font-weight-bold">La Lechera 325gr Untable</h5>
-                                        </div>
-                                        <div class="card-body text-center">
-                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6 col-lg-3">
-                                    <div class="card shadow-sm" style="width: 100%; min-width: 100%;">
-                                        <img id="img-mas-vendidos-4" alt="" class="imgCatalogo"><script>getImgMasVendidos(5,".png",4);</script>
-                                        <div class="card-body text-center">
-                                        <h5 id="descripcion-mas-vendidos-4" class="card-title font-weight-bold">Fiore Nocturna c/ alas 8pz</h5>
-                                        </div>
-                                        <div class="card-body text-center">
-                                        <button class="btn btn-sm bg-warning font-weight-bold">Añadir a carrito</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
                         </div>
                     </div>                        
-                </div>
-            </section>
-            <div id="account-details"></div>
-        </div>
-        <nav id="sidebar" class=".sidebar active" style="font-family: Arial, Helvetica, sans-serif;">
-            <div class="sidebar-header text-center">
-                <h3 class="font-weight-bold">Carrito</h3>
+                </section>
+                <div id="account-details"></div>
             </div>
-
-            <ul class="list-unstyled CTAs">
-                <li>
-                    <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a>
-                </li>
-                <li>
-                    <a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a>
-                </li>
-            </ul>
-        </nav>
+        </div> <!-- /#page-content-wrapper -->
+      <div class="wrapper">
       </div>
     </main>
     <footer>

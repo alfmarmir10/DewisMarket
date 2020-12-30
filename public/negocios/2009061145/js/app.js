@@ -1478,8 +1478,8 @@ function actualizarPrecio(CB, row, precio, margen, precioOriginal){
                         [[IdCat+".MargenActual"]]: parseFloat(margen) 
                     })
                     .then(function(){
-                        document.getElementById("tabla_catalogo").rows[row].cells[7].innerText = parseFloat(precio).toFixed(1);
-                        document.getElementById("tabla_catalogo").rows[row].cells[11].innerText = parseFloat(margen).toFixed(1)+" %";
+                        document.getElementById("tabla_catalogo").rows[row].cells[7].innerText = parseFloat(precio).toFixed(2);
+                        document.getElementById("tabla_catalogo").rows[row].cells[11].innerText = parseFloat(margen).toFixed(2)+" %";
                         alert("Precio Actualizado Correctamente");
                         $("#modalActualizarPrecio").modal('toggle');
                     })
@@ -1565,11 +1565,11 @@ function actualizarPrecioECommerce(CB, row, precio, margen, precioOriginal){
                     var catalogoListRef = db.collection("Negocios").doc(idNegocio).collection("Catalogo").doc("Catalogo");
                     catalogoListRef.update({
                         [[IdCat+".PrecioECommerce"]]: parseFloat(precio),
-                        [[IdCat+".MargenActualECommerce"]]: parseFloat(margen) 
+                        [[IdCat+".MargenActualECommerce"]]: parseFloat(margen)
                     })
                     .then(function(){
-                        document.getElementById("tabla_catalogo").rows[row].cells[15].innerText = parseFloat(precio).toFixed(1);
-                        document.getElementById("tabla_catalogo").rows[row].cells[16].innerText = parseFloat(margen).toFixed(1)+" %";
+                        document.getElementById("tabla_catalogo").rows[row].cells[15].innerText = parseFloat(precio).toFixed(2);
+                        document.getElementById("tabla_catalogo").rows[row].cells[16].innerText = parseFloat(margen).toFixed(2)+" %";
                         alert("Precio Actualizado Correctamente");
                         $("#modalActualizarPrecioECommerce").modal('toggle');
                     })
@@ -4174,12 +4174,12 @@ function CargarCatalogoFROM1doc(){
 
                 var PrecioECommerce = "-";
                 if (docs[0][keys[x-1]]["PrecioECommerce"] != undefined){
-                    PrecioECommerce = docs[0][keys[x-1]]["PrecioECommerce"];
+                    PrecioECommerce = parseFloat(docs[0][keys[x-1]]["PrecioECommerce"]).toFixed(2);
                 }
 
                 var MargenActualECommerce = "-";
                 if (docs[0][keys[x-1]]["MargenActualECommerce"] != undefined){
-                    MargenActualECommerce = docs[0][keys[x-1]]["MargenActualECommerce"];
+                    MargenActualECommerce = parseFloat(docs[0][keys[x-1]]["MargenActualECommerce"]).toFixed(2);
                     if (isNaN(MargenActualECommerce)) MargenActualECommerce = "-";
                 }
 

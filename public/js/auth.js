@@ -74,7 +74,6 @@ function loadImgMasVendidos(){
             if (bandera == true){
                 contadorImagenImpresa = contadorImagenImpresa + 1;
                 console.log(docs[0][keys[x-1]]["Descripcion"]);
-                // FALTA AGREGAR UNA BANDERA QUE CUENTE CUANDO SE IMPRIME CADA CARD, no utilizar i para el IF % 5
     
                 var btn = document.createElement("button");
                 var classBtn = document.createAttribute("class");
@@ -82,11 +81,95 @@ function loadImgMasVendidos(){
                 btn.setAttributeNode(classBtn);
                 btn.textContent = "COMPRAR";
     
-                var cardBody2 = document.createElement("div");
-                var classCardBody2 = document.createAttribute("class"); 
-                classCardBody2.value = "card-body text-center";
-                cardBody2.setAttributeNode(classCardBody2);
-                cardBody2.appendChild(btn);
+                var cardBody4 = document.createElement("div");
+                var classCardBody4 = document.createAttribute("class"); 
+                classCardBody4.value = "card-body text-center";
+                cardBody4.setAttributeNode(classCardBody4);
+                cardBody4.appendChild(btn);
+
+
+                var iPlusSign = document.createElement("i");
+                var classIPlusSign = document.createAttribute("class");
+                classIPlusSign.value = "fa fa-plus";
+                iPlusSign.setAttributeNode(classIPlusSign);
+
+                var btnPlusSign = document.createElement("button");
+                var classBtnPlusSign = document.createAttribute("class");
+                classBtnPlusSign.value = "button hollow circle";
+                var typeBtnPlusSign = document.createAttribute("type");
+                typeBtnPlusSign.value = "button";
+                var dataQuantityBtnPlusSign = document.createAttribute("data-quantity");
+                dataQuantityBtnPlusSign.value = "plus";
+                var dataFielBtnPlusSign = document.createAttribute("data-field");
+                dataFielBtnPlusSign.value = keys[x-1]+"_Field";
+                btnPlusSign.setAttributeNode(dataFielBtnPlusSign);  
+                btnPlusSign.setAttributeNode(dataQuantityBtnPlusSign);  
+                btnPlusSign.setAttributeNode(typeBtnPlusSign);  
+                btnPlusSign.setAttributeNode(classBtnPlusSign); 
+                btnPlusSign.appendChild(iPlusSign); 
+
+                var inputGroupButtonPlus = document.createElement("div");
+                var classInputGroupButtonPlus = document.createAttribute("class");
+                classInputGroupButtonPlus.value = "input-group-button";
+                inputGroupButtonPlus.setAttributeNode(classInputGroupButtonPlus);
+                inputGroupButtonPlus.appendChild(btnPlusSign);
+
+                var inputMinusPlusSign = document.createElement("input");
+                var classInputMinusPlusSign = document.createAttribute("class");
+                classInputMinusPlusSign.value = "input-group-field";
+                var typeInputMinusPlusSign = document.createAttribute("type");
+                typeInputMinusPlusSign.value = "number";
+                var nameInputMinusPlusSign = document.createAttribute("name");
+                nameInputMinusPlusSign.value = keys[x-1]+"_Field";
+                var idInputMinusPlusSign = document.createAttribute("id");
+                idInputMinusPlusSign.value = keys[x-1];
+                var valueInputMinusPlusSign = document.createAttribute("value");
+                valueInputMinusPlusSign.value = "0";
+                inputMinusPlusSign.setAttributeNode(idInputMinusPlusSign);  
+                inputMinusPlusSign.setAttributeNode(valueInputMinusPlusSign);  
+                inputMinusPlusSign.setAttributeNode(nameInputMinusPlusSign);  
+                inputMinusPlusSign.setAttributeNode(typeInputMinusPlusSign);  
+                inputMinusPlusSign.setAttributeNode(classInputMinusPlusSign); 
+
+                var iMinusSign = document.createElement("i");
+                var classIMinusSign = document.createAttribute("class");
+                classIMinusSign.value = "fa fa-minus";
+                iMinusSign.setAttributeNode(classIMinusSign);
+
+                var btnMinusSign = document.createElement("button");
+                var classBtnMinusSign = document.createAttribute("class");
+                classBtnMinusSign.value = "button hollow circle";
+                var typeBtnMinusSign = document.createAttribute("type");
+                typeBtnMinusSign.value = "button";
+                var dataQuantityBtnMinusSign = document.createAttribute("data-quantity");
+                dataQuantityBtnMinusSign.value = "minus";
+                var dataFielBtnMinusSign = document.createAttribute("data-field");
+                dataFielBtnMinusSign.value = keys[x-1]+"_Field";
+                btnMinusSign.setAttributeNode(dataFielBtnMinusSign);  
+                btnMinusSign.setAttributeNode(dataQuantityBtnMinusSign);  
+                btnMinusSign.setAttributeNode(typeBtnMinusSign);  
+                btnMinusSign.setAttributeNode(classBtnMinusSign); 
+                btnMinusSign.appendChild(iMinusSign); 
+
+                var inputGroupButtonMinus = document.createElement("div");
+                var classInputGroupButtonMinus = document.createAttribute("class");
+                classInputGroupButtonMinus.value = "input-group-button";
+                inputGroupButtonMinus.setAttributeNode(classInputGroupButtonMinus);
+                inputGroupButtonMinus.appendChild(btnMinusSign);
+
+                var contenedorInputMinusPlusSign = document.createElement("div");
+                var classContenedorInputMinusPlusSign = document.createAttribute("class");
+                classContenedorInputMinusPlusSign.value = "input-group plus-minus-input";
+                contenedorInputMinusPlusSign.setAttributeNode(classContenedorInputMinusPlusSign);
+                contenedorInputMinusPlusSign.appendChild(btnMinusSign);
+                contenedorInputMinusPlusSign.appendChild(inputMinusPlusSign);
+                contenedorInputMinusPlusSign.appendChild(btnPlusSign);
+
+                var cardBody3 = document.createElement("div");
+                var classCardBody3 = document.createAttribute("class"); 
+                classCardBody3.value = "card-body text-center";
+                cardBody3.setAttributeNode(classCardBody3);
+                cardBody3.appendChild(contenedorInputMinusPlusSign);
 
                 var precio = document.createElement("h1");
                 var classPrecio = document.createAttribute("class");
@@ -94,11 +177,11 @@ function loadImgMasVendidos(){
                 precio.setAttributeNode(classPrecio);
                 precio.textContent = "$"+docs[0][keys[x-1]]["PrecioECommerce"];
 
-                var cardBody3 = document.createElement("div");
-                var classCardBody3 = document.createAttribute("class"); 
-                classCardBody3.value = "card-body text-center";
-                cardBody3.setAttributeNode(classCardBody3);
-                cardBody3.appendChild(precio);
+                var cardBody2 = document.createElement("div");
+                var classCardBody2 = document.createAttribute("class"); 
+                classCardBody2.value = "card-body text-center";
+                cardBody2.setAttributeNode(classCardBody2);
+                cardBody2.appendChild(precio);
     
                 var descr = document.createElement("h2");
                 var classDescr = document.createAttribute("class");
@@ -135,8 +218,9 @@ function loadImgMasVendidos(){
                 card.setAttributeNode(styleCard);
                 card.appendChild(Img);
                 card.appendChild(cardBody);
-                card.appendChild(cardBody3);
                 card.appendChild(cardBody2);
+                card.appendChild(cardBody3);
+                card.appendChild(cardBody4);
                 
                 var col = document.createElement("div");
                 var classCol = document.createAttribute("class");
