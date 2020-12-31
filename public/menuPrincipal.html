@@ -30,6 +30,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Spartan:wght@200&display=swap" rel="stylesheet">
 <script src="./js/auth.js"></script>
 <script>
+  function openNav() {
+    document.getElementById("mySidebar").style.width = "90%";
+    document.getElementById("main").style.marginLeft = "90%";
+  }
+  
+  function closeNav() {
+    document.getElementById("mySidebar").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+  }
+  </script>
+<script>
   $(Document).on("click", "#dropdown-departamentos", function(e){
       var menu = $('#dropdown-menu-departamentos');
       if(menu.hasClass('show')) { 
@@ -39,7 +50,14 @@
       }
   });
 
+  $(Document).on("keydown", ".input-group-field", function(e){
+          var x = event.charCode || event.keyCode;
+          if (isNaN(String.fromCharCode(e.which)) && x!=32 && x!=8 && x!=37 && x!=39) e.preventDefault();
+          // if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+        });
+
     $(document).ready(function () {
+      validarSesion();
       // This button will increment the value
       $(Document).on("click", "[data-quantity='plus']", function(e){
       // $('[data-quantity="plus"]').click(function(e){
@@ -98,48 +116,6 @@
             });
       });
 </script>
-<script type="text/javascript">
-    initApp = function() {
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // User is signed in.
-          var displayName = user.displayName;
-          var email = user.email;
-          var emailVerified = user.emailVerified;
-          var photoURL = user.photoURL;
-          var uid = user.uid;
-          var phoneNumber = user.phoneNumber;
-          var providerData = user.providerData;
-          user.getIdToken().then(function(accessToken) {
-            // document.getElementById('sign-in-status').textContent = 'Signed in';
-            // document.getElementById('sign-in').textContent = 'Sign out';
-            document.getElementById('account-details').textContent = JSON.stringify({
-              displayName: displayName,
-              email: email,
-              emailVerified: emailVerified,
-              phoneNumber: phoneNumber,
-              photoURL: photoURL,
-              uid: uid,
-              accessToken: accessToken,
-              providerData: providerData
-            }, null, '  ');
-          });
-        } else {
-          // User is signed out.
-        //   document.getElementById('sign-in-status').textContent = 'Signed out';
-        //   document.getElementById('sign-in').textContent = 'Sign in';
-        window.location.href='./indexLogin.html';
-          document.getElementById('account-details').textContent = 'null';
-        }
-      }, function(error) {
-        console.log(error);
-      });
-    };
-
-    window.addEventListener('load', function() {
-      initApp()
-    });
-  </script>
 </head>
 <body>
     <header>
@@ -151,7 +127,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="align-items: center">
                     <li class="nav-item active">
                         <a class="nav-link text-center active" aria-current="page" href="#">Inicio</a>
                     </li>
@@ -161,18 +137,29 @@
                         </a>
                         <ul id="dropdown-menu-departamentos"  class="dropdown-menu bg-transparent text-center rounded" aria-labelledby="navbarDropdown">
                           <li><a class="dropdown-item" href="#">Abarrotes</a></li>
-                          <li><a class="dropdown-item" href="#">Limpieza</a></li>
+                          <li><a class="dropdown-item" href="#">Botanas</a></li>
                           <li><a class="dropdown-item" href="#">Cuidado Personal</a></li>
-                          <li><a class="dropdown-item" href="#">Abarrotes</a></li>
+                          <li><a class="dropdown-item" href="#">Dulces</a></li>
+                          <li><a class="dropdown-item" href="#">Galletas</a></li>
+                          <li><a class="dropdown-item" href="#">Hogar</a></li>
+                          <li><a class="dropdown-item" href="#">Insecticidas</a></li>
                           <li><a class="dropdown-item" href="#">Limpieza</a></li>
-                          <li><a class="dropdown-item" href="#">Cuidado Personal</a></li>
-                          <li><a class="dropdown-item" href="#">Abarrotes</a></li>
-                          <li><a class="dropdown-item" href="#">Limpieza</a></li>
-                          <li><a class="dropdown-item" href="#">Cuidado Personal</a></li>
+                          <li><a class="dropdown-item" href="#">Mascotas</a></li>
+                          <li><a class="dropdown-item" href="#">Medicamentos</a></li>
+                          <li><a class="dropdown-item" href="#">Pan</a></li>
+                          <li><a class="dropdown-item" href="#">Refrescos</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-center" aria-current="page" href="#">Ajustes</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link text-center" aria-current="page" href="" onclick="salir();">Salir</a>
+                    </li>
+                    <li>
+                      <a href="#" id="imgUsuarioPadre">
+                          <img id="imgUsuario">
+                      </a>
                     </li>
                 </ul>
             </div>
@@ -181,23 +168,56 @@
     </header>
     <main>
         <!-- Page Content -->
+        <div id="mySidebar" class="sidebar">
+          <a href="javascript:void(0)" class="closebtn text-danger" onclick="closeNav()">×</a>
+          <div class="card">
+            <div class="card-header text-center">
+              <p>CARRITO</p>
+            </div>
+            <div class="card-body" id="carritoList">
+              <div class="table-responsive">
+                <table class="table table-striped " id="tabla_catalogo">
+                    <thead class="thead-dark">
+                        <tr">
+                          <th scope="col" style="text-align: center;" class="bg-info">Artículo</th>
+                          <th scope="col" style="text-align: center;" class="bg-info">Precio</th>
+                          <th scope="col" style="text-align: center;" class="bg-info">Cantidad</th>
+                          <th scope="col" style="text-align: center;" class="bg-info">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>                                          
+                    </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-lg btn-block bg-success">Continuar con la compra</button>
+            </div>
+          </div>
+        </div>
+        
         <div id="page-content-wrapper">
-            <div class="d-flex justify-content-end">
-                <button type="button" id="menu-toggle" class="btn btn-white mb-2">
-                    <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
-                    <!-- <span>Toggle Sidebar</span> -->
-                </button>
-            </div>
-            <div class="container-fluid">
-                <section class="carousel-mas-vendidos">
-                    <div class="card" style="width: 100%; min-width: 100%;">
-                        <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase h1 text-white">Lo más vendido</div>
-                        <div id="card-body-mas-vendidos" class="card-body">
-                        </div>
-                    </div>                        
-                </section>
-                <div id="account-details"></div>
-            </div>
+          <div class="nameUserBar">
+            <section class="nameUserBar-left">
+              <p id="nameUser" style="font-family: Arial, Helvetica, sans-serif; font-weight:lighter; font-size: 20px; align-items: center;"></p>
+            </section>
+            <section class="nameUserBar-right">
+              <button type="button" id="menu-toggle" class="btn btn-white mb-2" onclick="openNav();">
+                  <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
+                  <!-- <span>Toggle Sidebar</span> -->
+              </button>
+            </section>
+          </div>
+          <div class="container-fluid">
+              <section class="carousel-mas-vendidos">
+                  <div class="card" style="width: 100%; min-width: 100%;">
+                      <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase h1 text-white">Lo más vendido</div>
+                      <div id="card-body-mas-vendidos" class="card-body">
+                      </div>
+                  </div>                        
+              </section>
+              <div id="account-details"></div>
+          </div>
         </div> <!-- /#page-content-wrapper -->
       <div class="wrapper">
       </div>

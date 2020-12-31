@@ -22,6 +22,69 @@ if (user) {
 
 setCookie("idNegocio-eCommerce", 2009061145, (86400000 * 365));
 
+function validarSesion(){
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+        // User is signed in.
+        var displayName = user.displayName;
+        
+
+        if (displayName == null){
+            window.location.href='./indexLogin.html';
+            alert("Por favor inicia sesión.");
+            return;
+        }
+        alert("¡Bienvenido "+displayName+"!");
+
+        document.getElementById('nameUser').innerText = displayName;
+
+        var email = user.email;
+        var emailVerified = user.emailVerified;
+        var photoURL = user.photoURL;
+
+        
+        document.getElementById('imgUsuario').src = photoURL;
+
+        var uid = user.uid;
+        var phoneNumber = user.phoneNumber;
+        var providerData = user.providerData;
+        user.getIdToken().then(function(accessToken) {
+            // document.getElementById('sign-in-status').textContent = 'Signed in';
+            // document.getElementById('sign-in').textContent = 'Sign out';
+            // document.getElementById('account-details').textContent = 
+            
+            JSON.stringify({
+            displayName: displayName,
+            email: email,
+            emailVerified: emailVerified,
+            phoneNumber: phoneNumber,
+            photoURL: photoURL,
+            uid: uid,
+            accessToken: accessToken,
+            providerData: providerData
+            }, null, '  ');
+        });
+        } else {
+        // User is signed out.
+        //   document.getElementById('sign-in-status').textContent = 'Signed out';
+        //   document.getElementById('sign-in').textContent = 'Sign in';
+        window.location.href='./indexLogin.html';
+        document.getElementById('account-details').textContent = 'null';
+        }
+    }, function(error) {
+        console.log(error);
+    });
+}
+
+function salir(){
+    firebase.auth().signOut().then(function() {
+        alert("Sesión Finalizada correctamente");
+        window.location.href="./indexLogin.html";
+      }).catch(function(error) {
+        alert(error);
+      });
+}
+
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -77,7 +140,7 @@ function loadImgMasVendidos(){
     
                 var btn = document.createElement("button");
                 var classBtn = document.createAttribute("class");
-                classBtn.value = "btn btn-block bg-warning font-weight-bold";
+                classBtn.value = "btn btn-block btn-lg bg-warning font-weight-bold";
                 btn.setAttributeNode(classBtn);
                 btn.textContent = "COMPRAR";
     
@@ -95,13 +158,16 @@ function loadImgMasVendidos(){
 
                 var btnPlusSign = document.createElement("button");
                 var classBtnPlusSign = document.createAttribute("class");
-                classBtnPlusSign.value = "button hollow circle";
+                classBtnPlusSign.value = "button hollow circle bg-white border-0";
                 var typeBtnPlusSign = document.createAttribute("type");
                 typeBtnPlusSign.value = "button";
                 var dataQuantityBtnPlusSign = document.createAttribute("data-quantity");
                 dataQuantityBtnPlusSign.value = "plus";
+                var styleBtnPlusSign = document.createAttribute("style"); 
+                styleBtnPlusSign.value = "min-height: 55px; max-height: 55px; min-width: 55px; max-width: 55px; margin: 5px 5px;";
                 var dataFielBtnPlusSign = document.createAttribute("data-field");
                 dataFielBtnPlusSign.value = keys[x-1]+"_Field";
+                btnPlusSign.setAttributeNode(styleBtnPlusSign);
                 btnPlusSign.setAttributeNode(dataFielBtnPlusSign);  
                 btnPlusSign.setAttributeNode(dataQuantityBtnPlusSign);  
                 btnPlusSign.setAttributeNode(typeBtnPlusSign);  
@@ -118,13 +184,16 @@ function loadImgMasVendidos(){
                 var classInputMinusPlusSign = document.createAttribute("class");
                 classInputMinusPlusSign.value = "input-group-field";
                 var typeInputMinusPlusSign = document.createAttribute("type");
-                typeInputMinusPlusSign.value = "number";
+                typeInputMinusPlusSign.value = "text";
                 var nameInputMinusPlusSign = document.createAttribute("name");
                 nameInputMinusPlusSign.value = keys[x-1]+"_Field";
                 var idInputMinusPlusSign = document.createAttribute("id");
                 idInputMinusPlusSign.value = keys[x-1];
+                var styleInputMinusPlusSign = document.createAttribute("style"); 
+                styleInputMinusPlusSign.value = "min-height: 40px; max-height: 40px; min-width: 80px; max-width: 80px; margin: 5px 20px; font-size: 30px; text-align: center; vertical-align: sub;";
                 var valueInputMinusPlusSign = document.createAttribute("value");
                 valueInputMinusPlusSign.value = "0";
+                inputMinusPlusSign.setAttributeNode(styleInputMinusPlusSign);  
                 inputMinusPlusSign.setAttributeNode(idInputMinusPlusSign);  
                 inputMinusPlusSign.setAttributeNode(valueInputMinusPlusSign);  
                 inputMinusPlusSign.setAttributeNode(nameInputMinusPlusSign);  
@@ -138,14 +207,17 @@ function loadImgMasVendidos(){
 
                 var btnMinusSign = document.createElement("button");
                 var classBtnMinusSign = document.createAttribute("class");
-                classBtnMinusSign.value = "button hollow circle";
+                classBtnMinusSign.value = "button hollow circle bg-white border-0";
                 var typeBtnMinusSign = document.createAttribute("type");
                 typeBtnMinusSign.value = "button";
+                var styleBtnMinusSign = document.createAttribute("style"); 
+                styleBtnMinusSign.value = "min-height: 55px; max-height: 55px; min-width: 55px; max-width: 55px; margin: 5px 5px;";
                 var dataQuantityBtnMinusSign = document.createAttribute("data-quantity");
                 dataQuantityBtnMinusSign.value = "minus";
                 var dataFielBtnMinusSign = document.createAttribute("data-field");
                 dataFielBtnMinusSign.value = keys[x-1]+"_Field";
                 btnMinusSign.setAttributeNode(dataFielBtnMinusSign);  
+                btnMinusSign.setAttributeNode(styleBtnMinusSign);  
                 btnMinusSign.setAttributeNode(dataQuantityBtnMinusSign);  
                 btnMinusSign.setAttributeNode(typeBtnMinusSign);  
                 btnMinusSign.setAttributeNode(classBtnMinusSign); 
@@ -160,6 +232,9 @@ function loadImgMasVendidos(){
                 var contenedorInputMinusPlusSign = document.createElement("div");
                 var classContenedorInputMinusPlusSign = document.createAttribute("class");
                 classContenedorInputMinusPlusSign.value = "input-group plus-minus-input";
+                var styleContenedor = document.createAttribute("style"); 
+                styleContenedor.value = "display: block!important;";
+                contenedorInputMinusPlusSign.setAttributeNode(styleContenedor);
                 contenedorInputMinusPlusSign.setAttributeNode(classContenedorInputMinusPlusSign);
                 contenedorInputMinusPlusSign.appendChild(btnMinusSign);
                 contenedorInputMinusPlusSign.appendChild(inputMinusPlusSign);
@@ -191,7 +266,7 @@ function loadImgMasVendidos(){
 
                 var cardBody = document.createElement("div");
                 var classCardBody = document.createAttribute("class"); 
-                classCardBody.value = "card-body text-center";
+                classCardBody.value = "card-body text-center align-items-center d-flex justify-content-center";
                 cardBody.setAttributeNode(classCardBody);
                 cardBody.appendChild(descr);
 
@@ -199,9 +274,9 @@ function loadImgMasVendidos(){
                 var classImg = document.createAttribute("class");
                 classImg.value = "imgCatalogo card-img-top";
                 var IdImg = document.createAttribute("Id");
-                var styleImg = document.createAttribute("style"); 
-                styleImg.value = "width: 100%; min-width: 100%; min-height: 100%; border: 0px solid black!important;";
-                Img.setAttributeNode(styleImg);
+                // var styleImg = document.createAttribute("style"); 
+                // // styleImg.value = "width: 100%; min-width: 100%; min-height: 100%; border: 0px solid black!important;";
+                // Img.setAttributeNode(styleImg);
                 IdImg.value = "img-mas-vendidos"+contadorImagenImpresa;
                 Img.setAttributeNode(IdImg);
                 var srcImg = document.createAttribute("src");
@@ -214,7 +289,7 @@ function loadImgMasVendidos(){
                 classCard.value = "card shadow-lg bg-black";
                 card.setAttributeNode(classCard);
                 var styleCard = document.createAttribute("style"); 
-                styleCard.value = "width: 100%; min-width: 100%; min-height: 100%; border: 0.5px solid black!important;";
+                styleCard.value = "width: 100%; min-width: 100%; min-height: 100%; max-height: 100%; border: 0.5px solid black!important;";
                 card.setAttributeNode(styleCard);
                 card.appendChild(Img);
                 card.appendChild(cardBody);
@@ -224,7 +299,7 @@ function loadImgMasVendidos(){
                 
                 var col = document.createElement("div");
                 var classCol = document.createAttribute("class");
-                classCol.value = "col-sm-6 col-md-6 col-lg-3";
+                classCol.value = "col-sm-6 col-md-6 col-lg-3 col-xl-3";
                 col.setAttributeNode(classCol);
                 var styleCol = document.createAttribute("style"); 
                 styleCol.value = "padding-bottom: 15px;";
