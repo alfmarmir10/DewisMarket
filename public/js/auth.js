@@ -34,7 +34,8 @@ function validarSesion(){
             alert("Por favor inicia sesión.");
             return;
         }
-        alert("¡Bienvenido "+displayName+"!");
+        
+        document.getElementById('msgBienvenidoDeNuevo').innerText = "Bienvenido\n\n"+displayName;
 
         document.getElementById('nameUser').innerText = displayName;
 

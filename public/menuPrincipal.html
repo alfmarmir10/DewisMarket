@@ -47,6 +47,7 @@
 <script>
   $(document).ready(function () {
     validarSesion();
+    $("#toastMsg").toast('show');
     $(Document).on("click", "#dropdown-departamentos", function(e){
     var menu = $('#dropdown-menu-departamentos');
     if(menu.hasClass('show')) { 
@@ -64,12 +65,18 @@
 
   $(Document).on('click', "[btn-name='btnComprar']", function(e){
     var fieldName = $(this).attr('btn-target');
-    
+    var CAN = $('#'+fieldName+'_Cantidad').val();
+
+    if (isNaN(CAN) || CAN == 0){
+      alert("La cantidad no puede ser cero, verifica.");
+      return;
+    }
+
     var PREC = $('#'+fieldName+'_Precio').text();
     var DESCR = $('#'+fieldName+'_Descripcion').text();
     var CB = $('#'+fieldName+'_CodigoBarras').text();
     var COS = $('#'+fieldName+'_Costo').text();
-    var CAN = $('#'+fieldName+'_Cantidad').val();
+    
     alert("Descripción: "+DESCR+"\nPrecio: "+PREC.substring(1)+"\nCódigo de Barras: "+CB+"\nCosto: "+COS+"\nCantidad: "+CAN);
   })
 
@@ -183,8 +190,8 @@
         <div id="mySidebar" class="sidebar">
               <a href="javascript:void(0)" class="closebtn text-white" onclick="closeNav()">×</a>
           <div class="card">
-            <div class="card-header text-center">
-              <p>CARRITO</p>
+            <div class="card-header text-center bg-dark text-white font-weight-bold">
+              <h2>CARRITO</h2>
             </div>
             <div class="card-body" id="carritoList" style="min-height: 1000px;">
               <div class="table-responsive">
@@ -237,6 +244,20 @@
     <footer>
 
     </footer>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastMsg" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="3500">
+      <div class="toast-header bg-dark">
+      <img src="./img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px">
+      <strong class="mr-auto text-white">DEWIS MARKET</strong>
+      <!-- <small class="text-muted">just now</small> -->
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+      </div>
+      <div class="toast-body bg-dark text-white">
+          <p class="lead text-white" id="msgBienvenidoDeNuevo">¡Bienvenido!</p><br>
+          <p>¡Disfruta la experiencia!</p><br><br>
+      </div>
+    </div>
 </body>
 <script>loadImgMasVendidos();</script>
 </html>
