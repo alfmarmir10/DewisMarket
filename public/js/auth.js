@@ -140,7 +140,13 @@ function loadImgMasVendidos(){
     
                 var btn = document.createElement("button");
                 var classBtn = document.createAttribute("class");
+                var targetBtn = document.createAttribute("btn-target");
+                targetBtn.value = keys[x-1];
+                btn.setAttributeNode(targetBtn);
                 classBtn.value = "btn btn-block btn-lg bg-warning font-weight-bold";
+                var nameBtn = document.createAttribute("btn-name");
+                nameBtn.value = "btnComprar";
+                btn.setAttributeNode(nameBtn);
                 btn.setAttributeNode(classBtn);
                 btn.textContent = "COMPRAR";
     
@@ -193,6 +199,9 @@ function loadImgMasVendidos(){
                 styleInputMinusPlusSign.value = "min-height: 40px; max-height: 40px; min-width: 80px; max-width: 80px; margin: 5px 20px; font-size: 30px; text-align: center; vertical-align: sub;";
                 var valueInputMinusPlusSign = document.createAttribute("value");
                 valueInputMinusPlusSign.value = "0";
+                var idInputMinusPlusSign = document.createAttribute("id");
+                idInputMinusPlusSign.value = keys[x-1]+"_Cantidad";
+                inputMinusPlusSign.setAttributeNode(idInputMinusPlusSign); 
                 inputMinusPlusSign.setAttributeNode(styleInputMinusPlusSign);  
                 inputMinusPlusSign.setAttributeNode(idInputMinusPlusSign);  
                 inputMinusPlusSign.setAttributeNode(valueInputMinusPlusSign);  
@@ -250,6 +259,9 @@ function loadImgMasVendidos(){
                 var classPrecio = document.createAttribute("class");
                 classPrecio.value = "card-title font-weight-bold text-danger";
                 precio.setAttributeNode(classPrecio);
+                var idPrecio = document.createAttribute("id");
+                idPrecio.value = keys[x-1]+"_Precio";
+                precio.setAttributeNode(idPrecio);
                 precio.textContent = "$"+docs[0][keys[x-1]]["PrecioECommerce"];
 
                 var cardBody2 = document.createElement("div");
@@ -257,11 +269,30 @@ function loadImgMasVendidos(){
                 classCardBody2.value = "card-body text-center";
                 cardBody2.setAttributeNode(classCardBody2);
                 cardBody2.appendChild(precio);
+
+                var codBar = document.createElement("h2");
+                var classCodBar = document.createAttribute("hidden");
+                codBar.setAttributeNode(classCodBar);
+                var idCodBar = document.createAttribute("id");
+                idCodBar.value = keys[x-1]+"_CodigoBarras";
+                codBar.setAttributeNode(idCodBar);
+                codBar.textContent = docs[0][keys[x-1]]["CodigoBarras"];
+
+                var costo = document.createElement("h2");
+                var classCosto = document.createAttribute("hidden");
+                costo.setAttributeNode(classCosto);
+                var idCosto = document.createAttribute("id");
+                idCosto.value = keys[x-1]+"_Costo";
+                costo.setAttributeNode(idCosto);
+                costo.textContent = docs[0][keys[x-1]]["UltimoCosto"];
     
                 var descr = document.createElement("h2");
                 var classDescr = document.createAttribute("class");
                 classDescr.value = "card-title font-weight-bold";
                 descr.setAttributeNode(classDescr);
+                var idDescripcion = document.createAttribute("id");
+                idDescripcion.value = keys[x-1]+"_Descripcion";
+                descr.setAttributeNode(idDescripcion);
                 descr.textContent = docs[0][keys[x-1]]["Descripcion"];
 
                 var cardBody = document.createElement("div");
@@ -269,6 +300,8 @@ function loadImgMasVendidos(){
                 classCardBody.value = "card-body text-center align-items-center d-flex justify-content-center";
                 cardBody.setAttributeNode(classCardBody);
                 cardBody.appendChild(descr);
+                cardBody.appendChild(costo);
+                cardBody.appendChild(codBar);
 
                 var Img = document.createElement("img");
                 var classImg = document.createAttribute("class");

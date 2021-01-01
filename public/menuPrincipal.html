@@ -31,90 +31,102 @@
 <script src="./js/auth.js"></script>
 <script>
   function openNav() {
-    document.getElementById("mySidebar").style.width = "90%";
-    document.getElementById("main").style.marginLeft = "90%";
+      var menu = $('#mySidebar');
+      if(menu.hasClass('expanded')) { 
+          menu.removeClass('expanded'); 
+      } else {
+          menu.addClass('expanded');
+      }
   }
   
   function closeNav() {
-    document.getElementById("mySidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft= "0";
+    var menu = $('#mySidebar');
+    menu.removeClass('expanded');
   }
-  </script>
+</script>
 <script>
-  $(Document).on("click", "#dropdown-departamentos", function(e){
-      var menu = $('#dropdown-menu-departamentos');
-      if(menu.hasClass('show')) { 
-          menu.removeClass('show'); 
-      } else {
-          menu.addClass('show');
-      }
+  $(document).ready(function () {
+    validarSesion();
+    $(Document).on("click", "#dropdown-departamentos", function(e){
+    var menu = $('#dropdown-menu-departamentos');
+    if(menu.hasClass('show')) { 
+        menu.removeClass('show'); 
+    } else {
+        menu.addClass('show');
+    }
   });
 
   $(Document).on("keydown", ".input-group-field", function(e){
-          var x = event.charCode || event.keyCode;
-          if (isNaN(String.fromCharCode(e.which)) && x!=32 && x!=8 && x!=37 && x!=39) e.preventDefault();
-          // if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
-        });
+    var x = event.charCode || event.keyCode;
+    if (isNaN(String.fromCharCode(e.which)) && x!=32 && x!=8 && x!=37 && x!=39) e.preventDefault();
+    // if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
+  });
 
-    $(document).ready(function () {
-      validarSesion();
-      // This button will increment the value
-      $(Document).on("click", "[data-quantity='plus']", function(e){
-      // $('[data-quantity="plus"]').click(function(e){
-        console.log("Plus");
-          // Stop acting like a button
+  $(Document).on('click', "[btn-name='btnComprar']", function(e){
+    var fieldName = $(this).attr('btn-target');
+    
+    var PREC = $('#'+fieldName+'_Precio').text();
+    var DESCR = $('#'+fieldName+'_Descripcion').text();
+    var CB = $('#'+fieldName+'_CodigoBarras').text();
+    var COS = $('#'+fieldName+'_Costo').text();
+    var CAN = $('#'+fieldName+'_Cantidad').val();
+    alert("Descripción: "+DESCR+"\nPrecio: "+PREC.substring(1)+"\nCódigo de Barras: "+CB+"\nCosto: "+COS+"\nCantidad: "+CAN);
+  })
+
+  // This button will increment the value
+  $(Document).on("click", "[data-quantity='plus']", function(e){
+    // Stop acting like a button
+    e.preventDefault();
+    // Get the field name
+    fieldName = $(this).attr('data-field');
+    // Get its current value
+    var currentVal = parseInt($('input[name='+fieldName+']').val());
+    console.log(currentVal);
+    console.log('input[name='+fieldName+']');
+    // If is not undefined
+    if (!isNaN(currentVal)) {
+        // Increment
+        $('input[name='+fieldName+']').val(currentVal + 1);
+    } else {
+        // Otherwise put a 0 there
+        $('input[name='+fieldName+']').val(1);
+    }
+  });
+  // This button will decrement the value till 0
+  $(Document).on("click", "[data-quantity='minus']", function(e){
+    // Stop acting like a button
+    e.preventDefault();
+    // Get the field name
+    fieldName = $(this).attr('data-field');
+    // Get its current value
+    var currentVal = parseInt($('input[name='+fieldName+']').val());
+    console.log(currentVal);
+    console.log('input[name='+fieldName+']');
+    // If it isn't undefined or its greater than 0
+    if (!isNaN(currentVal) && currentVal > 0) {
+        // Decrement one
+        $('input[name='+fieldName+']').val(currentVal - 1);
+    } else {
+        // Otherwise put a 0 there
+        $('input[name='+fieldName+']').val(0);
+    }
+  });
+
+  $(function(){
+      $("#menu-toggle").click(function(e) {
           e.preventDefault();
-          // Get the field name
-          fieldName = $(this).attr('data-field');
-          // Get its current value
-          var currentVal = parseInt($('input[name='+fieldName+']').val());
-          console.log(currentVal);
-          console.log('input[name='+fieldName+']');
-          // If is not undefined
-          if (!isNaN(currentVal)) {
-              // Increment
-              $('input[name='+fieldName+']').val(currentVal + 1);
-          } else {
-              // Otherwise put a 0 there
-              $('input[name='+fieldName+']').val(1);
-          }
+          $("#wrapper").toggleClass("toggled");
       });
-      // This button will decrement the value till 0
-      $(Document).on("click", "[data-quantity='minus']", function(e){
-        console.log("Minus");
-          // Stop acting like a button
-          e.preventDefault();
-          // Get the field name
-          fieldName = $(this).attr('data-field');
-          // Get its current value
-          var currentVal = parseInt($('input[name='+fieldName+']').val());
-          console.log(currentVal);
-          console.log('input[name='+fieldName+']');
-          // If it isn't undefined or its greater than 0
-          if (!isNaN(currentVal) && currentVal > 0) {
-              // Decrement one
-              $('input[name='+fieldName+']').val(currentVal - 1);
-          } else {
-              // Otherwise put a 0 there
-              $('input[name='+fieldName+']').val(0);
-          }
-        });
 
-          $(function(){
-              $("#menu-toggle").click(function(e) {
-                  e.preventDefault();
-                  $("#wrapper").toggleClass("toggled");
-              });
-
-              $(window).resize(function(e) {
-                if($(window).width()<=768){
-                  $("#wrapper").removeClass("toggled");
-                }else{
-                  $("#wrapper").addClass("toggled");
-                }
-              });
-            });
+      $(window).resize(function(e) {
+        if($(window).width()<=768){
+          $("#wrapper").removeClass("toggled");
+        }else{
+          $("#wrapper").addClass("toggled");
+        }
       });
+    });
+  });
 </script>
 </head>
 <body>
@@ -169,12 +181,12 @@
     <main>
         <!-- Page Content -->
         <div id="mySidebar" class="sidebar">
-          <a href="javascript:void(0)" class="closebtn text-danger" onclick="closeNav()">×</a>
+              <a href="javascript:void(0)" class="closebtn text-white" onclick="closeNav()">×</a>
           <div class="card">
             <div class="card-header text-center">
               <p>CARRITO</p>
             </div>
-            <div class="card-body" id="carritoList">
+            <div class="card-body" id="carritoList" style="min-height: 1000px;">
               <div class="table-responsive">
                 <table class="table table-striped " id="tabla_catalogo">
                     <thead class="thead-dark">
@@ -201,9 +213,9 @@
             <section class="nameUserBar-left">
               <p id="nameUser" style="font-family: Arial, Helvetica, sans-serif; font-weight:lighter; font-size: 20px; align-items: center;"></p>
             </section>
-            <section class="nameUserBar-right">
+            <section class="nameUserBar-right" style="position: fixed; top: 5%; left: 89%; z-index: 1;">
               <button type="button" id="menu-toggle" class="btn btn-white mb-2" onclick="openNav();">
-                  <image src="./img/shoppingCart-icon.png" style="max-width: 35px; max-height: 35px;"></i>
+                  <image src="./img/carrito.png" style="max-width: 35px; max-height: 35px;"></i>
                   <!-- <span>Toggle Sidebar</span> -->
               </button>
             </section>

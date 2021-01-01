@@ -146,10 +146,9 @@ main{
     background-color: #444;
   }
   
-  #main {
-    transition: margin-left .5s;
-    padding: 16px;
-  }
+  .expanded{
+    width: 90%;
+    }
   
   /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
   @media screen and (max-height: 450px) {
@@ -203,6 +202,10 @@ main{
     .navbar-nav .nav-item a{
         color: white!important;
     }
+
+    .expanded{
+        width: 90%;
+    }
 }
 
 @media (min-width: 992px) {
@@ -231,6 +234,10 @@ main{
     .navbar-nav{
         margin-left: 50%;
     }
+
+    .expanded{
+        width: 75%;
+    }
 }
 
   @media (min-width: 1200px) {
@@ -258,6 +265,42 @@ main{
 
     .navbar-nav{
         margin-left: 65%;
+    }
+
+    .expanded{
+        width: 65%;
+    }
+}
+
+@media (min-width: 1500px) {
+    .navbar{
+        padding: 0!important;
+    }
+
+    .navbar-brand img{
+        width: 140px;
+        height: 45px;
+        margin: 15px 15px;
+    }
+
+    .card-principal{
+        font-size: 30px;
+    }
+
+    .card-subtitle{
+        font-size: 25px;
+    }
+
+    .navbar-nav .nav-item a{
+        color: white!important;
+    }
+
+    .navbar-nav{
+        margin-left: 65%;
+    }
+
+    .expanded{
+        width: 50%;
     }
 }
 
