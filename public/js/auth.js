@@ -320,7 +320,7 @@ function loadImgMasVendidos(){
 
                 var card = document.createElement("div");
                 var classCard = document.createAttribute("class"); 
-                classCard.value = "card shadow-lg bg-black";
+                classCard.value = "card shadow-lg bg-black rounded";
                 card.setAttributeNode(classCard);
                 var styleCard = document.createAttribute("style"); 
                 styleCard.value = "width: 100%; min-width: 100%; min-height: 100%; max-height: 100%; border: 0.5px solid black!important;";

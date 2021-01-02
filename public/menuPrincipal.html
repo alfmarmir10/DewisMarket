@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="./css/clientes.css">
 <link href="https://fonts.googleapis.com/css2?family=Spartan:wght@200&display=swap" rel="stylesheet">
 <script src="./js/auth.js"></script>
+
 <script>
   function openNav() {
       var menu = $('#mySidebar');
@@ -43,8 +44,7 @@
     var menu = $('#mySidebar');
     menu.removeClass('expanded');
   }
-</script>
-<script>
+
   $(document).ready(function () {
     validarSesion();
     $("#toastMsg").toast('show');
@@ -146,9 +146,9 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="align-items: center">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item active">
-                        <a class="nav-link text-center active" aria-current="page" href="#">Inicio</a>
+                        <a class="nav-link text-center active fs1" aria-current="page" href="#">Inicio</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-center" href="#" id="dropdown-departamentos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -193,7 +193,7 @@
             <div class="card-header text-center bg-dark text-white font-weight-bold">
               <h2>CARRITO</h2>
             </div>
-            <div class="card-body" id="carritoList" style="min-height: 1000px;">
+            <div class="card-body carritoCardBody" id="carritoList">
               <div class="table-responsive">
                 <table class="table table-striped " id="tabla_catalogo">
                     <thead class="thead-dark">
@@ -218,18 +218,18 @@
         <div id="page-content-wrapper">
           <div class="nameUserBar">
             <section class="nameUserBar-left">
-              <p id="nameUser" style="font-family: Arial, Helvetica, sans-serif; font-weight:lighter; font-size: 20px; align-items: center;"></p>
+              <p id="nameUser" class="nameUser"></p>
             </section>
-            <section class="nameUserBar-right" style="position: fixed; top: 5%; left: 89%; z-index: 1;">
+            <section class="nameUserBar-right">
               <button type="button" id="menu-toggle" class="btn btn-white mb-2" onclick="openNav();">
-                  <image src="./img/carrito.png" style="max-width: 35px; max-height: 35px;"></i>
+                  <image src="./img/carrito.png" class="imgCarrito"></i>
                   <!-- <span>Toggle Sidebar</span> -->
               </button>
             </section>
           </div>
           <div class="container-fluid">
               <section class="carousel-mas-vendidos">
-                  <div class="card" style="width: 100%; min-width: 100%;">
+                  <div class="card cardCarouselMasVendidos" >
                       <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase h1 text-white">Lo más vendido</div>
                       <div id="card-body-mas-vendidos" class="card-body">
                       </div>
@@ -244,7 +244,7 @@
     <footer>
 
     </footer>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toastMsg" data-autohide="true" style="position: fixed; top: 125px; right: 0; min-width: 300px; z-index: 999" data-delay="3500">
+    <div class="toast toastMsg" role="alert" aria-live="assertive" aria-atomic="true" id="toastMsg" data-autohide="true" data-delay="3500">
       <div class="toast-header bg-dark">
       <img src="./img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px">
       <strong class="mr-auto text-white">DEWIS MARKET</strong>

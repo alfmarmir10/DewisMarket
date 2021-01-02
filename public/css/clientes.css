@@ -84,11 +84,10 @@ main{
 
 .nameUserBar-left{
     justify-self: center;
+    padding-top: 10px;
 }
 
-.nameUserBar-right{
-    justify-self: right;
-}
+
 
 #sidebar-collapse-img{
     background-repeat: no-repeat;
@@ -149,15 +148,75 @@ main{
   .expanded{
     width: 90%;
     }
-  
-  /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-  @media screen and (max-height: 450px) {
-    .sidebar {padding-top: 15px;}
-    .sidebar a {font-size: 18px;}
-  }
 
+    #navbarSupportedContent ul{
+        align-items: center;
+    }
+
+    .carritoCardBody{
+        min-height: 500px;
+    }
+
+    .nameUser{
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight:lighter; 
+        align-items: center; 
+        font-size: 10px;
+    }
+
+    .imgCarrito{
+        max-width: 80px;
+        max-height: 80px;
+        border-radius: 20%;
+        box-shadow: 2px 2px 2px 2px black;
+        padding: 5px;
+        background-color: white;
+    }
+
+    .nameUserBar-right{
+        justify-self: right;
+        position: fixed;
+        bottom: 5%;
+        right: 5%;
+        z-index: 1;
+    }
+
+    .cardCarouselMasVendidos{
+        width: 100%; 
+        min-width: 100%;
+    }
+
+    .toastMsg{
+        position: fixed;
+        top: 125px;
+        right: 0;
+        min-width: 300px;
+        z-index: 999
+    }
+
+    .navbar-nav li a{
+        font-size: 25px;
+    }
+
+@media (min-width: 350px){
+    /* .nameUserBar-right{
+        top: 50px;
+        left: 83%
+    } */
+}
+
+@media (min-width: 414px){
+    /* .nameUserBar-right{
+        top: 76px;
+        left: 83%
+    } */
+}
 
 @media (min-width: 420px) {
+
+    .navbar-nav li a{
+        font-size: 25px;
+    }
 
     .navbar-brand img{
         width: 130px;
@@ -178,9 +237,26 @@ main{
         font-size: 15px;
 
     }
+
+    .nameUser{
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight:lighter; 
+        align-items: center; 
+        font-size: 20px;
+    }
+}
+
+@media (min-width: 541px){
+    /* .nameUserBar-right{
+        top: 100px;
+    } */
 }
 
 @media (min-width: 720px) {
+    .navbar-nav li a{
+        font-size: 20px;
+    }
+
     .navbar{
         padding: 0!important;
     }
@@ -206,9 +282,25 @@ main{
     .expanded{
         width: 90%;
     }
+
+    .nameUser{
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight:lighter; 
+        align-items: center; 
+        font-size: 20px;
+    }
+
+    /* .nameUserBar-right{
+        top: 150px;
+    } */
+
 }
 
 @media (min-width: 992px) {
+    .navbar-nav li a{
+        font-size: 20px;
+    }
+
     .navbar{
         padding: 0!important;
     }
@@ -232,15 +324,20 @@ main{
     }
 
     .navbar-nav{
-        margin-left: 50%;
+        margin-left: 30%;
     }
 
     .expanded{
         width: 75%;
     }
+
 }
 
   @media (min-width: 1200px) {
+    .navbar-nav li a{
+        font-size: 20px;
+    }
+
     .navbar{
         padding: 0!important;
     }
@@ -264,15 +361,20 @@ main{
     }
 
     .navbar-nav{
-        margin-left: 65%;
+        margin-left: 50%;
     }
 
     .expanded{
         width: 65%;
     }
+
 }
 
 @media (min-width: 1500px) {
+    .navbar-nav li a{
+        font-size: 20px;
+    }
+
     .navbar{
         padding: 0!important;
     }
@@ -302,6 +404,7 @@ main{
     .expanded{
         width: 50%;
     }
+
 }
 
 
