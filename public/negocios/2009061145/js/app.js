@@ -4818,6 +4818,7 @@ function llenarComboBoxDescripcionVenderListener(){
         } catch (error) {
             console.log("Error: "+error);
         }
+        console.log("Doc: "+doc.get("Descripcion"));
         documentosComboBox = [];
         documentosComboBox = doc.get("Descripcion");
         var container = document.getElementById("cmbDescripcion");
@@ -4971,6 +4972,11 @@ function DisponibilidadCB(){
             }
         });
     }
+}
+
+function AgregarACatalogoECommerce(){
+    var idNegocio = getCookie("idNegocio");
+
 }
 
 function AgregarProducto(){

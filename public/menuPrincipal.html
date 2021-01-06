@@ -26,11 +26,100 @@
 <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
 
 <link rel="stylesheet" type="text/less" href="./css/plus-minus-input.scss">
-<link rel="stylesheet" href="./css/clientes.css">
+<link rel="stylesheet" href="./css/mobile320px.css">
 <link href="https://fonts.googleapis.com/css2?family=Spartan:wght@200&display=swap" rel="stylesheet">
 <script src="./js/auth.js"></script>
 
 <script>
+  function setFolioECommerce(){
+    var d = new Date();
+    var anio = d.getFullYear();
+    $("#anio").text(anio);
+
+    var mes = d.getMonth()+1;
+
+    if(mes <10){
+    $("#mes").text("0"+mes);
+    mes = "0"+mes;
+    } else {
+    $("#mes").text(mes);
+    }
+
+    var dia = d.getDate();
+
+    if(dia <10){
+    $("#dia").text("0"+dia);
+    dia = "0"+dia;
+    } else {
+    $("#dia").text(dia);
+    }
+
+    var hora = d.getHours();
+
+    if(hora <10){
+    $("#hora").text("0"+hora);
+    hora = "0"+hora;
+    } else {
+    $("#hora").text(hora);
+    }
+
+    var minutos = d.getMinutes();
+
+    if(minutos <10){
+    $("#minutos").text("0"+minutos);
+    minutos = "0"+minutos;
+    } else {
+    $("#minutos").text(minutos);
+    }
+
+    var segundos = d.getSeconds();
+
+    if(segundos <10){
+    $("#segundos").text("0"+segundos);
+    segundos = "0"+segundos;
+    } else {
+    $("#segundos").text(segundos);
+    }
+
+    var milisegundos = d.getMilliseconds();
+
+    if(milisegundos <10){
+    $("#milisegundos").text("0"+milisegundos);
+    milisegundos = "0"+milisegundos;
+    } else {
+    $("#milisegundos").text(milisegundos);
+    }
+
+    $("#folio").text(anio+""+mes+""+dia+""+hora+""+minutos+""+segundos+""+milisegundos);
+  }
+
+  $(Document).on('click', "[btn-name='btnComprar']", function(e){
+    var fieldName = $(this).attr('btn-target');
+    var CAN = $('#'+fieldName+'_Cantidad').val();
+
+    if (isNaN(CAN) || CAN == 0){
+      alert("La cantidad no puede ser cero, verifica.");
+      return;
+    }
+
+    var CB = $('#'+fieldName+'_CodigoBarras').text();
+    var ID = $('#'+fieldName+'_Id').text();
+    var DESCR = $('#'+fieldName+'_Descripcion').text();
+    var PREC = $('#'+fieldName+'_Precio').text();
+    var COS = $('#'+fieldName+'_Costo').text();
+    var TOT = PREC.substr(1) * CAN;
+    var CLI = $('#nameUser').text();
+    var MAIL = $('#emailUser').text();
+
+    setFolioECommerce();
+    var FOL = $("#folio").text();
+    var GAN = ((PREC.substring(1) - COS) * CAN).toFixed(2);
+
+
+    alert("Descripción: "+DESCR+"\nPrecio: "+PREC.substring(1)+"\nCódigo de Barras: "+CB+"\nCosto: "+COS+"\nCantidad: "+CAN+"\nId: "+ID+"\nTotal: "+TOT+"\nCliente: "+CLI+"\nGanancia: "+GAN+"\nFolio: "+FOL+"\ne-mail: "+MAIL);
+    agregarElementosVentasECommerce(CB, ID, DESCR, PREC.substring(1), TOT, CLI, FOL, COS, GAN, MAIL);
+  })
+
   function openNav() {
       var menu = $('#mySidebar');
       if(menu.hasClass('expanded')) { 
@@ -43,6 +132,15 @@
   function closeNav() {
     var menu = $('#mySidebar');
     menu.removeClass('expanded');
+  }
+
+  function openSearch(){
+    var menu = $('.search-input');
+      if(menu.hasClass('search-input-hidden')) { 
+          menu.removeClass('search-input-hidden'); 
+      } else {
+          menu.addClass('search-input-hidden');
+      }
   }
 
   $(document).ready(function () {
@@ -62,23 +160,8 @@
     if (isNaN(String.fromCharCode(e.which)) && x!=32 && x!=8 && x!=37 && x!=39) e.preventDefault();
     // if (isNaN(String.fromCharCode(e.which)) && x!=190 && x!=8 && x!=37 && x!=39) e.preventDefault();
   });
+  
 
-  $(Document).on('click', "[btn-name='btnComprar']", function(e){
-    var fieldName = $(this).attr('btn-target');
-    var CAN = $('#'+fieldName+'_Cantidad').val();
-
-    if (isNaN(CAN) || CAN == 0){
-      alert("La cantidad no puede ser cero, verifica.");
-      return;
-    }
-
-    var PREC = $('#'+fieldName+'_Precio').text();
-    var DESCR = $('#'+fieldName+'_Descripcion').text();
-    var CB = $('#'+fieldName+'_CodigoBarras').text();
-    var COS = $('#'+fieldName+'_Costo').text();
-    
-    alert("Descripción: "+DESCR+"\nPrecio: "+PREC.substring(1)+"\nCódigo de Barras: "+CB+"\nCosto: "+COS+"\nCantidad: "+CAN);
-  })
 
   // This button will increment the value
   $(Document).on("click", "[data-quantity='plus']", function(e){
@@ -88,8 +171,6 @@
     fieldName = $(this).attr('data-field');
     // Get its current value
     var currentVal = parseInt($('input[name='+fieldName+']').val());
-    console.log(currentVal);
-    console.log('input[name='+fieldName+']');
     // If is not undefined
     if (!isNaN(currentVal)) {
         // Increment
@@ -143,12 +224,12 @@
             <div class="container">
             <a class="navbar-brand" href="#"><img src="./img/logo_editado.png" alt="" width="300" id="logo"></a>
             <button class="navbar-toggler border border-white bg-white" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+              <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item active">
-                        <a class="nav-link text-center active fs1" aria-current="page" href="#">Inicio</a>
+                        <a class="nav-link text-center active" aria-current="page" href="#">Inicio</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-center" href="#" id="dropdown-departamentos" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -184,6 +265,17 @@
             </div>
             </div>
         </nav>
+        <label id="anio" hidden></label>
+        <label id="mes" hidden></label>
+        <label id="dia" hidden></label>
+        <label id="hora" hidden></label>
+        <label id="minutos" hidden></label>
+        <label id="segundos" hidden></label>
+        <label id="milisegundos" hidden></label>
+        <label id="folio" hidden></label>
+        <label id="fecha2" hidden></label>
+        <label id="hora2" hidden></label>
+        <label id="docOrigen" hidden></label>
     </header>
     <main>
         <!-- Page Content -->
@@ -216,21 +308,26 @@
         </div>
         
         <div id="page-content-wrapper">
+          <div class="carrito-flotante">
+            <button type="button" id="menu-toggle" class="btn btn-white mb-2" onclick="openNav();">
+              <image src="./img/carrito.png" class="imgCarrito"></i>
+            </button>
+          </div>
           <div class="nameUserBar">
             <section class="nameUserBar-left">
               <p id="nameUser" class="nameUser"></p>
+              <p id="emailUser" hidden></p>
             </section>
             <section class="nameUserBar-right">
-              <button type="button" id="menu-toggle" class="btn btn-white mb-2" onclick="openNav();">
-                  <image src="./img/carrito.png" class="imgCarrito"></i>
-                  <!-- <span>Toggle Sidebar</span> -->
-              </button>
+              <i class="fas fa-search search-icon" onclick="openSearch();"></i>
+              <input id="Catalogo" class="search-input search-input-hidden" placeholder="Escribe aquí"></input>
+              <script>llenarComboBox('Catalogo', 'cmbCatalogoValidarPrecio', 'search-input');</script>
             </section>
           </div>
           <div class="container-fluid">
               <section class="carousel-mas-vendidos">
                   <div class="card cardCarouselMasVendidos" >
-                      <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase h1 text-white">Lo más vendido</div>
+                      <div class="card-header bg-danger text-center font-weight-bold border-5 rounded text-uppercase text-white titulo-seccion">Lo más vendido</div>
                       <div id="card-body-mas-vendidos" class="card-body">
                       </div>
                   </div>                        
@@ -249,7 +346,7 @@
       <img src="./img/favicon.ico" class="mr-2" alt="..." style="width: 16px; height: 16px">
       <strong class="mr-auto text-white">DEWIS MARKET</strong>
       <!-- <small class="text-muted">just now</small> -->
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <button type="button" class="ml-2 mb-1 close text-white" data-dismiss="toast" aria-label="Close">
           <span aria-hidden="true">&times;</span>
       </button>
       </div>

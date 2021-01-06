@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dewis Market - Menu Principal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./css/mobile320_clientes.css">
+</head>
+<body>
+    <header>
+        <nav class="topnav" id="myTopnav">
+            <a href="#"><img src="./img/logo_editado.png" alt=""></a>
+            <div id="myLinks">
+                <a href="#" class="active">Inicio</a>
+                <div class="dropdown">
+                    <div class="dropbtn-container">
+                        <a href="#" class="dropbtn" onclick="toggleDeptsDropdown()">Departamentos</a>
+                        <i class="fa fa-caret-down droptbtn-flecha-abajo"></i>
+                    </div>
+                    <div class="dropdown-content" id="dropdown-depts">
+                        <a class="dropdown-item" href="#">Abarrotes</a>
+                        <a class="dropdown-item" href="#">Botanas</a>
+                        <a class="dropdown-item" href="#">Cuidado Personal</a>
+                        <a class="dropdown-item" href="#">Dulces</a>
+                        <a class="dropdown-item" href="#">Galletas</a>
+                        <a class="dropdown-item" href="#">Hogar</a>
+                        <a class="dropdown-item" href="#">Insecticidas</a>
+                        <a class="dropdown-item" href="#">Limpieza</a>
+                        <a class="dropdown-item" href="#">Mascotas</a>
+                        <a class="dropdown-item" href="#">Medicamentos</a>
+                        <a class="dropdown-item" href="#">Pan</a>
+                        <a class="dropdown-item" href="#">Refrescos</a>
+                    </div>
+                </div>
+                <a href="#">Ajustes</a>
+                <a href="#">Salir</a>
+              </div>
+              <a href="javascript:void(0);" class="icon" onclick="toggleNavBar()">
+                <i class="fa fa-bars"></i>
+              </a>
+        </nav>
+    </header>
+    <main>
+
+    </main>
+    <footer>
+
+    </footer>
+</body>
+<script>
+    function toggleNavBar() {
+        var x = document.getElementById("myLinks");
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "block";
+        }
+    }
+
+    function toggleDeptsDropdown() {
+        var x = document.getElementById("dropdown-depts");
+        if (x.style.display === "block") {
+            x.style.display = "none";
+        } else {
+            x.style.display = "block";
+        }
+    }
+</script>
+</html>

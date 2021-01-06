@@ -1,0 +1,32 @@
+.navbar-nav li a{
+    font-size: 25px;
+}
+
+.navbar-brand img{
+    width: 130px;
+    height: 40px;
+    margin: 5px 5px;
+}
+
+.navbar-nav .nav-item a{
+    color: white;
+    
+}
+
+.card-principal{
+    font-size: 20px;
+}
+
+.card-subtitle{
+    font-size: 15px;
+
+}
+
+.nameUser{
+    display: block;
+    font-size: 10px;
+}
+
+.search-input{
+    min-width: 100px;
+}
